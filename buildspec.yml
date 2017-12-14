@@ -1,0 +1,36 @@
+version: 0.2
+
+env:
+  parameter-store:
+    DOCKER_PASSWORD: "docker_password"
+    SERVER_KEY: "baseball_key"
+
+phases:
+  build:
+    commands:
+      # Push to DockerHub
+      - docker build -t benjamincrom/livebaseballscorecards .
+      - docker login -u benjamincrom -p $DOCKER_PASSWORD
+      - docker push benjamincrom/livebaseballscorecards:latest
+
+      # Deploy to remote server
+      - apt update
+      - apt install -y ssh
+      - echo $SERVER_KEY > unformatted_keyfile
+      - echo "-----BEGIN RSA PRIVATE KEY-----" > keyfile
+      - tr ' ' '\n' < unformatted_keyfile >> keyfile
+      - echo "-----END RSA PRIVATE KEY-----" >> keyfile
+      - chmod 600 keyfile
+      - ssh -i keyfile -o StrictHostKeyChecking=no root@livebaseballscorecards.com 'docker pull benjamincrom/livebaseballscorecards:latest'
+      - ssh -i keyfile -o StrictHostKeyChecking=no root@livebaseballscorecards.com 'docker rm -f livebaseballscorecards'
+      - ssh -i keyfile -o StrictHostKeyChecking=no root@livebaseballscorecards.com 'docker run -itd --name livebaseballscorecards -p 80:80 benjamincrom/livebaseballscorecards:latest'
+      - ssh -i keyfile -o StrictHostKeyChecking=no root@livebaseballscorecards.com 'docker image prune -f'
+
+      # Push to ECR
+      # - $(aws ecr get-login --no-include-email --region us-east-1)
+      # - docker tag benjamincrom/livebaseballscorecards:latest 709205728612.dkr.ecr.us-east-1.amazonaws.com/livebaseballscorecards:latest
+      # - docker push 709205728612.dkr.ecr.us-east-1.amazonaws.com/livebaseballscorecards:latest
+
+      # Deploy to Amazon Fargate 
+      # - aws ecs register-task-definition --cli-input-json file://baseball-task.json --execution-role-arn arn:aws:iam::709205728612:role/ecsTaskExecutionRole
+      # - aws ecs update-service --cluster baseball-cluster --service baseball-service --task-definition baseball-task
