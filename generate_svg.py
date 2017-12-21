@@ -1460,18 +1460,13 @@ def write_file(game_list, output_path):
             filehandle.write(html_text)
 
 def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
-    formatted_date_str = get_xml_data.get_formatted_date_str(date_str)
-    date = dateutil.parser.parse(formatted_date_str)
-    boxscore_xml, team_xml, game_xml = get_xml_data.get_game_xml_data(
-        date,
-        away_code,
-        home_code,
-        game_num
+    this_game = get_xml_data.get_game_from_url(
+        date_str, away_code, home_code, game_num
     )
 
-    if boxscore_xml:
-        this_game = get_xml_data.get_game_obj(boxscore_xml, team_xml, game_xml)
+    formatted_date_str = get_xml_data.get_formatted_date_str(date_str)
 
+    if this_game:
         game_id = '-'.join(
             [formatted_date_str, away_code, home_code, str(game_num)]
         )
