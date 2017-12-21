@@ -1425,7 +1425,7 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
         raise ValueError('Invalid input directory')
 
     input_path = os.path.abspath(input_dir)
-    filename_list = get_xml_data.get_filename_list(
+    game_list = get_xml_data.get_game_list_from_files(
         start_date_str, end_date_str, input_path
     )
 
@@ -1433,46 +1433,31 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
         os.mkdir(output_dir)
 
     output_path = os.path.abspath(output_dir)
-    list_of_filename_lists = get_xml_data.get_list_of_lists(filename_list, 16)
-    for filename_list in list_of_filename_lists:
+    list_of_game_lists = get_xml_data.get_list_of_lists(game_list, 16)
+    for game_list in list_of_game_lists:
         process = multiprocessing.Process(
             target=write_file,
-            args=(filename_list, output_path)
+            args=(game_list, output_path)
         )
 
         process.start()
 
-def write_file(filename_list, output_path):
-    for output, boxscore, player, inning in filename_list:
-        if (os.path.isfile(boxscore) and
-                os.path.isfile(player) and
-                os.path.isfile(inning)):
-            boxscore_raw = open(boxscore, 'r', encoding='utf-8').read()
-            boxscore_xml = xml.etree.ElementTree.fromstring(boxscore_raw)
-            player_raw = open(player, 'r', encoding='utf-8').read()
-            player_xml = xml.etree.ElementTree.fromstring(player_raw)
-            inning_raw = open(inning, 'r', encoding='utf-8').read()
-            inning_xml = xml.etree.ElementTree.fromstring(inning_raw)
+def write_file(game_list, output_path):
+    for output, this_game in game_list:
+        svg_filename = output + '.svg'
+        html_filename = output + '.html'
+        print(svg_filename)
+        print(html_filename)
 
-            svg_filename = output + '.svg'
-            html_filename = output + '.html'
+        title = get_game_title_str(this_game)
+        svg_text = write_big_svg(this_game)
+        html_text = wrap_in_html(title, svg_filename)
 
-            print(svg_filename)
-            print(html_filename)
+        with open(output_path + '/' + svg_filename, 'w', encoding='utf-8') as filehandle:
+            filehandle.write(svg_text)
 
-            this_game = get_xml_data.get_game_obj(boxscore_xml,
-                                                  player_xml,
-                                                  inning_xml)
-
-            title = get_game_title_str(this_game)
-            svg_text = write_big_svg(this_game)
-            html_text = wrap_in_html(title, svg_filename)
-
-            with open(output_path + '/' + svg_filename, 'w', encoding='utf-8') as filehandle:
-                filehandle.write(svg_text)
-
-            with open(output_path + '/' + html_filename, 'w', encoding='utf-8') as filehandle:
-                filehandle.write(html_text)
+        with open(output_path + '/' + html_filename, 'w', encoding='utf-8') as filehandle:
+            filehandle.write(html_text)
 
 def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
     formatted_date_str = get_xml_data.get_formatted_date_str(date_str)

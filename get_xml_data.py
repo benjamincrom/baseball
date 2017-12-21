@@ -14,6 +14,9 @@ import baseball_events
 import constants
 
 def get_list_of_lists(this_list, size):
+    if len(this_list) % size:
+        size -= 1
+
     chunk_size = len(this_list) // size
     return [this_list[i:i+chunk_size]
             for i in range(0, len(this_list), chunk_size)]
@@ -190,6 +193,7 @@ def get_player_names(player_list):
             'Pitcher ', ''
         )
     )
+
     outgoing_player_name = get_name_only(player_list[1])
 
     return incoming_player_name.strip(), outgoing_player_name.strip()
@@ -494,7 +498,7 @@ def parse_switch_description(description, event_summary, game_obj,
 
     return switch_obj, switching_team
 
-def get_subsitution_switch_flags(event_summary, event_description):
+def get_substitution_switch_flags(event_summary, event_description):
     substitution_flag = (
         ('Sub' in event_summary or 'sub' in event_summary) and
         'remains in the game' not in event_description and
@@ -531,7 +535,7 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
             plate_appearance_list.append(plate_appearance_obj)
             event_list = []
         elif event_container.tag == 'action':
-            substitution_flag, switch_flag = get_subsitution_switch_flags(
+            substitution_flag, switch_flag = get_substitution_switch_flags(
                 event_summary,
                 event_description
             )
@@ -771,37 +775,6 @@ def initialize_game_object(boxscore_xml):
             away_starting_pitcher_id,
             home_starting_pitcher_id)
 
-def get_game_xml_data(date, away_team_code, home_team_code, game_number):
-    request_url_base = constants.MLB_URL_PATTERN.format(
-        year=date.year,
-        month=str(date.month).zfill(2),
-        day=str(date.day).zfill(2),
-        away_mlb_code=constants.MLB_TEAM_CODE_DICT[away_team_code],
-        home_mlb_code=constants.MLB_TEAM_CODE_DICT[home_team_code],
-        game_number=game_number
-    )
-
-    boxscore_request_text = requests.get(
-        request_url_base + constants.BOXSCORE_SUFFIX
-    ).text
-
-    if boxscore_request_text == 'GameDay - 404 Not Found':
-        boxscore_raw_xml, team_raw_xml, game_raw_xml = None, None, None
-    else:
-        boxscore_raw_xml = xml.etree.ElementTree.fromstring(
-            boxscore_request_text
-        )
-
-        team_raw_xml = xml.etree.ElementTree.fromstring(
-            requests.get(request_url_base + constants.PLAYERS_SUFFIX).text
-        )
-
-        game_raw_xml = xml.etree.ElementTree.fromstring(
-            requests.get(request_url_base + constants.GAME_SUFFIX).text
-        )
-
-    return boxscore_raw_xml, team_raw_xml, game_raw_xml
-
 def set_pitcher_wls_codes(game, away_pitcher_status_dict,
                           home_pitcher_status_dict):
     team_tuple_list = [(game.home_team.pitcher_list, home_pitcher_status_dict),
@@ -913,6 +886,24 @@ def get_filename_list(start_date_str, end_date_str, input_path):
 
     return filename_list
 
+def get_game_sublist(filename_list, return_queue):
+    game_sublist = []
+    for filename, boxscore, player, inning in filename_list:
+        if (os.path.isfile(boxscore) and
+                os.path.isfile(player) and
+                os.path.isfile(inning)):
+            boxscore_raw = open(boxscore, 'r', encoding='utf-8').read()
+            boxscore_xml = xml.etree.ElementTree.fromstring(boxscore_raw)
+            player_raw = open(player, 'r', encoding='utf-8').read()
+            player_xml = xml.etree.ElementTree.fromstring(player_raw)
+            inning_raw = open(inning, 'r', encoding='utf-8').read()
+            inning_xml = xml.etree.ElementTree.fromstring(inning_raw)
+
+            this_game = get_game_obj(boxscore_xml, player_xml, inning_xml)
+            game_sublist.append((filename, this_game))
+
+    return_queue.put(game_sublist)
+
 def get_game_list_from_files(start_date_str, end_date_str, input_dir):
     if not os.path.exists(input_dir):
         raise ValueError('Invalid input directory')
@@ -921,7 +912,9 @@ def get_game_list_from_files(start_date_str, end_date_str, input_dir):
     manager = multiprocessing.Manager()
     return_queue = manager.Queue()
     filename_list = get_filename_list(start_date_str, end_date_str, input_path)
-    list_of_filename_lists = get_list_of_lists(filename_list, 16)
+    list_of_filename_lists = get_list_of_lists(filename_list,
+                                               constants.NUM_SUBLISTS)
+
     job_list = []
     for filename_list in list_of_filename_lists:
         process = multiprocessing.Process(
@@ -941,31 +934,53 @@ def get_game_list_from_files(start_date_str, end_date_str, input_dir):
 
     return game_list
 
-def get_game_sublist(filename_list, return_queue):
-    game_sublist = []
-    for _, boxscore, player, inning in filename_list:
-        if (os.path.isfile(boxscore) and
-                os.path.isfile(player) and
-                os.path.isfile(inning)):
-            boxscore_raw = open(boxscore, 'r', encoding='utf-8').read()
-            boxscore_xml = xml.etree.ElementTree.fromstring(boxscore_raw)
-            player_raw = open(player, 'r', encoding='utf-8').read()
-            player_xml = xml.etree.ElementTree.fromstring(player_raw)
-            inning_raw = open(inning, 'r', encoding='utf-8').read()
-            inning_xml = xml.etree.ElementTree.fromstring(inning_raw)
-
-            this_game = get_game_obj(boxscore_xml, player_xml, inning_xml)
-            game_sublist.append(this_game)
-
-    return_queue.put(game_sublist)
-
 def generate_from_files(start_date_str, end_date_str, input_dir):
     game_list = get_game_list_from_files(start_date_str,
                                          end_date_str,
                                          input_dir)
 
-    for game in game_list:
+    for filename, game in game_list:
+        print(filename)
         print(game)
+
+def get_formatted_date_str(input_date_str):
+    this_date = dateutil.parser.parse(input_date_str)
+    this_date_str = '{}-{}-{}'.format(str(this_date.year),
+                                      str(this_date.month).zfill(2),
+                                      str(this_date.day).zfill(2))
+
+    return this_date_str
+
+def get_game_xml_data(date, away_team_code, home_team_code, game_number):
+    request_url_base = constants.MLB_URL_PATTERN.format(
+        year=date.year,
+        month=str(date.month).zfill(2),
+        day=str(date.day).zfill(2),
+        away_mlb_code=constants.MLB_TEAM_CODE_DICT[away_team_code],
+        home_mlb_code=constants.MLB_TEAM_CODE_DICT[home_team_code],
+        game_number=game_number
+    )
+
+    boxscore_request_text = requests.get(
+        request_url_base + constants.BOXSCORE_SUFFIX
+    ).text
+
+    if boxscore_request_text == 'GameDay - 404 Not Found':
+        boxscore_raw_xml, team_raw_xml, game_raw_xml = None, None, None
+    else:
+        boxscore_raw_xml = xml.etree.ElementTree.fromstring(
+            boxscore_request_text
+        )
+
+        team_raw_xml = xml.etree.ElementTree.fromstring(
+            requests.get(request_url_base + constants.PLAYERS_SUFFIX).text
+        )
+
+        game_raw_xml = xml.etree.ElementTree.fromstring(
+            requests.get(request_url_base + constants.GAME_SUFFIX).text
+        )
+
+    return boxscore_raw_xml, team_raw_xml, game_raw_xml
 
 def get_game_from_url(date_str, away_code, home_code, game_num):
     formatted_date_str = get_formatted_date_str(date_str)
@@ -996,14 +1011,6 @@ def generate_from_url(date_str, away_code, home_code, game_num):
         status = False
 
     return status
-
-def get_formatted_date_str(input_date_str):
-    this_date = dateutil.parser.parse(input_date_str)
-    this_date_str = '{}-{}-{}'.format(str(this_date.year),
-                                      str(this_date.month).zfill(2),
-                                      str(this_date.day).zfill(2))
-
-    return this_date_str
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
