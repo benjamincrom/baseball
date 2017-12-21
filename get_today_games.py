@@ -24,7 +24,7 @@ def get_today_date_str(today):
 
     return today_date_str
 
-def get_html_id_list(game_id_list, today_date_str, output_dir):
+def get_generated_html_id_list(game_id_list, today_date_str, output_dir):
     game_html_id_list = []
     for game_id in game_id_list:
         away_mlb_code = game_id.split('_')[-3][:3]
@@ -84,8 +84,9 @@ def get_today_games(output_dir):
     page = get_page(today)
 
     game_id_list = re.findall(r'>\s*(gid\_\w+)/<', page.text)
-    game_html_id_list = get_html_id_list(game_id_list, today_date_str,
-                                         output_dir)
+    game_html_id_list = get_generated_html_id_list(game_id_list,
+                                                   today_date_str,
+                                                   output_dir)
 
     object_html_str = get_object_html_str(game_html_id_list)
     output_html = constants.HTML_INDEX_PAGE.format(
@@ -93,8 +94,8 @@ def get_today_games(output_dir):
     )
 
     if object_html_str or not os.path.exists(output_dir + '/index.html'):
-        with open(output_dir + '/index.html', 'w', encoding='utf-8') as filehandle:
-            filehandle.write(output_html)
+        with open(output_dir + '/index.html', 'w', encoding='utf-8') as fh:
+            fh.write(output_html)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:

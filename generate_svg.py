@@ -7,7 +7,7 @@ import dateutil.parser
 
 import baseball_events
 import constants
-import get_xml_data
+import fetch_game
 
 def get_game_width(game):
     inning_length = max(len(game.inning_list), constants.NUM_MINIMUM_INNINGS)
@@ -1425,7 +1425,7 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
         raise ValueError('Invalid input directory')
 
     input_path = os.path.abspath(input_dir)
-    game_list = get_xml_data.get_game_list_from_files(
+    game_tuple_list = fetch_game.get_game_list_from_files(
         start_date_str, end_date_str, input_path
     )
 
@@ -1433,19 +1433,23 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
         os.mkdir(output_dir)
 
     output_path = os.path.abspath(output_dir)
-    list_of_game_lists = get_xml_data.get_list_of_lists(game_list, 16)
-    for game_list in list_of_game_lists:
+    list_of_game_tuple_lists = fetch_game.get_list_of_lists(
+        game_tuple_list,
+        constants.NUM_SUBLISTS
+    )
+
+    for game_tuple_list in list_of_game_tuple_lists:
         process = multiprocessing.Process(
             target=write_file,
-            args=(game_list, output_path)
+            args=(game_tuple_list, output_path)
         )
 
         process.start()
 
-def write_file(game_list, output_path):
-    for output, this_game in game_list:
-        svg_filename = output + '.svg'
-        html_filename = output + '.html'
+def write_file(game_tuple_list, output_path):
+    for game_id, this_game in game_tuple_list:
+        svg_filename = game_id + '.svg'
+        html_filename = game_id + '.html'
         print(svg_filename)
         print(html_filename)
 
@@ -1453,24 +1457,18 @@ def write_file(game_list, output_path):
         svg_text = write_big_svg(this_game)
         html_text = wrap_in_html(title, svg_filename)
 
-        with open(output_path + '/' + svg_filename, 'w', encoding='utf-8') as filehandle:
-            filehandle.write(svg_text)
+        with open(output_path + '/' + svg_filename, 'w', encoding='utf-8') as fh:
+            fh.write(svg_text)
 
-        with open(output_path + '/' + html_filename, 'w', encoding='utf-8') as filehandle:
-            filehandle.write(html_text)
+        with open(output_path + '/' + html_filename, 'w', encoding='utf-8') as fh:
+            fh.write(html_text)
 
 def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
-    this_game = get_xml_data.get_game_from_url(
+    game_id, this_game = fetch_game.get_game_from_url(
         date_str, away_code, home_code, game_num
     )
 
-    formatted_date_str = get_xml_data.get_formatted_date_str(date_str)
-
     if this_game:
-        game_id = '-'.join(
-            [formatted_date_str, away_code, home_code, str(game_num)]
-        )
-
         svg_filename = game_id + '.svg'
         html_filename = game_id + '.html'
         title = get_game_title_str(this_game)
@@ -1481,11 +1479,11 @@ def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
             os.mkdir(output_dir)
 
         output_path = os.path.abspath(output_dir)
-        with open(output_path + '/' + svg_filename, 'w', encoding='utf-8') as filehandle:
-            filehandle.write(svg_text)
+        with open(output_path + '/' + svg_filename, 'w', encoding='utf-8') as fh:
+            fh.write(svg_text)
 
-        with open(output_path + '/' + html_filename, 'w', encoding='utf-8') as filehandle:
-            filehandle.write(html_text)
+        with open(output_path + '/' + html_filename, 'w', encoding='utf-8') as fh:
+            fh.write(html_text)
 
         print(svg_filename)
         print(html_filename)
