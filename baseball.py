@@ -7,29 +7,6 @@ import pytz
 import constants
 import stats
 
-def fix_initials(input_str):
-    match = re.search(r'[A-Z]\.\s+[A-Z]\.\s+', input_str)
-    while match:
-        index_start = match.start()
-        index_end = match.end()
-        string_start = input_str[:index_start]
-        string_end = input_str[index_end:]
-        string_middle = input_str[index_start:index_end]
-        string_middle = re.sub(r'\.\s+', '', string_middle)
-        input_str = (string_start + string_middle + ' ' + string_end)
-        match = re.search(r'[A-Z]\.\s+[A-Z]\.\s+', input_str)
-
-    match = re.search(r'[A-Z]\.\s+[A-Z]', input_str)
-    while match:
-        index_start = match.start()
-        index_end = match.end()
-        string_start = input_str[:index_start]
-        string_middle = input_str[index_start:index_end].replace('.', '')
-        string_end = input_str[index_end:]
-        input_str = (string_start + string_middle + string_end).strip()
-        match = re.search(r'[A-Z]\.\s+[A-Z]', input_str)
-
-    return input_str
 
 def strip_this_suffix(pattern, suffix, input_str):
     match = re.search(pattern, input_str)
@@ -152,6 +129,25 @@ class Team(object):
         self.player_id_dict = {}
         self.player_name_dict = {}
         self.player_last_name_dict = {}
+
+    def lookup_player(self, player_name):
+        if player_name in self.player_name_dict:
+            player = self.player_name_dict[player_name]
+        else:
+            player_name = re.sub(r' Jr$', '', player_name.strip(' .'))
+            player_name = re.sub(r' Sr$', '', player_name.strip(' .'))
+            player_name = re.sub(r' II$', '', player_name.strip())
+            player_name = re.sub(r' III$', '', player_name.strip())
+            player_name = re.sub(r' IV$', '', player_name.strip())
+
+            player_name = strip_suffixes(player_name.strip())
+            first_name_initial = player_name[0]
+            last_name = player_name.split()[-1]
+
+            initial_last_name = first_name_initial + last_name
+            player = self.player_last_name_dict[initial_last_name]
+
+        return player
 
     def __repr__(self):
         return_str = (
@@ -323,40 +319,10 @@ class Inning(object):
     def __init__(self, top_half_appearance_list, bottom_half_appearance_list):
         self.top_half_appearance_list = top_half_appearance_list
         self.bottom_half_appearance_list = bottom_half_appearance_list
-
-        (self.top_half_inning_stats,
-         self.bottom_half_inning_stats) = self.get_half_inning_stats()
-
-    def get_half_inning_stats(self):
-        if self.top_half_appearance_list:
-            top_half_inning_stats = constants.InningStatsTuple(
-                stats.get_strikes(self.top_half_appearance_list),
-                stats.get_pitches(self.top_half_appearance_list),
-                stats.get_walks(self.top_half_appearance_list),
-                stats.get_strikeouts(self.top_half_appearance_list),
-                stats.get_lob(self.top_half_appearance_list),
-                stats.get_errors(self.top_half_appearance_list),
-                stats.get_hits(self.top_half_appearance_list),
-                stats.get_runs(self.top_half_appearance_list)
-            )
-        else:
-            top_half_inning_stats = None
-
-        if self.bottom_half_appearance_list:
-            bottom_half_inning_stats = constants.InningStatsTuple(
-                stats.get_strikes(self.bottom_half_appearance_list),
-                stats.get_pitches(self.bottom_half_appearance_list),
-                stats.get_walks(self.bottom_half_appearance_list),
-                stats.get_strikeouts(self.bottom_half_appearance_list),
-                stats.get_lob(self.bottom_half_appearance_list),
-                stats.get_errors(self.bottom_half_appearance_list),
-                stats.get_hits(self.bottom_half_appearance_list),
-                stats.get_runs(self.bottom_half_appearance_list)
-            )
-        else:
-            bottom_half_inning_stats = None
-
-        return top_half_inning_stats, bottom_half_inning_stats
+        self.top_half_inning_stats, self.bottom_half_inning_stats = (
+            stats.get_half_inning_stats(top_half_appearance_list,
+                                        bottom_half_appearance_list)
+        )
 
     def __repr__(self):
         return (
@@ -371,29 +337,24 @@ class Inning(object):
 
 
 class PlateAppearance(object):
-    def __init__(self, plate_appearance_description, plate_appearance_summary,
-                 pitcher, batter, inning_outs, out_runners_list,
+    def __init__(self, batting_team, plate_appearance_description,
+                 plate_appearance_summary, pitcher, batter, inning_outs,
                  scoring_runners_list, runners_batted_in_list, event_list):
+        self.batting_team = batting_team
         self.event_list = event_list or []
+        self.plate_appearance_description = re.sub(r'\.\s+',
+                                                   '. ',
+                                                   plate_appearance_description)
 
-        plate_appearance_description = fix_initials(
-            plate_appearance_description
-        )
-
-        plate_appearance_description = re.sub(r'\.\s+',
-                                              '. ',
-                                              plate_appearance_description)
-
-        self.plate_appearance_description = plate_appearance_description.strip()
-        self.plate_appearance_summary = plate_appearance_summary.strip()
+        self.plate_appearance_summary = plate_appearance_summary
         self.pitcher = pitcher
         self.batter = batter
         self.inning_outs = inning_outs
-        self.out_runners_list = out_runners_list
         self.scoring_runners_list = scoring_runners_list
         self.runners_batted_in_list = runners_batted_in_list
 
         self.error_str = None
+        self.set_out_runners_list()
         self.set_hit_location()
         self.set_scorecard_summary_and_got_on_base()
 
@@ -487,9 +448,31 @@ class PlateAppearance(object):
 
         return defense_suffix
 
+    def set_out_runners_list(self):
+        description = strip_suffixes(self.plate_appearance_description)
+        runner_name_list = re.findall(
+            (r'([A-Z][\w\'-]+\s+(?:[A-Z,a-z][\w\'-]+\s+)?'
+             r'(?:[A-Z,a-z][\w\'-]+\s+)?[A-Z][\w\'-]+)\s+'
+             r'(?:out at|(?:was )?picked off and caught stealing|'
+             r'(?:was )?caught stealing|(?:was )?picked off|'
+             r'(?:was )?doubled off)'
+             r' +(\w+)'),
+            self.plate_appearance_description
+        )
+
+        runner_tuple_list = []
+        for name, base in runner_name_list:
+            if re.findall(re.escape(name) + r' (?:was )?doubled off', description):
+                base = constants.INCREMENT_BASE_DICT[base]
+
+            runner_tuple_list.append(
+                (self.batting_team.lookup_player(name), base)
+            )
+
+        self.out_runners_list = runner_tuple_list
+
     def get_throws_str(self):
         description_str = strip_suffixes(self.plate_appearance_description)
-        description_str = fix_initials(description_str)
         suffix_str = ''
 
         if '. ' in description_str:

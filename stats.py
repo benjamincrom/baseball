@@ -1,6 +1,7 @@
 import baseball_events
 import constants
 
+
 def process_pickoffs(plate_appearance, first_base, second_base, third_base):
     for event in plate_appearance.event_list:
         if (isinstance(event, baseball_events.Pickoff) and
@@ -74,6 +75,37 @@ def get_inning_half_list(game, inning_half_str):
         )
 
     return inning_half_list
+
+def get_half_inning_stats(top_half_appearance_list, bottom_half_appearance_list):
+    if top_half_appearance_list:
+        top_half_inning_stats = constants.InningStatsTuple(
+            get_strikes(top_half_appearance_list),
+            get_pitches(top_half_appearance_list),
+            get_walks(top_half_appearance_list),
+            get_strikeouts(top_half_appearance_list),
+            get_lob(top_half_appearance_list),
+            get_errors(top_half_appearance_list),
+            get_hits(top_half_appearance_list),
+            get_runs(top_half_appearance_list)
+        )
+    else:
+        top_half_inning_stats = None
+
+    if bottom_half_appearance_list:
+        bottom_half_inning_stats = constants.InningStatsTuple(
+            get_strikes(bottom_half_appearance_list),
+            get_pitches(bottom_half_appearance_list),
+            get_walks(bottom_half_appearance_list),
+            get_strikeouts(bottom_half_appearance_list),
+            get_lob(bottom_half_appearance_list),
+            get_errors(bottom_half_appearance_list),
+            get_hits(bottom_half_appearance_list),
+            get_runs(bottom_half_appearance_list)
+        )
+    else:
+        bottom_half_inning_stats = None
+
+    return top_half_inning_stats, bottom_half_inning_stats
 
 def get_all_pitcher_stats(game, team, pitcher, inning_half_str):
     inning_half_list = get_inning_half_list(game, inning_half_str)

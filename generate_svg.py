@@ -9,6 +9,7 @@ import baseball_events
 import constants
 import fetch_game
 
+
 def get_game_width(game):
     inning_length = max(len(game.inning_list), constants.NUM_MINIMUM_INNINGS)
     game_width = constants.BOX_WIDTH * (inning_length + constants.EXTRA_COLUMNS)

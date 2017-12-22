@@ -1,5 +1,6 @@
 from collections import OrderedDict, namedtuple
 
+
 InningStatsTuple = namedtuple('InningStatsTuple', 'S P BB K LOB E H R')
 BatterBoxScore = namedtuple('BatterBoxScore', 'AB R H RBI BB SO LOB')
 

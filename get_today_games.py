@@ -8,6 +8,7 @@ import requests
 import constants
 import generate_svg
 
+
 def get_page(today):
     page = requests.get(
         constants.MLB_URL_BASE_PATTERN.format(year=today.year,
