@@ -457,7 +457,7 @@ class PlateAppearance(object):
              r'(?:was )?caught stealing|(?:was )?picked off|'
              r'(?:was )?doubled off)'
              r' +(\w+)'),
-            self.plate_appearance_description
+            description
         )
 
         runner_tuple_list = []
