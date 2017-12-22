@@ -86,6 +86,7 @@ def get_game_sublist(filename_list, return_queue):
             this_game = get_game_obj.get_game_obj(
                 boxscore_xml, player_xml, inning_xml
             )
+            print('Processed: {}'.format(filename))
 
             game_sublist.append((filename, this_game))
 
