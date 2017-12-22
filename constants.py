@@ -146,9 +146,9 @@ GENERATE_SVG_USAGE_STR = (
 )
 
 GET_XML_USAGE_STR = ('Usage:\n'
-                     '  - ./get_xml_data.py url [DATE] [AWAY CODE] [HOME CODE] '
+                     '  - ./fetch_game.py url [DATE] [AWAY CODE] [HOME CODE] '
                      '[GAME NUMBER]\n'
-                     '  - ./get_xml_data.py files [START DATE] [END DATE] '
+                     '  - ./fetch_game.py files [START DATE] [END DATE] '
                      '[INPUT DIRECTORY]\n')
 
 STADIUM_TIMEZONE_DICT = {
