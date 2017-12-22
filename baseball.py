@@ -462,6 +462,9 @@ class PlateAppearance(object):
 
         runner_tuple_list = []
         for name, base in runner_name_list:
+            if re.findall(re.escape(name) + r' (?:was )?doubled off', description):
+                base = constants.INCREMENT_BASE_DICT[base]
+
             runner_tuple_list.append(
                 (self.batting_team.lookup_player(name), base)
             )
