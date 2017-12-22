@@ -1451,8 +1451,8 @@ def write_file(game_tuple_list, output_path):
     for game_id, this_game in game_tuple_list:
         svg_filename = game_id + '.svg'
         html_filename = game_id + '.html'
-        print(svg_filename)
-        print(html_filename)
+        print('Wrote: ' + svg_filename)
+        print('Wrote: ' + html_filename)
 
         title = get_game_title_str(this_game)
         svg_text = write_big_svg(this_game)
