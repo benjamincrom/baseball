@@ -33,6 +33,7 @@ def strip_suffixes(input_str):
 
     return input_str
 
+
 class PlayerAppearance(object):
     def __init__(self, player_obj, position, start_inning_num,
                  start_inning_half, start_inning_batter_num):
@@ -319,10 +320,11 @@ class Inning(object):
     def __init__(self, top_half_appearance_list, bottom_half_appearance_list):
         self.top_half_appearance_list = top_half_appearance_list
         self.bottom_half_appearance_list = bottom_half_appearance_list
-        self.top_half_inning_stats, self.bottom_half_inning_stats = (
-            stats.get_half_inning_stats(top_half_appearance_list,
-                                        bottom_half_appearance_list)
-        )
+        (self.top_half_inning_stats,
+         self.bottom_half_inning_stats) = (
+             stats.get_half_inning_stats(top_half_appearance_list,
+                                         bottom_half_appearance_list)
+         )
 
     def __repr__(self):
         return (
@@ -342,10 +344,7 @@ class PlateAppearance(object):
                  scoring_runners_list, runners_batted_in_list, event_list):
         self.batting_team = batting_team
         self.event_list = event_list or []
-        self.plate_appearance_description = re.sub(r'\.\s+',
-                                                   '. ',
-                                                   plate_appearance_description)
-
+        self.plate_appearance_description = plate_appearance_description
         self.plate_appearance_summary = plate_appearance_summary
         self.pitcher = pitcher
         self.batter = batter
@@ -353,10 +352,11 @@ class PlateAppearance(object):
         self.scoring_runners_list = scoring_runners_list
         self.runners_batted_in_list = runners_batted_in_list
 
-        self.error_str = None
-        self.set_out_runners_list()
-        self.set_hit_location()
-        self.set_scorecard_summary_and_got_on_base()
+        self.out_runners_list = self.get_out_runners_list()
+        self.hit_location = self.get_hit_location()
+        self.error_str = self.get_error_str()
+        (self.got_on_base,
+         self.scorecard_summary) = self.get_on_base_and_summary()
 
     @staticmethod
     def process_defense_predicate_list(defense_player_order):
@@ -448,7 +448,7 @@ class PlateAppearance(object):
 
         return defense_suffix
 
-    def set_out_runners_list(self):
+    def get_out_runners_list(self):
         description = strip_suffixes(self.plate_appearance_description)
         runner_name_list = re.findall(
             (r'([A-Z][\w\'-]+\s+(?:[A-Z,a-z][\w\'-]+\s+)?'
@@ -462,14 +462,15 @@ class PlateAppearance(object):
 
         runner_tuple_list = []
         for name, base in runner_name_list:
-            if re.findall(re.escape(name) + r' (?:was )?doubled off', description):
+            search_pattern = re.escape(name) + r' (?:was )?doubled off'
+            if re.findall(search_pattern, description):
                 base = constants.INCREMENT_BASE_DICT[base]
 
             runner_tuple_list.append(
                 (self.batting_team.lookup_player(name), base)
             )
 
-        self.out_runners_list = runner_tuple_list
+        return runner_tuple_list
 
     def get_throws_str(self):
         description_str = strip_suffixes(self.plate_appearance_description)
@@ -493,14 +494,16 @@ class PlateAppearance(object):
 
         return defense_str, defense_suffix
 
-    def set_hit_location(self):
+    def get_hit_location(self):
         play_str = self.get_play_str()
         throws_str, _ = self.get_throws_str()
 
         if throws_str and play_str not in constants.NO_HIT_CODE_LIST:
-            self.hit_location = play_str + throws_str[0]
+            hit_location = play_str + throws_str[0]
         else:
-            self.hit_location = None
+            hit_location = None
+
+        return hit_location
 
     def get_play_str(self):
         description_str = strip_suffixes(self.plate_appearance_description)
@@ -534,28 +537,34 @@ class PlateAppearance(object):
 
         return code
 
-    def set_scorecard_summary_and_got_on_base(self):
+    def get_error_str(self):
+        error_str = None
         if 'error' in self.plate_appearance_description:
             description_str = self.plate_appearance_description
             description_str = description_str.split(' error by ')[1]
             defense_player = description_str.split()[0]
             defense_code = str(constants.POSITION_CODE_DICT[defense_player])
-            self.error_str = 'E' + defense_code
+            error_str = 'E' + defense_code
         elif 'catcher interference' in self.plate_appearance_description:
-            self.error_str = 'E2'
+            error_str = 'E2'
 
+        return error_str
+
+    def get_on_base_and_summary(self):
         throws_str, suffix_str = self.get_throws_str()
         if self.plate_appearance_summary in constants.ON_BASE_SUMMARY_DICT:
-            self.got_on_base = True
-            self.scorecard_summary = (
+            on_base = True
+            scorecard_summary = (
                 constants.ON_BASE_SUMMARY_DICT[self.plate_appearance_summary] +
                 suffix_str
             )
         else:
-            self.got_on_base = False
-            self.scorecard_summary = (
+            on_base = False
+            scorecard_summary = (
                 self.get_play_str() + throws_str + suffix_str
             )
+
+        return on_base, scorecard_summary
 
     def __repr__(self):
         wrapper = textwrap.TextWrapper(width=80, subsequent_indent=' '*17)

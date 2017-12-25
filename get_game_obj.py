@@ -8,30 +8,6 @@ import baseball_events
 import constants
 
 
-def fix_initials(input_str):
-    match = re.search(r'[A-Z]\.\s+[A-Z]\.\s+', input_str)
-    while match:
-        index_start = match.start()
-        index_end = match.end()
-        string_start = input_str[:index_start]
-        string_end = input_str[index_end:]
-        string_middle = input_str[index_start:index_end]
-        string_middle = re.sub(r'\.\s+', '', string_middle)
-        input_str = (string_start + string_middle + ' ' + string_end)
-        match = re.search(r'[A-Z]\.\s+[A-Z]\.\s+', input_str)
-
-    match = re.search(r'[A-Z]\.\s+[A-Z]', input_str)
-    while match:
-        index_start = match.start()
-        index_end = match.end()
-        string_start = input_str[:index_start]
-        string_middle = input_str[index_start:index_end].replace('.', '')
-        string_end = input_str[index_end:]
-        input_str = (string_start + string_middle + string_end).strip()
-        match = re.search(r'[A-Z]\.\s+[A-Z]', input_str)
-
-    return input_str
-
 def get_team_abbreviation(mlb_code):
     for abbreviation, this_mlb_code in constants.MLB_TEAM_CODE_DICT.items():
         if mlb_code == this_mlb_code:
@@ -276,6 +252,33 @@ def get_position_number(position_str):
 
     return position
 
+def fix_description(input_str):
+    match = re.search(r'[A-Z]\.\s+[A-Z]\.\s+', input_str)
+    while match:
+        index_start = match.start()
+        index_end = match.end()
+        string_start = input_str[:index_start]
+        string_end = input_str[index_end:]
+        string_middle = input_str[index_start:index_end]
+        string_middle = re.sub(r'\.\s+', '', string_middle)
+        input_str = (string_start + string_middle + ' ' + string_end)
+        match = re.search(r'[A-Z]\.\s+[A-Z]\.\s+', input_str)
+
+    match = re.search(r'[A-Z]\.\s+[A-Z]', input_str)
+    while match:
+        index_start = match.start()
+        index_end = match.end()
+        string_start = input_str[:index_start]
+        string_middle = input_str[index_start:index_end].replace('.', '')
+        string_end = input_str[index_end:]
+        input_str = (string_start + string_middle + string_end).strip()
+        match = re.search(r'[A-Z]\.\s+[A-Z]', input_str)
+
+    input_str = re.sub(r'\.\s+', '. ', input_str)
+    input_str = input_str.strip()
+
+    return input_str
+
 def process_at_bat(plate_appearance, event_list, game_obj):
     (new_event_list,
      scoring_runners_list,
@@ -283,7 +286,7 @@ def process_at_bat(plate_appearance, event_list, game_obj):
                                                         game_obj)
 
     event_list += new_event_list
-    plate_appearance_desc = fix_initials(plate_appearance.get('des')).strip()
+    plate_appearance_desc = fix_description(plate_appearance.get('des'))
     pitcher_id = int(plate_appearance.get('pitcher'))
     inning_outs = int(plate_appearance.get('o'))
 
