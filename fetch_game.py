@@ -1,4 +1,5 @@
 import datetime
+import math
 import multiprocessing
 import os
 import sys
@@ -12,10 +13,7 @@ import process_game_xml
 
 
 def get_list_of_lists(this_list, size):
-    if len(this_list) % size:
-        size -= 1
-
-    chunk_size = len(this_list) // size
+    chunk_size = int(math.ceil(len(this_list) / float(size)))
     return [this_list[i:i+chunk_size]
             for i in range(0, len(this_list), chunk_size)]
 
