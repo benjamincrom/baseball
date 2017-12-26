@@ -183,9 +183,15 @@ def get_game_from_url(date_str, away_code, home_code, game_num):
                                                          game_num)
 
     if boxscore_xml:
-        this_game = process_game_xml.get_game_obj(boxscore_xml, team_xml, game_xml)
+        this_game = process_game_xml.get_game_obj(boxscore_xml,
+                                                  team_xml,
+                                                  game_xml)
     else:
         this_game = None
+        print('No data found for {} {} {} {}'.format(date_str,
+                                                     away_code,
+                                                     home_code,
+                                                     game_num))
 
     return game_id, this_game
 
@@ -199,11 +205,6 @@ def generate_from_url(date_str, away_code, home_code, game_num):
         print(this_game)
         status = True
     else:
-        print('No data found for {} {} {} {}'.format(date_str,
-                                                     away_code,
-                                                     home_code,
-                                                     game_num))
-
         status = False
 
     return status

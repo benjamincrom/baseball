@@ -1488,11 +1488,6 @@ def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
 
         status = True
     else:
-        print('No data found for {} {} {} {}'.format(date_str,
-                                                     away_code,
-                                                     home_code,
-                                                     game_num))
-
         status = False
 
     return status
