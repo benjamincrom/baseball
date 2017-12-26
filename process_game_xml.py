@@ -77,10 +77,10 @@ def process_pickoff(event):
 def process_runner_advance(event, game_obj):
     runner_id = int(event.get('id'))
 
-    if runner_id in game_obj.away_team.player_id_dict:
-        runner = game_obj.away_team.player_id_dict[runner_id]
-    elif runner_id in game_obj.home_team.player_id_dict:
-        runner = game_obj.home_team.player_id_dict[runner_id]
+    if runner_id in game_obj.away_team:
+        runner = game_obj.away_team[runner_id]
+    elif runner_id in game_obj.home_team:
+        runner = game_obj.home_team[runner_id]
     else:
         raise ValueError('Runner ID not in player dict')
 
@@ -227,8 +227,8 @@ def parse_substitution(description, event_summary, inning_half_str, game_obj):
         position_num = 1
 
     outgoing_player_name = get_name_only(outgoing_player_name)
-    incoming_player = this_team.lookup_player(incoming_player_name)
-    outgoing_player = this_team.lookup_player(outgoing_player_name)
+    incoming_player = this_team[incoming_player_name]
+    outgoing_player = this_team[outgoing_player_name]
     substitution_obj = baseball_events.Substitution(incoming_player,
                                                     outgoing_player,
                                                     batting_order,
@@ -292,19 +292,19 @@ def process_at_bat(plate_appearance, event_list, game_obj):
 
     pitcher = None
     for this_team in [game_obj.home_team, game_obj.away_team]:
-        if pitcher_id in this_team.player_id_dict:
-            pitcher = this_team.player_id_dict[pitcher_id]
+        if pitcher_id in this_team:
+            pitcher = this_team[pitcher_id]
 
     if not pitcher:
         raise ValueError('Batter ID not in player_dict')
 
     batter_id = int(plate_appearance.get('batter'))
 
-    if batter_id in game_obj.home_team.player_id_dict:
-        batter = game_obj.home_team.player_id_dict[batter_id]
+    if batter_id in game_obj.home_team:
+        batter = game_obj.home_team[batter_id]
         batting_team = game_obj.home_team
-    elif batter_id in game_obj.away_team.player_id_dict:
-        batter = game_obj.away_team.player_id_dict[batter_id]
+    elif batter_id in game_obj.away_team:
+        batter = game_obj.away_team[batter_id]
         batting_team = game_obj.away_team
     else:
         raise ValueError('Batter ID not in player_dict')
@@ -446,7 +446,7 @@ def parse_switch_description(description, event_summary, game_obj,
     else:
         raise ValueError('Invalid switch')
 
-    player = switching_team.lookup_player(player_name)
+    player = switching_team[player_name]
 
     old_position = None
     for player_list in switching_team.batting_order_list_list:
@@ -601,7 +601,7 @@ def initialize_team(team_name, team_code, batter_xml_list):
                                           player_slg,
                                           None)
 
-            add_player_to_team_dictionaries(this_team, this_player)
+            this_team.append(this_player)
             this_player_appearance_list = init_player_list(this_player,
                                                            player_position_num)
 
@@ -632,26 +632,6 @@ def process_inning_xml(baseball_inning, game_obj):
 
     return this_inning_obj
 
-def add_player_to_team_dictionaries(this_team, this_player):
-    last_name = re.sub(
-        r' Jr$', '', this_player.last_name.strip('. ').replace(',', '')
-    )
-    last_name = re.sub(r' Sr$', '', last_name.strip('. ').replace(',', ''))
-    last_name = re.sub(r' II$', '', last_name.strip())
-    last_name = re.sub(r' III$', '', last_name.strip())
-    last_name = re.sub(r' IV$', '', last_name.strip())
-    last_name = re.sub(r' St\. ', ' St ', last_name.strip())
-
-    if ' ' in last_name:
-        last_name = last_name.split()[1]
-
-    this_team.player_id_dict[this_player.mlb_id] = this_player
-
-    this_team.player_name_dict[this_player.full_name()] = this_player
-    this_team.player_last_name_dict[this_player.first_name[0] + last_name] = (
-        this_player
-    )
-
 def process_team_xml(game_obj, team_xml):
     away_team_xml, home_team_xml = [x for x in team_xml if x.tag == 'team']
 
@@ -663,8 +643,8 @@ def process_team_xml(game_obj, team_xml):
             if player_xml.tag == 'player':
                 player_id = int(player_xml.get('id'))
 
-                if player_id in this_team.player_id_dict:
-                    this_player = this_team.player_id_dict[player_id]
+                if player_id in this_team:
+                    this_player = this_team[player_id]
 
                     if (player_xml.get('num') and
                             player_xml.get('num') != '--' and
@@ -684,7 +664,7 @@ def process_team_xml(game_obj, team_xml):
                             player_xml.get('last') and
                             player_xml.get('first')):
                         this_player = create_player(player_xml)
-                        add_player_to_team_dictionaries(this_team, this_player)
+                        this_team.append(this_player)
 
 def initialize_game_object(boxscore_xml):
     game_venue = boxscore_xml.get('venue_name')
@@ -761,14 +741,14 @@ def set_starting_pitchers(game, away_starting_pitcher_id,
                           home_starting_pitcher_id):
     game.away_team.pitcher_list.append(
         baseball.PlayerAppearance(
-            game.away_team.player_id_dict[away_starting_pitcher_id],
+            game.away_team[away_starting_pitcher_id],
             1, 1, 'top', 1
         )
     )
 
     game.home_team.pitcher_list.append(
         baseball.PlayerAppearance(
-            game.home_team.player_id_dict[home_starting_pitcher_id],
+            game.home_team[home_starting_pitcher_id],
             1, 1, 'top', 1
         )
     )

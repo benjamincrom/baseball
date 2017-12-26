@@ -131,24 +131,63 @@ class Team(object):
         self.player_name_dict = {}
         self.player_last_name_dict = {}
 
-    def lookup_player(self, player_name):
-        if player_name in self.player_name_dict:
-            player = self.player_name_dict[player_name]
+    def find_player(self, player_key):
+        player = None
+        if isinstance(player_key, int):
+            player_id = player_key
+            player = self.player_id_dict.get(player_id)
+        elif isinstance(player_key, str):
+            player_name = player_key
+            if player_name in self.player_name_dict:
+                player = self.player_name_dict[player_name]
+            else:
+                player_name = re.sub(r' Jr$', '', player_name.strip(' .'))
+                player_name = re.sub(r' Sr$', '', player_name.strip(' .'))
+                player_name = re.sub(r' II$', '', player_name.strip())
+                player_name = re.sub(r' III$', '', player_name.strip())
+                player_name = re.sub(r' IV$', '', player_name.strip())
+
+                player_name = strip_suffixes(player_name.strip())
+                first_name_initial = player_name[0]
+                last_name = player_name.split()[-1]
+
+                initial_plus_last_name = first_name_initial + last_name
+                player = self.player_last_name_dict.get(initial_plus_last_name)
         else:
-            player_name = re.sub(r' Jr$', '', player_name.strip(' .'))
-            player_name = re.sub(r' Sr$', '', player_name.strip(' .'))
-            player_name = re.sub(r' II$', '', player_name.strip())
-            player_name = re.sub(r' III$', '', player_name.strip())
-            player_name = re.sub(r' IV$', '', player_name.strip())
-
-            player_name = strip_suffixes(player_name.strip())
-            first_name_initial = player_name[0]
-            last_name = player_name.split()[-1]
-
-            initial_last_name = first_name_initial + last_name
-            player = self.player_last_name_dict[initial_last_name]
+            raise ValueError(
+                'Player key: {player_key} must be either int or str'.format(
+                    player_key=player_key
+                )
+            )
 
         return player
+
+    def append(self, player):
+        last_name = re.sub(
+            r' Jr$', '', player.last_name.strip('. ').replace(',', '')
+        )
+
+        last_name = re.sub(r' Sr$', '', last_name.strip('. ').replace(',', ''))
+        last_name = re.sub(r' II$', '', last_name.strip())
+        last_name = re.sub(r' III$', '', last_name.strip())
+        last_name = re.sub(r' IV$', '', last_name.strip())
+        last_name = re.sub(r' St\. ', ' St ', last_name.strip())
+        if ' ' in last_name:
+            last_name = last_name.split()[1]
+
+        self.player_id_dict[player.mlb_id] = player
+        self.player_name_dict[player.full_name()] = player
+        self.player_last_name_dict[player.first_name[0] + last_name] = player
+
+    def __contains__(self, player_key):
+        return bool(self.find_player(player_key))
+
+    def __getitem__(self, player_key):
+        player = self.find_player(player_key)
+        if player:
+            return player
+        else:
+            raise ValueError('{} not found in team'.format(player_key))
 
     def __repr__(self):
         return_str = (
@@ -467,7 +506,7 @@ class PlateAppearance(object):
                 base = constants.INCREMENT_BASE_DICT[base]
 
             runner_tuple_list.append(
-                (self.batting_team.lookup_player(name), base)
+                (self.batting_team[name], base)
             )
 
         return runner_tuple_list
