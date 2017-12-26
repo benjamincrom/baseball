@@ -1,9 +1,6 @@
 import multiprocessing
 import os
 import sys
-import xml.etree.ElementTree
-
-import dateutil.parser
 
 import baseball_events
 import constants
