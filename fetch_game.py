@@ -8,7 +8,7 @@ import requests
 import dateutil.parser
 
 import constants
-import get_game_obj
+import process_game_xml
 
 
 def get_list_of_lists(this_list, size):
@@ -83,7 +83,7 @@ def get_game_sublist(filename_list, return_queue):
             player_xml = xml.etree.ElementTree.fromstring(player_raw)
             inning_raw = open(inning, 'r', encoding='utf-8').read()
             inning_xml = xml.etree.ElementTree.fromstring(inning_raw)
-            this_game = get_game_obj.get_game_obj(
+            this_game = process_game_xml.get_game_obj(
                 boxscore_xml, player_xml, inning_xml
             )
             print('Processed: {}'.format(filename))
@@ -183,7 +183,7 @@ def get_game_from_url(date_str, away_code, home_code, game_num):
                                                          game_num)
 
     if boxscore_xml:
-        this_game = get_game_obj.get_game_obj(boxscore_xml, team_xml, game_xml)
+        this_game = process_game_xml.get_game_obj(boxscore_xml, team_xml, game_xml)
     else:
         this_game = None
 
