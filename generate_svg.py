@@ -1423,29 +1423,30 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
         raise ValueError('Invalid input directory')
 
     input_path = os.path.abspath(input_dir)
-    game_tuple_list = fetch_game.get_game_list_from_files(
-        start_date_str, end_date_str, input_path
-    )
+    filename_tuple_list = fetch_game.get_filename_list(start_date_str,
+                                                       end_date_str,
+                                                       input_path)
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
     output_path = os.path.abspath(output_dir)
-    list_of_game_tuple_lists = fetch_game.get_list_of_lists(
-        game_tuple_list,
+    list_of_filename_tuple_lists = fetch_game.get_list_of_lists(
+        filename_tuple_list,
         constants.NUM_SUBLISTS
     )
 
-    for game_tuple_list in list_of_game_tuple_lists:
+    for filename_tuple_list in list_of_filename_tuple_lists:
         process = multiprocessing.Process(
             target=write_file,
-            args=(game_tuple_list, output_path)
+            args=(filename_tuple_list, output_path)
         )
 
         process.start()
 
-def write_file(game_tuple_list, output_path):
-    for game_id, this_game in game_tuple_list:
+def write_file(filename_tuple_list, output_path):
+    for game_id, boxscore_file, player_file, inning_file in filename_tuple_list:
+        this_game = fetch_game.get_game(boxscore_file, player_file, inning_file)
         svg_filename = game_id + '.svg'
         html_filename = game_id + '.html'
         print('Writing: ' + svg_filename)

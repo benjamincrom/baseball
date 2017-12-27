@@ -69,23 +69,28 @@ def get_filename_list(start_date_str, end_date_str, input_path):
 
     return filename_list
 
+def get_game(boxscore_file, player_file, inning_file):
+    this_game = None
+    if (os.path.isfile(boxscore_file) and
+            os.path.isfile(player_file) and
+            os.path.isfile(inning_file)):
+        boxscore_raw = open(boxscore_file, 'r', encoding='utf-8').read()
+        boxscore_xml = xml.etree.ElementTree.fromstring(boxscore_raw)
+        player_raw = open(player_file, 'r', encoding='utf-8').read()
+        player_xml = xml.etree.ElementTree.fromstring(player_raw)
+        inning_raw = open(inning_file, 'r', encoding='utf-8').read()
+        inning_xml = xml.etree.ElementTree.fromstring(inning_raw)
+        this_game = process_game_xml.get_game_obj(boxscore_xml,
+                                                  player_xml,
+                                                  inning_xml)
+
+    return this_game
+
 def get_game_sublist(filename_list, return_queue):
     game_sublist = []
-    for filename, boxscore, player, inning in filename_list:
-        if (os.path.isfile(boxscore) and
-                os.path.isfile(player) and
-                os.path.isfile(inning)):
-            boxscore_raw = open(boxscore, 'r', encoding='utf-8').read()
-            boxscore_xml = xml.etree.ElementTree.fromstring(boxscore_raw)
-            player_raw = open(player, 'r', encoding='utf-8').read()
-            player_xml = xml.etree.ElementTree.fromstring(player_raw)
-            inning_raw = open(inning, 'r', encoding='utf-8').read()
-            inning_xml = xml.etree.ElementTree.fromstring(inning_raw)
-            this_game = process_game_xml.get_game_obj(
-                boxscore_xml, player_xml, inning_xml
-            )
-            print('Processed: {}'.format(filename))
-
+    for filename, boxscore_file, player_file, inning_file in filename_list:
+        this_game = get_game(boxscore_file, player_file, inning_file)
+        if this_game:
             game_sublist.append((filename, this_game))
 
     return_queue.put(game_sublist)
