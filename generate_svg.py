@@ -1436,15 +1436,16 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
         constants.NUM_SUBLISTS
     )
 
-    for filename_tuple_list in list_of_filename_tuple_lists:
+    for this_filename_tuple_list in list_of_filename_tuple_lists:
         process = multiprocessing.Process(
             target=write_file,
-            args=(filename_tuple_list, output_path)
+            args=(this_filename_tuple_list, output_path)
         )
 
         process.start()
 
 def write_file(filename_tuple_list, output_path):
+    print(len(filename_tuple_list))
     for game_id, boxscore_file, player_file, inning_file in filename_tuple_list:
         this_game = fetch_game.get_game(boxscore_file, player_file, inning_file)
         svg_filename = game_id + '.svg'
