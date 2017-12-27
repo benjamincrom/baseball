@@ -1441,7 +1441,6 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
             target=write_file,
             args=(this_filename_tuple_list, output_path)
         )
-        #write_file(this_filename_tuple_list, output_path)
 
         process.start()
 
