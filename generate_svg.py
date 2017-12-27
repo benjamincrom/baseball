@@ -1427,10 +1427,6 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
                                                        end_date_str,
                                                        input_path)
 
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
-
-    output_path = os.path.abspath(output_dir)
     list_of_filename_tuple_lists = fetch_game.get_list_of_lists(
         filename_tuple_list,
         constants.NUM_SUBLISTS
@@ -1438,63 +1434,54 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
 
     for this_filename_tuple_list in list_of_filename_tuple_lists:
         process = multiprocessing.Process(
-            target=write_file,
-            args=(this_filename_tuple_list, output_path)
+            target=write_list_of_files,
+            args=(this_filename_tuple_list, output_dir)
         )
 
         process.start()
 
-def write_file(filename_tuple_list, output_path):
+def write_list_of_files(filename_tuple_list, output_dir):
     for game_id, boxscore_file, player_file, inning_file in filename_tuple_list:
         this_game = fetch_game.get_game(boxscore_file, player_file, inning_file)
-        if this_game:
-            svg_filename = game_id + '.svg'
-            html_filename = game_id + '.html'
-            print('Writing: ' + svg_filename)
-            print('Writing: ' + html_filename)
+        write_file(game_id, this_game, output_dir)
 
-            title = get_game_title_str(this_game)
-            svg_text = write_big_svg(this_game)
-            html_text = wrap_in_html(title, svg_filename)
+def write_file(game_id, this_game, output_dir):
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
 
-            with open(output_path + '/' + svg_filename,
-                      'w',
-                      encoding='utf-8') as filehandle:
-                filehandle.write(svg_text)
+    output_path = os.path.abspath(output_dir)
 
-            with open(output_path + '/' + html_filename,
-                      'w',
-                      encoding='utf-8') as filehandle:
-                filehandle.write(html_text)
+    if this_game:
+        svg_filename = game_id + '.svg'
+        html_filename = game_id + '.html'
+        print('Writing: ' + svg_filename)
+        print('Writing: ' + html_filename)
+
+        title = get_game_title_str(this_game)
+        svg_text = write_big_svg(this_game)
+        html_text = wrap_in_html(title, svg_filename)
+
+        with open(output_path + '/' + svg_filename,
+                  'w',
+                  encoding='utf-8') as filehandle:
+            filehandle.write(svg_text)
+
+        with open(output_path + '/' + html_filename,
+                  'w',
+                  encoding='utf-8') as filehandle:
+            filehandle.write(html_text)
+        status = True
+    else:
+        status = False
+
+    return status
 
 def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
     game_id, this_game = fetch_game.get_game_from_url(
         date_str, away_code, home_code, game_num
     )
 
-    if this_game:
-        svg_filename = game_id + '.svg'
-        html_filename = game_id + '.html'
-        title = get_game_title_str(this_game)
-        svg_text = write_big_svg(this_game)
-        html_text = wrap_in_html(title, svg_filename)
-
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
-
-        output_path = os.path.abspath(output_dir)
-        with open(output_path + '/' + svg_filename, 'w', encoding='utf-8') as fh:
-            fh.write(svg_text)
-
-        with open(output_path + '/' + html_filename, 'w', encoding='utf-8') as fh:
-            fh.write(html_text)
-
-        print(svg_filename)
-        print(html_filename)
-
-        status = True
-    else:
-        status = False
+    status = write_file(game_id, this_game, output_dir)
 
     return status
 
