@@ -1,7 +1,7 @@
-import datetime
-import re
+from datetime import datetime
+from re import search, sub
 
-import pytz
+from pytz import UTC
 
 import baseball
 import baseball_events
@@ -68,8 +68,8 @@ def set_pitch_times(event, game_obj):
         hour = int(tfs_zulu_str[11:13])
         minute = int(tfs_zulu_str[14:16])
         second = int(tfs_zulu_str[17:19])
-        event_datetime = datetime.datetime(year, month, day, hour, minute,
-                                           second, tzinfo=pytz.UTC)
+        event_datetime = datetime(year, month, day, hour, minute, second,
+                                  tzinfo=UTC)
 
         if not game_obj.first_pitch_datetime:
             game_obj.first_pitch_datetime = event_datetime
@@ -297,18 +297,18 @@ def get_position_number(position_str):
     return position
 
 def fix_description(input_str):
-    match = re.search(r'[A-Z]\.\s+[A-Z]\.\s+', input_str)
+    match = search(r'[A-Z]\.\s+[A-Z]\.\s+', input_str)
     while match:
         index_start = match.start()
         index_end = match.end()
         string_start = input_str[:index_start]
         string_end = input_str[index_end:]
         string_middle = input_str[index_start:index_end]
-        string_middle = re.sub(r'\.\s+', '', string_middle)
+        string_middle = sub(r'\.\s+', '', string_middle)
         input_str = (string_start + string_middle + ' ' + string_end)
-        match = re.search(r'[A-Z]\.\s+[A-Z]\.\s+', input_str)
+        match = search(r'[A-Z]\.\s+[A-Z]\.\s+', input_str)
 
-    match = re.search(r'[A-Z]\.\s+[A-Z]', input_str)
+    match = search(r'[A-Z]\.\s+[A-Z]', input_str)
     while match:
         index_start = match.start()
         index_end = match.end()
@@ -316,9 +316,9 @@ def fix_description(input_str):
         string_middle = input_str[index_start:index_end].replace('.', '')
         string_end = input_str[index_end:]
         input_str = (string_start + string_middle + string_end).strip()
-        match = re.search(r'[A-Z]\.\s+[A-Z]', input_str)
+        match = search(r'[A-Z]\.\s+[A-Z]', input_str)
 
-    input_str = re.sub(r'\.\s+', '. ', input_str)
+    input_str = sub(r'\.\s+', '. ', input_str)
     input_str = input_str.strip()
 
     return input_str
@@ -608,8 +608,8 @@ def init_player_list(player_obj, position):
 
 def parse_name(batter):
     batter_name = batter.get('name_display_first_last')
-    if re.search(r'\w\s+[A-Z]\.\s+', batter_name):
-        batter_name = re.sub(r'\s[A-Z]\.\s+', ' ', batter_name)
+    if search(r'\w\s+[A-Z]\.\s+', batter_name):
+        batter_name = sub(r'\s[A-Z]\.\s+', ' ', batter_name)
 
     player_first_name, player_last_name = batter_name.split(' ', 1)
 

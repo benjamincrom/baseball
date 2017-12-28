@@ -1,7 +1,8 @@
-import multiprocessing
-import os
-import sys
 from collections import namedtuple
+from multiprocessing import Process
+from os import mkdir
+from os.path import exists, abspath
+from sys import argv
 
 import baseball_events
 import fetch_game
@@ -2102,10 +2103,10 @@ def wrap_in_html(title, filename):
                                          filename=filename)
 
 def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
-    if not os.path.exists(input_dir):
+    if not exists(input_dir):
         raise ValueError('Invalid input directory')
 
-    input_path = os.path.abspath(input_dir)
+    input_path = abspath(input_dir)
     filename_tuple_list = fetch_game.get_filename_list(start_date_str,
                                                        end_date_str,
                                                        input_path)
@@ -2116,7 +2117,7 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
     )
 
     for this_filename_tuple_list in list_of_filename_tuple_lists:
-        process = multiprocessing.Process(
+        process = Process(
             target=write_list_of_files,
             args=(this_filename_tuple_list, output_dir)
         )
@@ -2129,10 +2130,10 @@ def write_list_of_files(filename_tuple_list, output_dir):
         write_file(game_id, this_game, output_dir)
 
 def write_file(game_id, this_game, output_dir):
-    if not os.path.exists(output_dir):
-        os.mkdir(output_dir)
+    if not exists(output_dir):
+        mkdir(output_dir)
 
-    output_path = os.path.abspath(output_dir)
+    output_path = abspath(output_dir)
 
     if this_game:
         svg_filename = game_id + '.svg'
@@ -2169,13 +2170,13 @@ def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
     return status
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3:
+    if len(argv) < 3:
         print(GENERATE_SVG_USAGE_STR)
         exit()
-    if sys.argv[1] == 'files' and len(sys.argv) == 6:
-        generate_from_files(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
-    elif sys.argv[1] == 'url' and len(sys.argv) == 7:
-        generate_from_url(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5],
-                          sys.argv[6])
+    if argv[1] == 'files' and len(argv) == 6:
+        generate_from_files(argv[2], argv[3], argv[4], argv[5])
+    elif argv[1] == 'url' and len(argv) == 7:
+        generate_from_url(argv[2], argv[3], argv[4], argv[5],
+                          argv[6])
     else:
         print(GENERATE_SVG_USAGE_STR)

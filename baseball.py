@@ -1,6 +1,6 @@
-import re
 from collections import OrderedDict
 from textwrap import TextWrapper
+from re import search, sub
 
 from pytz import timezone
 
@@ -105,27 +105,27 @@ STADIUM_TIMEZONE_DICT = {
 
 
 def strip_this_suffix(pattern, suffix, input_str):
-    match = re.search(pattern, input_str)
+    match = search(pattern, input_str)
     while match:
         start = match.start()
         end = match.end()
         str_beginning = input_str[:start]
-        str_middle = re.sub(suffix, '.', input_str[start:end])
+        str_middle = sub(suffix, '.', input_str[start:end])
         str_end = input_str[end:]
         input_str = str_beginning + str_middle + str_end
-        match = re.search(pattern, input_str)
+        match = search(pattern, input_str)
 
-    input_str = re.sub(suffix, '', input_str)
+    input_str = sub(suffix, '', input_str)
 
     return input_str.strip()
 
 def strip_suffixes(input_str):
     input_str = strip_this_suffix(r' Jr\.\s+[A-Z]', r' Jr\.', input_str)
     input_str = strip_this_suffix(r' Sr\.\s+[A-Z]', r' Sr\.', input_str)
-    input_str = re.sub(r' II', '', input_str)
-    input_str = re.sub(r' III', '', input_str)
-    input_str = re.sub(r' IV', '', input_str)
-    input_str = re.sub(r' St\. ', ' St ', input_str)
+    input_str = sub(r' II', '', input_str)
+    input_str = sub(r' III', '', input_str)
+    input_str = sub(r' IV', '', input_str)
+    input_str = sub(r' St\. ', ' St ', input_str)
 
     return input_str
 
@@ -237,11 +237,11 @@ class Team(object):
             if player_name in self.player_name_dict:
                 player = self.player_name_dict[player_name]
             else:
-                player_name = re.sub(r' Jr$', '', player_name.strip(' .'))
-                player_name = re.sub(r' Sr$', '', player_name.strip(' .'))
-                player_name = re.sub(r' II$', '', player_name.strip())
-                player_name = re.sub(r' III$', '', player_name.strip())
-                player_name = re.sub(r' IV$', '', player_name.strip())
+                player_name = sub(r' Jr$', '', player_name.strip(' .'))
+                player_name = sub(r' Sr$', '', player_name.strip(' .'))
+                player_name = sub(r' II$', '', player_name.strip())
+                player_name = sub(r' III$', '', player_name.strip())
+                player_name = sub(r' IV$', '', player_name.strip())
 
                 player_name = strip_suffixes(player_name.strip())
                 first_name_initial = player_name[0]
@@ -259,15 +259,15 @@ class Team(object):
         return player
 
     def append(self, player):
-        last_name = re.sub(
+        last_name = sub(
             r' Jr$', '', player.last_name.strip('. ').replace(',', '')
         )
 
-        last_name = re.sub(r' Sr$', '', last_name.strip('. ').replace(',', ''))
-        last_name = re.sub(r' II$', '', last_name.strip())
-        last_name = re.sub(r' III$', '', last_name.strip())
-        last_name = re.sub(r' IV$', '', last_name.strip())
-        last_name = re.sub(r' St\. ', ' St ', last_name.strip())
+        last_name = sub(r' Sr$', '', last_name.strip('. ').replace(',', ''))
+        last_name = sub(r' II$', '', last_name.strip())
+        last_name = sub(r' III$', '', last_name.strip())
+        last_name = sub(r' IV$', '', last_name.strip())
+        last_name = sub(r' St\. ', ' St ', last_name.strip())
         if ' ' in last_name:
             last_name = last_name.split()[1]
 
@@ -566,7 +566,7 @@ class PlateAppearance(object):
 
     @classmethod
     def get_defense_suffix(cls, suffix_str):
-        search = re.search(
+        search = search(
             r'(?:out at|(?:was )?picked off and caught stealing|'
             r'(?:was )?caught stealing|(?:was )?picked off|'
             r'(?:was )?doubled off)'
@@ -585,7 +585,7 @@ class PlateAppearance(object):
 
     def get_out_runners_list(self):
         description = strip_suffixes(self.plate_appearance_description)
-        runner_name_list = re.findall(
+        runner_name_list = findall(
             (r'([A-Z][\w\'-]+\s+(?:[A-Z,a-z][\w\'-]+\s+)?'
              r'(?:[A-Z,a-z][\w\'-]+\s+)?[A-Z][\w\'-]+)\s+'
              r'(?:out at|(?:was )?picked off and caught stealing|'
@@ -597,8 +597,8 @@ class PlateAppearance(object):
 
         runner_tuple_list = []
         for name, base in runner_name_list:
-            search_pattern = re.escape(name) + r' (?:was )?doubled off'
-            if re.findall(search_pattern, description):
+            search_pattern = escape(name) + r' (?:was )?doubled off'
+            if findall(search_pattern, description):
                 base = INCREMENT_BASE_DICT[base]
 
             runner_tuple_list.append(
