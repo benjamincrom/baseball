@@ -1796,7 +1796,7 @@ def create_pitcher_stats_svg(chunk_tuple_list, chunk_size, box_score_dict):
     for location, pitcher_chunk in chunk_tuple_list:
         x_box, y_box = location
         pitcher_stats_svg += PITCHER_STATS_HEADER.format(x_box=x_box,
-                                                                   y_box=y_box)
+                                                         y_box=y_box)
 
         pitcher_stats_svg += '{}{}'.format(
             get_pitcher_box_score_lines(pitcher_chunk,
@@ -2031,11 +2031,7 @@ def get_game_title_str(game):
 
 def assemble_game_title_svg(game):
     game_title_svg = ''
-    game_str = '{} @ {}'.format(
-        game.away_team.name,
-        game.home_team.name,
-    )
-
+    game_str = '{} @ {}'.format(game.away_team.name, game.home_team.name)
     if game.first_pitch_str and game.last_pitch_str:
         game_datetime = '{}{}'.format(game.first_pitch_str, game.last_pitch_str)
     else:
@@ -2060,12 +2056,8 @@ def get_big_rectangles(game):
     game_width = get_game_width(game)
 
     big_rectangles_svg = '{}{}'.format(
-        BIG_RECTANGLE.format(y_pos=0,
-                                       y_pos_2=HEIGHT // 2,
-                                       width=game_width),
-        BIG_RECTANGLE.format(y_pos=HEIGHT // 2,
-                                       y_pos_2=HEIGHT,
-                                       width=game_width)
+        BIG_RECTANGLE.format(y_pos=0, y_pos_2=HEIGHT // 2, width=game_width),
+        BIG_RECTANGLE.format(y_pos=HEIGHT // 2, y_pos_2=HEIGHT, width=game_width)
     )
 
     return big_rectangles_svg
@@ -2099,8 +2091,43 @@ def write_big_svg(game):
     return big_svg_text
 
 def wrap_in_html(title, filename):
-    return HTML_WRAPPER.format(title=title,
-                                         filename=filename)
+    return HTML_WRAPPER.format(title=title, filename=filename)
+
+def write_file(game_id, this_game, output_dir):
+    if not exists(output_dir):
+        mkdir(output_dir)
+
+    output_path = abspath(output_dir)
+    svg_filename = game_id + '.svg'
+    html_filename = game_id + '.html'
+
+    if this_game:
+        print('Writing: ' + svg_filename)
+        print('Writing: ' + html_filename)
+
+        title = get_game_title_str(this_game)
+        svg_text = write_big_svg(this_game)
+        html_text = wrap_in_html(title, svg_filename)
+
+        with open(output_path + '/' + svg_filename,
+                  'w',
+                  encoding='utf-8') as filehandle:
+            filehandle.write(svg_text)
+
+        with open(output_path + '/' + html_filename,
+                  'w',
+                  encoding='utf-8') as filehandle:
+            filehandle.write(html_text)
+    else:
+        raise ValueError('Game ID {} does not exist'.format(game_id))
+
+def write_list_of_files(filename_tuple_list, output_dir):
+    for game_id, boxscore_file, player_file, inning_file in filename_tuple_list:
+        this_game = fetch_game.get_game_from_files(boxscore_file,
+                                                   player_file,
+                                                   inning_file)
+
+        write_file(game_id, this_game, output_dir)
 
 def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
     if not exists(input_dir):
@@ -2124,53 +2151,13 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
 
         process.start()
 
-def write_list_of_files(filename_tuple_list, output_dir):
-    for game_id, boxscore_file, player_file, inning_file in filename_tuple_list:
-        this_game = fetch_game.get_game_from_files(boxscore_file,
-                                                   player_file,
-                                                   inning_file)
-
-        write_file(game_id, this_game, output_dir)
-
-def write_file(game_id, this_game, output_dir):
-    if not exists(output_dir):
-        mkdir(output_dir)
-
-    output_path = abspath(output_dir)
-
-    if this_game:
-        svg_filename = game_id + '.svg'
-        html_filename = game_id + '.html'
-        print('Writing: ' + svg_filename)
-        print('Writing: ' + html_filename)
-
-        title = get_game_title_str(this_game)
-        svg_text = write_big_svg(this_game)
-        html_text = wrap_in_html(title, svg_filename)
-
-        with open(output_path + '/' + svg_filename,
-                  'w',
-                  encoding='utf-8') as filehandle:
-            filehandle.write(svg_text)
-
-        with open(output_path + '/' + html_filename,
-                  'w',
-                  encoding='utf-8') as filehandle:
-            filehandle.write(html_text)
-        status = True
-    else:
-        status = False
-
-    return status
-
 def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
-    game_id, this_game = fetch_game.get_game_from_url(
-        date_str, away_code, home_code, game_num
-    )
+    game_id, this_game = fetch_game.get_game_from_url(date_str,
+                                                      away_code,
+                                                      home_code,
+                                                      game_num)
 
-    status = write_file(game_id, this_game, output_dir)
-
-    return status
+    write_file(game_id, this_game, output_dir)
 
 if __name__ == '__main__':
     if len(argv) < 3:
