@@ -2127,7 +2127,10 @@ def write_list_of_files(filename_tuple_list, output_dir):
                                                    player_file,
                                                    inning_file)
 
-        write_file(game_id, this_game, output_dir)
+        if this_game:
+            write_file(game_id, this_game, output_dir)
+        else:
+            raise ValueError('Game ID {} does not exist'.format(game_id))
 
 def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
     if not exists(input_dir):
@@ -2157,7 +2160,13 @@ def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
                                                       home_code,
                                                       game_num)
 
-    write_file(game_id, this_game, output_dir)
+    if this_game:
+        write_file(game_id, this_game, output_dir)
+        status = True
+    else:
+        status = False
+
+    return status
 
 if __name__ == '__main__':
     if len(argv) < 3:
