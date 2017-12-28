@@ -2126,7 +2126,10 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
 
 def write_list_of_files(filename_tuple_list, output_dir):
     for game_id, boxscore_file, player_file, inning_file in filename_tuple_list:
-        this_game = fetch_game.get_game(boxscore_file, player_file, inning_file)
+        this_game = fetch_game.get_game_from_files(boxscore_file,
+                                                   player_file,
+                                                   inning_file)
+
         write_file(game_id, this_game, output_dir)
 
 def write_file(game_id, this_game, output_dir):

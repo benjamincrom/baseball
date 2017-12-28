@@ -28,8 +28,8 @@ GET_XML_USAGE_STR = ('Usage:\n'
                      '[INPUT DIRECTORY]\n')
 
 
-def get_list_of_lists(this_list, size):
-    chunk_size = int(ceil(len(this_list) / float(size)))
+def get_list_of_lists(this_list, num_lists):
+    chunk_size = int(ceil(len(this_list) / float(num_lists)))
     return [this_list[i:i+chunk_size]
             for i in range(0, len(this_list), chunk_size)]
 
@@ -61,20 +61,17 @@ def get_filename_list(start_date_str, end_date_str, input_path):
                                 home_team = key
 
                         if away_team and home_team:
-                            output_name = (
-                                '-'.join([year, month, day, away_team,
-                                          home_team, game_num])
-                            )
+                            output_name = '-'.join([year, month, day, away_team,
+                                                    home_team, game_num])
 
                             subfolder_name = filename + subfile + '/'
                             if listdir(subfolder_name):
-                                boxscore_filename = (
-                                    subfolder_name + 'boxscore.xml'
-                                )
                                 player_filename = subfolder_name + 'players.xml'
-                                inning_filename = (
-                                    subfolder_name + 'inning/inning_all.xml'
-                                )
+                                boxscore_filename = (subfolder_name +
+                                                     'boxscore.xml')
+
+                                inning_filename = (subfolder_name +
+                                                   'inning/inning_all.xml')
 
                                 filename_list.append((output_name,
                                                       boxscore_filename,
@@ -85,7 +82,7 @@ def get_filename_list(start_date_str, end_date_str, input_path):
 
     return filename_list
 
-def get_game(boxscore_file, player_file, inning_file):
+def get_game_from_files(boxscore_file, player_file, inning_file):
     this_game = None
     if (isfile(boxscore_file) and isfile(player_file) and isfile(inning_file)):
         boxscore_raw = open(boxscore_file, 'r', encoding='utf-8').read()
@@ -98,23 +95,24 @@ def get_game(boxscore_file, player_file, inning_file):
 
     return this_game
 
-def get_game_sublist(filename_list, return_queue):
-    game_sublist = []
-    for filename, boxscore_file, player_file, inning_file in filename_list:
-        this_game = get_game(boxscore_file, player_file, inning_file)
-        if this_game:
-            game_sublist.append((filename, this_game))
-
-    return_queue.put(game_sublist)
-
-def get_game_list_from_files(start_date_str, end_date_str, input_dir):
+def get_input_path(input_dir):
     if not exists(input_dir):
         raise ValueError('Invalid input directory')
 
     input_path = abspath(input_dir)
+
+    return input_path
+
+def get_game_sublist(filename_list, return_queue):
+    game_sublist = [game_tup for game_tup in get_game_generator(filename_list)]
+    return_queue.put(game_sublist)
+
+def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
+    input_path = get_input_path(input_dir)
+    filename_list = get_filename_list(start_date_str, end_date_str, input_path)
+
     manager = Manager()
     return_queue = manager.Queue()
-    filename_list = get_filename_list(start_date_str, end_date_str, input_path)
     list_of_filename_lists = get_list_of_lists(filename_list,
                                                NUM_PROCESS_SUBLISTS)
 
@@ -129,18 +127,30 @@ def get_game_list_from_files(start_date_str, end_date_str, input_dir):
     for job in job_list:
         job.join()
 
-    game_list = []
+    game_tuple_list = []
     while not return_queue.empty():
-        game_list.extend(return_queue.get())
+        game_tuple_list.extend(return_queue.get())
 
-    return game_list
+    return game_tuple_list
 
-def generate_from_files(start_date_str, end_date_str, input_dir):
-    game_list = get_game_list_from_files(start_date_str,
-                                         end_date_str,
-                                         input_dir)
+def get_game_generator_from_file_range(start_date_str, end_date_str, input_dir):
+    input_path = get_input_path(input_dir)
+    filename_list = get_filename_list(start_date_str, end_date_str, input_path)
+    for game_id, game in get_game_generator(filename_list):
+        yield game_id, game
 
-    for filename, game in game_list:
+def get_game_generator(filename_list):
+    for game_id, boxscore_file, player_file, inning_file in filename_list:
+        this_game = get_game_from_files(boxscore_file, player_file, inning_file)
+        if this_game:
+            yield game_id, this_game
+
+def print_list_from_file_range(start_date_str, end_date_str, input_dir):
+    input_path = get_input_path(input_dir)
+    filename_list = get_filename_list(start_date_str, end_date_str, input_path)
+    game_generator = get_game_generator(filename_list)
+
+    for filename, game in game_generator:
         print(filename)
         print(game)
 
@@ -201,7 +211,7 @@ def get_game_from_url(date_str, away_code, home_code, game_num):
 
     return game_id, this_game
 
-def generate_from_url(date_str, away_code, home_code, game_num):
+def print_from_url(date_str, away_code, home_code, game_num):
     game_id, this_game = get_game_from_url(
         date_str, away_code, home_code, game_num
     )
@@ -209,19 +219,14 @@ def generate_from_url(date_str, away_code, home_code, game_num):
     if this_game:
         print(game_id)
         print(this_game)
-        status = True
-    else:
-        status = False
-
-    return status
 
 if __name__ == '__main__':
     if len(argv) < 3:
         print(GET_XML_USAGE_STR)
         exit()
     if argv[1] == 'files' and len(argv) == 5:
-        generate_from_files(argv[2], argv[3], argv[4])
+        print_list_from_file_range(argv[2], argv[3], argv[4])
     elif argv[1] == 'url' and len(argv) == 6:
-        generate_from_url(argv[2], argv[3], argv[4], argv[5])
+        print_from_url(argv[2], argv[3], argv[4], argv[5])
     else:
         print(GET_XML_USAGE_STR)
