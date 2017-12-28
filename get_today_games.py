@@ -341,6 +341,7 @@ def get_object_html_str(game_html_id_list):
             game_id_element_list[2],
             game_id_element_list[5]
         )
+
         object_html_str += OBJECT_ENTRY_TEMPLATE.format(
             title_str=title_str,
             game_id_str=game_html_id
