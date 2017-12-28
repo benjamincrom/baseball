@@ -566,7 +566,7 @@ class PlateAppearance(object):
 
     @classmethod
     def get_defense_suffix(cls, suffix_str):
-        search = search(
+        this_search = search(
             r'(?:out at|(?:was )?picked off and caught stealing|'
             r'(?:was )?caught stealing|(?:was )?picked off|'
             r'(?:was )?doubled off)'
@@ -574,8 +574,8 @@ class PlateAppearance(object):
             suffix_str
         )
 
-        if search:
-            suffix_str = suffix_str[search.start():]
+        if this_search:
+            suffix_str = suffix_str[this_search.start():]
             suffix_code_order = cls.get_defense_code_order(suffix_str)
             defense_suffix = ' (' + '-'.join(suffix_code_order) + ')'
         else:
