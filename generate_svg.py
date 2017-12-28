@@ -2118,8 +2118,12 @@ def write_files(game_id, this_game, output_dir):
                   'w',
                   encoding='utf-8') as filehandle:
             filehandle.write(html_text)
+
+        status = True
     else:
-        raise ValueError('Game ID {} does not exist'.format(game_id))
+        status = False
+
+    return status
 
 def write_list_of_files(filename_tuple_list, output_dir):
     for game_id, boxscore_file, player_file, inning_file in filename_tuple_list:
@@ -2127,10 +2131,7 @@ def write_list_of_files(filename_tuple_list, output_dir):
                                                    player_file,
                                                    inning_file)
 
-        if this_game:
-            write_files(game_id, this_game, output_dir)
-        else:
-            raise ValueError('Game ID {} does not exist'.format(game_id))
+        write_files(game_id, this_game, output_dir)
 
 def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
     if not exists(input_dir):
@@ -2160,11 +2161,7 @@ def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
                                                       home_code,
                                                       game_num)
 
-    if this_game:
-        write_files(game_id, this_game, output_dir)
-        status = True
-    else:
-        status = False
+    status = write_files(game_id, this_game, output_dir)
 
     return status
 
