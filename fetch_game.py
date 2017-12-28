@@ -8,8 +8,23 @@ import xml.etree.ElementTree
 import requests
 import dateutil.parser
 
-import constants
 import process_game_xml
+
+
+BOXSCORE_SUFFIX = 'boxscore.xml'
+PLAYERS_SUFFIX = 'players.xml'
+GAME_SUFFIX = 'inning/inning_all.xml'
+NUM_PROCESS_SUBLISTS = 16
+
+MLB_URL_PATTERN = ('http://gd2.mlb.com/components/game/mlb/year_{year}/'
+                   'month_{month}/day_{day}/gid_{year}_{month}_{day}_'
+                   '{away_mlb_code}mlb_{home_mlb_code}mlb_{game_number}/')
+
+GET_XML_USAGE_STR = ('Usage:\n'
+                     '  - ./fetch_game.py url [DATE] [AWAY CODE] [HOME CODE] '
+                     '[GAME NUMBER]\n'
+                     '  - ./fetch_game.py files [START DATE] [END DATE] '
+                     '[INPUT DIRECTORY]\n')
 
 
 def get_list_of_lists(this_list, size):
@@ -37,7 +52,7 @@ def get_filename_list(start_date_str, end_date_str, input_path):
                         away_code = away_code[:-3]
                         home_code = home_code[:-3]
                         away_team, home_team = None, None
-                        for key, value in constants.MLB_TEAM_CODE_DICT.items():
+                        for key, value in process_game_xml.MLB_TEAM_CODE_DICT.items():
                             if value == away_code:
                                 away_team = key
 
@@ -104,7 +119,7 @@ def get_game_list_from_files(start_date_str, end_date_str, input_dir):
     return_queue = manager.Queue()
     filename_list = get_filename_list(start_date_str, end_date_str, input_path)
     list_of_filename_lists = get_list_of_lists(filename_list,
-                                               constants.NUM_SUBLISTS)
+                                               NUM_PROCESS_SUBLISTS)
 
     job_list = []
     for filename_list in list_of_filename_lists:
@@ -143,17 +158,17 @@ def get_formatted_date_str(input_date_str):
     return this_date_str
 
 def get_game_xml_data(date, away_team_code, home_team_code, game_number):
-    request_url_base = constants.MLB_URL_PATTERN.format(
+    request_url_base = MLB_URL_PATTERN.format(
         year=date.year,
         month=str(date.month).zfill(2),
         day=str(date.day).zfill(2),
-        away_mlb_code=constants.MLB_TEAM_CODE_DICT[away_team_code],
-        home_mlb_code=constants.MLB_TEAM_CODE_DICT[home_team_code],
+        away_mlb_code=process_game_xml.MLB_TEAM_CODE_DICT[away_team_code],
+        home_mlb_code=process_game_xml.MLB_TEAM_CODE_DICT[home_team_code],
         game_number=game_number
     )
 
     boxscore_request_text = requests.get(
-        request_url_base + constants.BOXSCORE_SUFFIX
+        request_url_base + BOXSCORE_SUFFIX
     ).text
 
     if boxscore_request_text == 'GameDay - 404 Not Found':
@@ -164,11 +179,11 @@ def get_game_xml_data(date, away_team_code, home_team_code, game_number):
         )
 
         team_raw_xml = xml.etree.ElementTree.fromstring(
-            requests.get(request_url_base + constants.PLAYERS_SUFFIX).text
+            requests.get(request_url_base + PLAYERS_SUFFIX).text
         )
 
         game_raw_xml = xml.etree.ElementTree.fromstring(
-            requests.get(request_url_base + constants.GAME_SUFFIX).text
+            requests.get(request_url_base + GAME_SUFFIX).text
         )
 
     return boxscore_raw_xml, team_raw_xml, game_raw_xml
@@ -214,11 +229,11 @@ def generate_from_url(date_str, away_code, home_code, game_num):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print(constants.GET_XML_USAGE_STR)
+        print(GET_XML_USAGE_STR)
         exit()
     if sys.argv[1] == 'files' and len(sys.argv) == 5:
         generate_from_files(sys.argv[2], sys.argv[3], sys.argv[4])
     elif sys.argv[1] == 'url' and len(sys.argv) == 6:
         generate_from_url(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
     else:
-        print(constants.GET_XML_USAGE_STR)
+        print(GET_XML_USAGE_STR)

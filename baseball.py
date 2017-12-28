@@ -1,11 +1,107 @@
-import collections
 import re
-import textwrap
+from collections import OrderedDict
+from textwrap import TextWrapper
 
-import pytz
+from pytz import timezone
 
-import constants
 import stats
+
+
+POSITION_CODE_DICT = {'pitcher': 1,
+                      'catcher': 2,
+                      'first': 3,
+                      'second': 4,
+                      'third': 5,
+                      'shortstop': 6,
+                      'left': 7,
+                      'center': 8,
+                      'right': 9,
+                      'designated': 10}
+
+ON_BASE_SUMMARY_DICT = {'Single': '1B',
+                        'Double': '2B',
+                        'Triple': '3B',
+                        'Hit By Pitch': 'HBP',
+                        'Home Run': 'HR',
+                        'Walk': 'BB',
+                        'Intent Walk': 'IBB'}
+
+PLAY_CODE_ORDERED_DICT = OrderedDict([
+    ('picks off', 'PO'),
+    ('caught stealing', 'CS'),
+    ('wild pitch', 'WP'),
+    ('passed ball', 'PB'),
+    ('balk', 'BLK'),
+    ('steals', 'S'),
+    ('fan interference', 'FI'),
+    ('catcher interference', 'CI'),
+    ('error', 'E'),
+    ('ground', 'G'),
+    ('grand slam', 'HR'),
+    ('homers', 'HR'),
+    ('pop', 'P'),
+    ('line', 'L'),
+    ('fly', 'F'),
+    ('flies', 'F'),
+    ('sacrifice fly', 'SF'),
+    ('hit by pitch', 'HBP'),
+    ('bunt', 'B'),
+    ('sacrifice bunt', 'SB'),
+    ('walks', 'BB'),
+    ('intentionally walks', 'IBB'),
+    ('called out on strikes', 'ꓘ'),
+    ('strikes out', 'K'),
+    ('choice', 'FC')
+])
+
+NO_HIT_CODE_LIST = ['K', 'ꓘ', 'BB', 'IBB']
+
+INCREMENT_BASE_DICT = {'1st': '2nd',
+                       '2nd': '3rd',
+                       '3rd': 'home'}
+
+STADIUM_TIMEZONE_DICT = {
+    'Fenway Park': 'America/New_York',
+    'George M. Steinbrenner Field': 'America/New_York',
+    'Yankee Stadium': 'America/New_York',
+    'Roger Dean Stadium': 'America/New_York',
+    'Joker Marchant Stadium': 'America/New_York',
+    'JetBlue Park': 'America/New_York',
+    'Citi Field': 'America/New_York',
+    'LECOM Park': 'America/New_York',
+    'First Data Field': 'America/New_York',
+    'The Ballpark of the Palm Beaches': 'America/New_York',
+    'Citizens Bank Park': 'America/New_York',
+    'Spectrum Field': 'America/New_York',
+    'Oriole Park at Camden Yards': 'America/New_York',
+    'Nationals Park': 'America/New_York',
+    'Champion Stadium': 'America/New_York',
+    'SunTrust Park': 'America/New_York',
+    'Tropicana Field': 'America/New_York',
+    'Marlins Park': 'America/New_York',
+    'Rogers Centre': 'America/New_York',
+    'PNC Park': 'America/New_York',
+    'Progressive Field': 'America/New_York',
+    'Comerica Park': 'America/New_York',
+    'Great American Ball Park': 'America/New_York',
+    'Miller Park': 'America/Chicago',
+    'Wrigley Field': 'America/Chicago',
+    'Guaranteed Rate Field': 'America/Chicago',
+    'Busch Stadium': 'America/Chicago',
+    'Target Field': 'America/Chicago',
+    'Globe Life Park in Arlington': 'America/Chicago',
+    'Minute Maid Park': 'America/Chicago',
+    'Kauffman Stadium': 'America/Chicago',
+    'Coors Field': 'America/Denver',
+    'Chase Field': 'America/Denver',
+    'Safeco Field': 'America/Los_Angeles',
+    'AT&T Park': 'America/Los_Angeles',
+    'Oakland-Alameda County Coliseum': 'America/Los_Angeles',
+    'Oakland Coliseum': 'America/Los_Angeles',
+    'Angel Stadium of Anaheim': 'America/Los_Angeles',
+    'Dodger Stadium': 'America/Los_Angeles',
+    'Petco Park': 'America/Los_Angeles'
+}
 
 
 def strip_this_suffix(pattern, suffix, input_str):
@@ -243,9 +339,9 @@ class Game(object):
     def set_gametimes(self):
         if self.first_pitch_datetime:
             self.first_pitch_str = self.first_pitch_datetime.astimezone(
-                pytz.timezone(
-                    constants.STADIUM_TIMEZONE_DICT.get(self.location,
-                                                        'America/New_York')
+                timezone(
+                    STADIUM_TIMEZONE_DICT.get(self.location,
+                                              'America/New_York')
                 )
             ).strftime(
                 '%a %b %d %Y, %-I:%M %p'
@@ -255,9 +351,9 @@ class Game(object):
 
         if self.last_pitch_datetime:
             self.last_pitch_str = self.last_pitch_datetime.astimezone(
-                pytz.timezone(
-                    constants.STADIUM_TIMEZONE_DICT.get(self.location,
-                                                        'America/New_York')
+                timezone(
+                    STADIUM_TIMEZONE_DICT.get(self.location,
+                                              'America/New_York')
                 )
             ).strftime(
                 ' - %-I:%M %p %Z'
@@ -266,8 +362,8 @@ class Game(object):
             self.last_pitch_str = ''
 
     def set_pitching_box_score_dict(self):
-        self.away_pitcher_box_score_dict = collections.OrderedDict([])
-        self.home_pitcher_box_score_dict = collections.OrderedDict([])
+        self.away_pitcher_box_score_dict = OrderedDict([])
+        self.home_pitcher_box_score_dict = OrderedDict([])
 
         tuple_list = [
             (self.away_pitcher_box_score_dict, self.away_team, 'bottom'),
@@ -285,8 +381,8 @@ class Game(object):
                 )
 
     def set_batting_box_score_dict(self):
-        self.away_batter_box_score_dict = collections.OrderedDict([])
-        self.home_batter_box_score_dict = collections.OrderedDict([])
+        self.away_batter_box_score_dict = OrderedDict([])
+        self.home_batter_box_score_dict = OrderedDict([])
 
         tuple_list = [
             (self.away_batter_box_score_dict, self.away_team, 'top'),
@@ -401,9 +497,9 @@ class PlateAppearance(object):
     def process_defense_predicate_list(defense_player_order):
         defense_code_order = []
         for defense_position in defense_player_order:
-            if defense_position in constants.POSITION_CODE_DICT:
+            if defense_position in POSITION_CODE_DICT:
                 defense_code_order.append(
-                    str(constants.POSITION_CODE_DICT[defense_position])
+                    str(POSITION_CODE_DICT[defense_position])
                 )
             else:
                 if defense_position.strip(' .') not in ['1st', '2nd', '3rd']:
@@ -503,7 +599,7 @@ class PlateAppearance(object):
         for name, base in runner_name_list:
             search_pattern = re.escape(name) + r' (?:was )?doubled off'
             if re.findall(search_pattern, description):
-                base = constants.INCREMENT_BASE_DICT[base]
+                base = INCREMENT_BASE_DICT[base]
 
             runner_tuple_list.append(
                 (self.batting_team[name], base)
@@ -537,7 +633,7 @@ class PlateAppearance(object):
         play_str = self.get_play_str()
         throws_str, _ = self.get_throws_str()
 
-        if throws_str and play_str not in constants.NO_HIT_CODE_LIST:
+        if throws_str and play_str not in NO_HIT_CODE_LIST:
             hit_location = play_str + throws_str[0]
         else:
             hit_location = None
@@ -550,7 +646,7 @@ class PlateAppearance(object):
             description_str = description_str.split('. ')[0]
 
         code = None
-        for keyword, this_code in constants.PLAY_CODE_ORDERED_DICT.items():
+        for keyword, this_code in PLAY_CODE_ORDERED_DICT.items():
             if keyword in description_str:
                 code = this_code
 
@@ -582,7 +678,7 @@ class PlateAppearance(object):
             description_str = self.plate_appearance_description
             description_str = description_str.split(' error by ')[1]
             defense_player = description_str.split()[0]
-            defense_code = str(constants.POSITION_CODE_DICT[defense_player])
+            defense_code = str(POSITION_CODE_DICT[defense_player])
             error_str = 'E' + defense_code
         elif 'catcher interference' in self.plate_appearance_description:
             error_str = 'E2'
@@ -591,10 +687,10 @@ class PlateAppearance(object):
 
     def get_on_base_and_summary(self):
         throws_str, suffix_str = self.get_throws_str()
-        if self.plate_appearance_summary in constants.ON_BASE_SUMMARY_DICT:
+        if self.plate_appearance_summary in ON_BASE_SUMMARY_DICT:
             on_base = True
             scorecard_summary = (
-                constants.ON_BASE_SUMMARY_DICT[self.plate_appearance_summary] +
+                ON_BASE_SUMMARY_DICT[self.plate_appearance_summary] +
                 suffix_str
             )
         else:
@@ -606,7 +702,7 @@ class PlateAppearance(object):
         return on_base, scorecard_summary
 
     def __repr__(self):
-        wrapper = textwrap.TextWrapper(width=80, subsequent_indent=' '*17)
+        wrapper = TextWrapper(width=80, subsequent_indent=' '*17)
 
         description_str = ' Description:    {}'.format(
             self.plate_appearance_description

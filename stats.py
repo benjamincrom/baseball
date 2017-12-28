@@ -1,5 +1,26 @@
+from collections import namedtuple
+
 import baseball_events
-import constants
+
+
+NOT_AT_BAT_CODE_LIST = ['SB', 'SF', 'BB', 'CI', 'FI', 'IBB', 'HBP', 'CS', 'PO']
+
+HIT_CODE_LIST = ['1B', '2B', '3B', 'HR']
+
+
+InningStatsTuple = namedtuple('InningStatsTuple', 'S P BB K LOB E H R')
+
+BatterBoxScore = namedtuple('BatterBoxScore', 'AB R H RBI BB SO LOB')
+
+PitcherBoxScore = namedtuple(
+    'PitcherBoxScore',
+    'IP WLS BF H R ER SO BB IBB HBP BLK WP HR S P ERA WHIP'
+)
+
+TeamBoxScore = namedtuple(
+    'TeamBoxScore',
+    'B1 B2 B3 HR SF SAC DP HBP WP PB SB CS PA'
+)
 
 
 def process_pickoffs(plate_appearance, first_base, second_base, third_base):
@@ -78,7 +99,7 @@ def get_inning_half_list(game, inning_half_str):
 
 def get_half_inning_stats(top_half_appearance_list, bottom_half_appearance_list):
     if top_half_appearance_list:
-        top_half_inning_stats = constants.InningStatsTuple(
+        top_half_inning_stats = InningStatsTuple(
             get_strikes(top_half_appearance_list),
             get_pitches(top_half_appearance_list),
             get_walks(top_half_appearance_list),
@@ -92,7 +113,7 @@ def get_half_inning_stats(top_half_appearance_list, bottom_half_appearance_list)
         top_half_inning_stats = None
 
     if bottom_half_appearance_list:
-        bottom_half_inning_stats = constants.InningStatsTuple(
+        bottom_half_inning_stats = InningStatsTuple(
             get_strikes(bottom_half_appearance_list),
             get_pitches(bottom_half_appearance_list),
             get_walks(bottom_half_appearance_list),
@@ -110,7 +131,7 @@ def get_half_inning_stats(top_half_appearance_list, bottom_half_appearance_list)
 def get_all_pitcher_stats(game, team, pitcher, inning_half_str):
     inning_half_list = get_inning_half_list(game, inning_half_str)
 
-    pitcher_box_score = constants.PitcherBoxScore(
+    pitcher_box_score = PitcherBoxScore(
         get_pitcher_innings_pitched(pitcher, inning_half_list),
         get_pitcher_win_loss_save(pitcher, team),
         get_pitcher_batters_faced(pitcher, inning_half_list),
@@ -135,7 +156,7 @@ def get_all_pitcher_stats(game, team, pitcher, inning_half_str):
 def get_all_batter_stats(game, batter, inning_half_str):
     inning_half_list = get_inning_half_list(game, inning_half_str)
 
-    batter_box_score = constants.BatterBoxScore(
+    batter_box_score = BatterBoxScore(
         get_batter_at_bats(batter, inning_half_list),
         get_batter_runs(batter, inning_half_list),
         get_batter_hits(batter, inning_half_list),
@@ -165,13 +186,13 @@ def get_box_score_total(box_score_dict):
         total_so += box_score.SO
         total_lob += box_score.LOB
 
-    box_score_total_tuple = constants.BatterBoxScore(total_ab,
-                                                     total_r,
-                                                     total_h,
-                                                     total_rbi,
-                                                     total_bb,
-                                                     total_so,
-                                                     total_lob)
+    box_score_total_tuple = BatterBoxScore(total_ab,
+                                           total_r,
+                                           total_h,
+                                           total_rbi,
+                                           total_bb,
+                                           total_so,
+                                           total_lob)
 
     return box_score_total_tuple
 
@@ -211,7 +232,7 @@ def get_batter_runs_batted_in(batter, inning_half_list):
 def plate_appearance_is_hit(plate_appearance):
     is_hit = False
 
-    for code in constants.HIT_CODE_LIST:
+    for code in HIT_CODE_LIST:
         if code in plate_appearance.scorecard_summary:
             is_hit = True
 
@@ -244,7 +265,7 @@ def is_at_bat(plate_appearance):
     if plate_appearance.plate_appearance_summary == 'Runner Out':
         at_bat_flag = False
 
-    for code in constants.NOT_AT_BAT_CODE_LIST:
+    for code in NOT_AT_BAT_CODE_LIST:
         if plate_appearance.scorecard_summary.startswith(code):
             at_bat_flag = False
 
@@ -736,7 +757,7 @@ def get_hits(appearance_list):
     num_hits = 0
 
     for plate_appearance in appearance_list:
-        for code in constants.HIT_CODE_LIST:
+        for code in HIT_CODE_LIST:
             if code in plate_appearance.scorecard_summary:
                 num_hits += 1
                 continue
@@ -840,7 +861,7 @@ def get_team_plate_appearances(inning_half_list):
 def get_team_stats(game, inning_half_str):
     inning_half_list = get_inning_half_list(game, inning_half_str)
 
-    team_box_score = constants.TeamBoxScore(
+    team_box_score = TeamBoxScore(
         get_team_singles(inning_half_list),
         get_team_doubles(inning_half_list),
         get_team_triples(inning_half_list),

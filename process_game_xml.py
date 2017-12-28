@@ -5,11 +5,55 @@ import pytz
 
 import baseball
 import baseball_events
-import constants
+
+
+AUTOMATIC_BALL_POSITION = (1.0, 1.0)
+
+MLB_TEAM_CODE_DICT = {'LAA': 'ana',
+                      'SEA': 'sea',
+                      'BAL': 'bal',
+                      'CLE': 'cle',
+                      'CIN': 'cin',
+                      'NYM': 'nyn',
+                      'COL': 'col',
+                      'LAD': 'lan',
+                      'DET': 'det',
+                      'TOR': 'tor',
+                      'HOU': 'hou',
+                      'OAK': 'oak',
+                      'MIA': 'mia',
+                      'ATL': 'atl',
+                      'MIL': 'mil',
+                      'CHC': 'chn',
+                      'MIN': 'min',
+                      'KC': 'kca',
+                      'NYY': 'nya',
+                      'TEX': 'tex',
+                      'PHI': 'phi',
+                      'WSH': 'was',
+                      'PIT': 'pit',
+                      'STL': 'sln',
+                      'SD': 'sdn',
+                      'ARI': 'ari',
+                      'SF': 'sfn',
+                      'CHW': 'cha',
+                      'TB': 'tba',
+                      'BOS': 'bos'}
+
+POSITION_ABBREV_DICT = {'P': 1,
+                        'C': 2,
+                        '1B': 3,
+                        '2B': 4,
+                        '3B': 5,
+                        'SS': 6,
+                        'LF': 7,
+                        'CF': 8,
+                        'RF': 9,
+                        'DH': 10}
 
 
 def get_team_abbreviation(mlb_code):
-    for abbreviation, this_mlb_code in constants.MLB_TEAM_CODE_DICT.items():
+    for abbreviation, this_mlb_code in MLB_TEAM_CODE_DICT.items():
         if mlb_code == this_mlb_code:
             return abbreviation
 
@@ -37,7 +81,7 @@ def process_pitch(event):
     pitch_type = event.get('pitch_type')
 
     if not (event.get('x') and event.get('y')):
-        (pitch_x, pitch_y) = constants.AUTOMATIC_BALL_POSITION
+        (pitch_x, pitch_y) = AUTOMATIC_BALL_POSITION
     else:
         pitch_x = float(event.get('x'))
         pitch_y = float(event.get('y'))
@@ -237,10 +281,10 @@ def parse_substitution(description, event_summary, inning_half_str, game_obj):
     return this_team, substitution_obj
 
 def get_position_number(position_str):
-    if position_str in constants.POSITION_CODE_DICT:
-        position = constants.POSITION_CODE_DICT[position_str]
-    elif position_str in constants.POSITION_ABBREV_DICT:
-        position = constants.POSITION_ABBREV_DICT[position_str]
+    if position_str in baseball.POSITION_CODE_DICT:
+        position = baseball.POSITION_CODE_DICT[position_str]
+    elif position_str in POSITION_ABBREV_DICT:
+        position = POSITION_ABBREV_DICT[position_str]
     elif position_str == 'PH':
         position = 'PH'
     elif position_str == 'PR':
@@ -434,13 +478,13 @@ def parse_switch_description(description, event_summary, game_obj,
 
     if 'remains' in description:
         position_str = description.split(' as the ')[1].strip(' .')
-        new_position = constants.POSITION_CODE_DICT[position_str.split()[0]]
+        new_position = baseball.POSITION_CODE_DICT[position_str.split()[0]]
         player_name = description.split(' remains ')[0]
     elif 'switch from' in description:
         position_str = description.split(' switch from ')[1]
         position_str = position_str.split(' for ')[0]
         new_position_str = position_str.split(' to ')[1]
-        new_position = constants.POSITION_CODE_DICT[new_position_str.split()[0]]
+        new_position = baseball.POSITION_CODE_DICT[new_position_str.split()[0]]
         player_name = description.split(' for ')[1]
         player_name = player_name.strip(' .')
     else:

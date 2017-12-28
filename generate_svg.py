@@ -1,37 +1,720 @@
 import multiprocessing
 import os
 import sys
+from collections import namedtuple
 
 import baseball_events
-import constants
 import fetch_game
+from process_game_xml import AUTOMATIC_BALL_POSITION
+
+
+FakePlateAppearance = namedtuple(
+    'FakePlateAppearance',
+    'scorecard_summary batter plate_appearance_description'
+)
+
+
+HEIGHT = 4513
+WIDTH = 3192
+BOX_WIDTH = 266
+BOX_HEIGHT = 200
+EXTRA_COLUMNS = 3
+
+NUM_MINIMUM_INNINGS = 9
+LEN_BATTING_LIST = 9
+AUTOMATIC_BALL_COORDINATE = (300, 300)
+PITCH_X_MAX = 57
+PITCH_Y_MIN = 107
+PITCH_MAX_COORD = 250.0
+PITCH_BOX_WIDTH = 50
+PITCH_BOX_HEIGHT = 90
+PITCH_TYPE_X_OFFSET = 16
+PITCH_SPEED_X_OFFSET = 39
+FIRST_PITCH_X_VAL = 3
+FIRST_PITCH_Y_VAL = 15
+PITCHER_LARGE_FONT_SIZE = 20
+PITCHER_SMALL_FONT_SIZE = 13
+PITCHER_STATS_LARGE_FONT_SIZE = 15
+PITCHER_STATS_SMALL_FONT_SIZE = 10
+PITCHER_BOX_SCORE_LARGE_Y = 70
+PITCHER_BOX_SCORE_SMALL_Y = 56
+PITCHER_BOX_SCORE_X_INCREMENT = 70
+PITCHER_BOX_SCORE_LARGE_Y_INCREMENT = 40
+PITCHER_BOX_SCORE_SMALL_Y_INCREMENT = 26
+PITCHER_BOX_STATS_LARGE_Y_OFFSET = 73
+PITCHER_BOX_STATS_SMALL_Y_OFFSET = 67
+SMALL_CHUNK_SIZE = 5
+LARGE_CHUNK_SIZE = 8
+PITCH_Y_LIMIT = 132
+PITCH_X_OFFSET = 67
+PITCH_Y_OFFSET = 14
+PITCH_ROW_2_Y_VAL = FIRST_PITCH_Y_VAL + PITCH_Y_OFFSET
+OUT_CIRCLE_Y_VAL = 11
+OUT_TEXT_Y_OFFSET = 5
+OUT_CIRCLE_Y_OFFSET = 19
+RUNNER_SUMMARY_Y_VAL = 155
+RUNNER_SUMMARY_Y_OFFSET = 20
+PITCHER_Y = 150
+PITCHER_X = 166
+CATCHER_Y = 180
+FIRST_BASE_Y = 115
+FIRST_BASE_X = 220
+SECOND_BASE_Y = 80
+SECOND_BASE_X = 186
+THIRD_BASE_X = 112
+SHORTSTOP_Y = 100
+SHORTSTOP_X = 140
+LEFT_FIELDER_Y = 58
+LEFT_FIELDER_X = 105
+CENTER_FIELDER_Y = 35
+RIGHT_FIELDER_X = 225
+BATTER_FONT_SIZE_BIG = 20
+BATTER_FONT_SIZE_MED = 15
+BATTER_FONT_SIZE_SMALL = 10
+BATTER_SPACE_BIG = 38
+BATTER_SPACE_MED = 22
+BATTER_SPACE_SMALL = 15
+BATTER_STATS_OFFSET_BIG = 15
+BATTER_STATS_OFFSET_MED = 10
+BATTER_STATS_OFFSET_SMALL = 6
+BATTER_STATS_SPACES_BIG = 4
+BATTER_STATS_SPACES_MED = 6
+BATTER_STATS_SPACES_SMALL = 10
+BATTER_INITIAL_Y_POS = 25
+
+RED_COLOR = '#c10000'
+BLUE_COLOR = 'blue'
+DARK_GREEN_COLOR = 'darkgreen'
+BLACK_COLOR = 'black'
+
+GENERATE_SVG_USAGE_STR = (
+    'Usage:\n'
+    '  - ./generate_svg.py url [DATE] [AWAY CODE] [HOME CODE] '
+    '[GAME NUMBER] [OUTPUT DIRECTORY]\n'
+    '  - ./generate_svg.py files [START DATE] [END DATE] '
+    '[OUTPUT DIRECTORY] [INPUT DIRECTORY]\n'
+)
+
+PITCH_TYPE_DESCRIPTION = {'Ball': 'B',
+                          'Ball In Dirt': 'D',
+                          'Called Strike': 'C',
+                          'Automatic Strike': 'C',
+                          'Swinging Strike': 'S',
+                          'Strike': 'S',
+                          'Swinging Pitchout': 'S',
+                          'Foul': 'F',
+                          'Foul Tip': 'T',
+                          'Pitchout': 'P',
+                          'Foul Pitchout': 'P',
+                          'Balk': 'N',
+                          'Hit By Pitch': 'H',
+                          'Automatic Ball': 'I',
+                          'Intent Ball': 'I',
+                          'Foul Bunt': 'L',
+                          'Missed Bunt': 'M',
+                          'In play, run(s)': 'X',
+                          'In play, out(s)': 'X',
+                          'In play, no out': 'X'}
+
+HALF_SCALE_HEADER = '<g transform="scale(0.5)">'
+HALF_SCALE_FOOTER = '</g>'
+
+HTML_WRAPPER = (
+    '<html>'
+    '<head>'
+    '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
+    '<!-- Global site tag (gtag.js) - Google Analytics -->'
+    '<script async '
+    'src="https://www.googletagmanager.com/gtag/js?id=UA-108577160-1"></script>'
+    '<script>'
+    'window.dataLayer = window.dataLayer || [];'
+    'function gtag(){{dataLayer.push(arguments);}}'
+    'gtag(\'js\', new Date());'
+    'gtag(\'config\', \'UA-108577160-1\');'
+    '</script>'
+    '<title>{title}</title>'
+    '</head>'
+    '<body style="background-color:black;">'
+    '<div align="center">'
+    '<object width="1160px" data="{filename}" type="image/svg+xml">'
+    '</div>'
+    '</body>'
+    '</html>'
+)
+
+BIG_SVG_HEADER = (
+    '<?xml version="1.0" standalone="no"?>'
+    '<svg width="100%" height="100%" viewBox="0 0 {width} 4513" '
+    'version="1.1" xmlns="http://www.w3.org/2000/svg" '
+    'xmlns:xlink="http://www.w3.org/1999/xlink">'
+    '<rect x="0" y="0" width="{width}" height="4513" fill="#AAAAAA"/> '
+    '<rect x="0" y="0" width="266" height="100" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<text x="133" y="60" font-family="Arial" text-anchor="middle" '
+    'font-size="30">Batter</text>'
+    '<rect x="0" y="2256" width="266" height="100" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<text x="133" y="2316" font-family="Arial" text-anchor="middle" '
+    'font-size="30">Batter</text>'
+    '<rect x="0" y="1900" width="266" height="100" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<text x="133" y="1960" font-family="Arial" text-anchor="middle" '
+    'font-size="30">Inning Stats</text>'
+    '<rect x="0" y="4156" width="266" height="100" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<text x="133" y="4216" font-family="Arial" text-anchor="middle" '
+    'font-size="30">Inning Stats</text>'
+    '<line x1="0" y1="2256" x2="{width}" y2="2256" stroke="black" '
+    'stroke-width="1"/>'
+)
+
+PITCHER_STATS_HEADER = (
+    '<svg x="{x_box}" y="{y_box}" width="1596" height="256" '
+    'version="1.1" xmlns="http://www.w3.org/2000/svg" '
+    'xmlns:xlink="http://www.w3.org/1999/xlink">'
+    '<rect x="0" y="0" width="1596" height="256" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<text x="150" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">PITCHER</text>'
+    '<text x="345" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">IP</text>'
+    '<text x="409" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">WLS</text>'
+    '<text x="482" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">BF</text>'
+    '<text x="545" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">H</text>'
+    '<text x="615" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">R</text>'
+    '<text x="685" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">ER</text>'
+    '<text x="755" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">SO</text>'
+    '<text x="825" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">BB</text>'
+    '<text x="897" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">IBB</text>'
+    '<text x="967" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">HBP</text>'
+    '<text x="1037" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">BLK</text>'
+    '<text x="1105" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">WP</text>'
+    '<text x="1175" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">HR</text>'
+    '<text x="1250" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">S</text>'
+    '<text x="1320" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">P</text>'
+    '<text x="1398" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">ERA</text>'
+    '<text x="1475" y="35" font-family="Arial" text-anchor="middle" '
+    'font-size="20">WHIP</text>'
+)
+
+PITCHER_STATS_LINE_TEMPLATE = (
+    '<a target="_parent" xlink:href="http://m.mlb.com/player/{pitcher_id}">'
+    '<text x="10" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start" fill="blue">{pitcher}</text></a>'
+    '<text x="40" y="{stats_y_pos}" font-family="Arial" font-size="{size_2}" '
+    'text-anchor="start">{stats}</text>'
+    '<text x="260" y="{name_y_pos}" font-family="Arial" font-size="{size_2}" '
+    'text-anchor="end">{appears}</text>'
+    '<text x="330" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_1}</text>'
+    '<text x="400" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_2}</text>'
+    '<text x="470" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_3}</text>'
+    '<text x="540" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_4}</text>'
+    '<text x="610" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_5}</text>'
+    '<text x="680" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_6}</text>'
+    '<text x="750" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_7}</text>'
+    '<text x="820" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_8}</text>'
+    '<text x="890" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_9}</text>'
+    '<text x="960" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_10}</text>'
+    '<text x="1030" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_11}</text>'
+    '<text x="1100" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_12}</text>'
+    '<text x="1170" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_13}</text>'
+    '<text x="1240" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_14}</text>'
+    '<text x="1310" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_15}</text>'
+    '<text x="1380" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_16}</text>'
+    '<text x="1450" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
+    'text-anchor="start">{box_score_17}</text>'
+)
+
+INNING_STATS_BOX = (
+    '<svg x="{box_x}" y="{box_y}" width="1596" height="256" '
+    'version="1.1" xmlns="http://www.w3.org/2000/svg" '
+    'xmlns:xlink="http://www.w3.org/1999/xlink">'
+    '<rect x="0" y="0" width="266" height="100" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<text x="40" y="28" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_1}</text>'
+    '<text x="40" y="48" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_2}</text>'
+    '<text x="40" y="68" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_3}</text>'
+    '<text x="40" y="88" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_4}</text>'
+    '<text x="140" y="28" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_5}</text>'
+    '<text x="140" y="48" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_6}</text>'
+    '<text x="140" y="68" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_7}</text>'
+    '<text x="140" y="88" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_8}</text>'
+    '<text x="192" y="28" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_9}</text>'
+    '<text x="192" y="48" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_10}</text>'
+    '<text x="192" y="68" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_11}</text>'
+    '<text x="192" y="88" font-family="Arial" '
+    'text-anchor="start" '
+    'font-size="20">{stats_str_12}</text>'
+    '</svg>'
+)
+
+TOTAL_BOX_SCORE_STATS_BOX = (
+    '<svg x="{box_x}" y="{box_y}" width="266" height="400" '
+    'version="1.1" xmlns="http://www.w3.org/2000/svg" '
+    'xmlns:xlink="http://www.w3.org/1999/xlink">'
+    '<rect x="0" y="0" width="266" height="400" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<text x="50" y="60" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">AB</text>'
+    '<text x="50" y="110" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">R</text>'
+    '<text x="50" y="160" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">H</text>'
+    '<text x="50" y="210" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">RBI</text>'
+    '<text x="50" y="260" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">BB</text>'
+    '<text x="50" y="310" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">SO</text>'
+    '<text x="50" y="360" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">LOB</text>'
+    '<text x="150" y="60" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">{stats_str_1}</text>'
+    '<text x="150" y="110" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">{stats_str_2}</text>'
+    '<text x="150" y="160" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">{stats_str_3}</text>'
+    '<text x="150" y="210" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">{stats_str_4}</text>'
+    '<text x="150" y="260" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">{stats_str_5}</text>'
+    '<text x="150" y="310" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">{stats_str_6}</text>'
+    '<text x="150" y="360" font-family="Arial" text-anchor="start" '
+    'font-size="30" font-weight="bold">{stats_str_7}</text>'
+    '</svg>'
+)
+
+BIG_SVG_COLUMN = (
+    '<rect x="{x_pos}" y="0" width="266" height="100" fill="white" '
+    'stroke="black" '
+    'stroke-width="1"/>'
+    '<text x="{text_x_pos}" y="60" font-family="Arial" '
+    'text-anchor="middle" '
+    'font-size="30">{inning_num}</text>'
+    '<rect x="{x_pos}" y="2256" width="266" height="100" '
+    'fill="white" '
+    'stroke="black" '
+    'stroke-width="1"/>'
+    '<text x="{text_x_pos}" y="2316" font-family="Arial" '
+    'text-anchor="middle" '
+    'font-size="30">{inning_num}</text>'
+    '<line x1="0" y1="2256" x2="{width}" y2="2256" '
+    'stroke="black" stroke-width="1"/>'
+)
+
+BIG_SVG_TITLE = (
+    '<svg width="266" height="1300" x="{x_pos}" y="{y_pos}" version="1.1" '
+    'xmlns="http://www.w3.org/2000/svg" '
+    'xmlns:xlink="http://www.w3.org/1999/xlink">'
+    '<rect x="0" y="0" width="266" height="1300" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<rect x="0" y="0" width="266" height="100" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<text x="133" y="67" font-family="Arial" text-anchor="middle" '
+    'font-size="50">{inning_half}</text>'
+    '<text x="95" y="700" transform="rotate(-90,95,700)" '
+    'fill="black" font-size="55" font-family="Arial" text-anchor="middle" '
+    '>{game_str}</text>'
+    '<text x="165" y="700" transform="rotate(-90,165,700)" '
+    'fill="black" font-size="45" font-family="Arial" text-anchor="middle" '
+    '>{location}</text>'
+    '<text x="220" y="700" transform="rotate(-90,220,700)" '
+    'fill="black" font-size="30" font-family="Arial" text-anchor="middle" '
+    '>{datetime}</text>'
+    '</svg>'
+)
+
+BOX_SCORE_COLUMN_HEADER = (
+    '<rect x="{x_pos}" y="0" width="266" height="100" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<text x="{text_x_pos}" y="60" font-family="Arial" '
+    'text-anchor="start" font-size="20">'
+    'AB'
+    '&#160;&#160;&#160;R'
+    '&#160;&#160;&#160;H'
+    '&#160;&#160;RBI'
+    '&#160;BB'
+    '&#160;SO'
+    '&#160;LOB'
+    '</text>'
+    '<rect x="{x_pos}" y="2256" width="266" height="100" fill="white" '
+    'stroke="black" stroke-width="1"/>'
+    '<text x="{text_x_pos}" y="2316" font-family="Arial" text-anchor="start" '
+    'font-size="20">'
+    'AB'
+    '&#160;&#160;&#160;R'
+    '&#160;&#160;&#160;H'
+    '&#160;&#160;RBI'
+    '&#160;BB'
+    '&#160;SO'
+    '&#160;LOB'
+    '</text>'
+)
+
+BATTER_SVG_HEADER = (
+    '<svg x="{x_pos}" y="{y_pos}" width="266" height="200" version="1.1" '
+    'xmlns="http://www.w3.org/2000/svg" '
+    'xmlns:xlink="http://www.w3.org/1999/xlink">'
+    '<rect x="0" y="0" width="266" height="200" stroke="black" fill="white" '
+    'stroke-width="1"/>'
+)
+
+BATTER_NAME_TEMPLATE = (
+    '<a target="_parent" xlink:href="http://m.mlb.com/player/{batter_id}">'
+    '<text x="10" y="{name_y_pos}" font-family="Arial" '
+    'font-size="{batter_font_size}" '
+    'text-anchor="start" fill="blue">{batter}</text></a>'
+    '<text x="40" y="{stats_y_pos}" font-family="Arial" '
+    'font-size="{stats_font_size}" '
+    'text-anchor="start">{stats}</text>'
+    '<text x="260" y="{name_y_pos}" font-family="Arial" '
+    'font-size="{stats_font_size}" '
+    'text-anchor="end">{appears}</text>'
+)
+
+SIGNATURE = (
+    '<svg x="{x_pos}" y="{y_pos}" width="266" height="200" version="1.1" '
+    'xmlns="http://www.w3.org/2000/svg" '
+    'xmlns:xlink="http://www.w3.org/1999/xlink">'
+    '<rect x="0" y="0" width="266" height="200" stroke="black" fill="white" '
+    'stroke-width="1"/>'
+    '<a target="_parent" xlink:href="http://www.livebaseballscorecards.com">'
+    '<image xlink:href="baseball-fairy-161.png" x="50" y="10" height="161" '
+    'width="163" />'
+    '<text x="133" y="190" font-family="Arial" font-size="20" '
+    'text-anchor="middle" fill="blue">livebaseballscorecards.com</text></a>'
+    '</svg>'
+)
+
+BOX_SCORE_LINE_TEMPLATE = (
+    '<text x="13" y="{name_y_pos}" font-family="Arial" '
+    'font-size="{batter_font_size}" text-anchor="start">{box_score_line}</text>'
+)
+
+BATTER_SUB_DIVISION_LINE = (
+    '<line x1="{x_pos}" y1="{y_pos_1}" x2="{x_pos}" y2="{y_pos_2}" '
+    'stroke="blue" stroke-width="5"/>'
+)
+
+PITCHER_SUB_DIVISION_LINE = (
+    '<line x1="{x_pos_1}" y1="{y_pos}" x2="{x_pos_2}" y2="{y_pos}" '
+    'stroke="blue" stroke-dasharray="15, 10" stroke-width="5"/>'
+)
+
+SVG_HEADER = (
+    '<svg x="{x_pos}" y="{y_pos}" width="266" height="200" version="1.1" '
+    'xmlns="http://www.w3.org/2000/svg" '
+    'xmlns:xlink="http://www.w3.org/1999/xlink">'
+    '<rect x="0" y="0" width="266" height="200" stroke="black" fill="white" '
+    'stroke-width="1"/>'
+    '<line x1="67" y1="0" x2="67" y2="266" stroke="black" fill="transparent"/>'
+    '<!-- Diamond -->'
+    '<path d="M71 101 A 45 45, 0, 0, 1, 261 101 L 166 196 Z" stroke="black" '
+    'fill="transparent"/>'
+    '<path d="M112 142 L 166 89 L 220 142" stroke="black" fill="transparent"/>'
+    '<!-- Pitch box and Strike zone -->'
+    '<rect x="29" y="160" width="11" height="19" stroke="lightgray" '
+    'fill="transparent"/>'
+    '<path d="M13 266 L 13 143 L 55 143 L 55 266" stroke="black" '
+    'fill="transparent"/>'
+)
+
+BIG_RECTANGLE = ('<path d="M0 {y_pos} L {width} {y_pos} '
+                 'L {width} {y_pos_2} L 0 {y_pos_2}" '
+                 'stroke="black" stroke-width="4" fill="none"/>')
+
+FOOTER_BOX = (
+    '<rect x="0" y="0" width="{width}" height="4513" fill="none" '
+    'stroke="black" stroke-width="4"/>'
+)
+
+SVG_FOOTER = '</svg>'
+
+SVG_PITCH_TEMPLATE = (
+    '<text x="{pitch_text_x_1}" y="{pitch_text_y}" font-family="Arial" '
+    'fill="{pitch_color}" font-size="13">{pitch_code}'
+    '<title id="title">{title}</title></text>'
+    '<text x="{pitch_text_x_2}" y="{pitch_text_y}" font-family="Arial" '
+    'fill="{pitch_color}" font-size="13">{pitch_type} '
+    '<title id="title">{title}</title></text>'
+    '<text x="{pitch_text_x_3}" y="{pitch_text_y}" font-family="Arial" '
+    'fill="{pitch_color}" font-size="13">'
+    '{pitch_speed}<title id="title">{title}</title></text>'
+    '<rect x="{pitch_location_x}" y="{pitch_location_y}" width="2" '
+    'height="2" stroke="{pitch_color}" fill="{pitch_color}"/>'
+)
+
+SVG_PICKOFF_TEMPLATE = (
+    '<text x="{pickoff_text_x_1}" y="{pickoff_text_y}" font-family="Arial" '
+    'fill="{pickoff_color}" font-size="13">{pickoff_base}'
+    '<title id="title">{title}</title></text>'
+    '<text x="{pickoff_text_x_2}" y="{pickoff_text_y}" font-family="Arial" '
+    'fill="{pickoff_color}" font-size="13">{pickoff_result} '
+    '<title id="title">{title}</title></text>'
+)
+
+SVG_SUMMARY_TEMPLATE = (
+    '<text x="260" y="192" font-family="Arial" font-size="34" '
+    'text-anchor="end">{summary}'
+    '<title id="title">{title}</title>'
+    '</text>'
+)
+
+SVG_BASE_1 = (
+    '<path d="M162 192 L 216 138" stroke="black" fill="transparent" '
+    'stroke-width="11"/>'
+)
+
+SVG_BASE_2_TEMPLATE = (
+    '<path d="M162 192 L 216 138 L 164 89" stroke="black" fill="transparent" '
+    'stroke-width="11"/>'
+    '<text x="199" y="93" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_number}</text>'
+    '<text x="199" y="114" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_summary}'
+    '<title id="title">{base_2_title}</title>'
+    '</text>'
+)
+
+SVG_BASE_2_OUT_TEMPLATE = (
+    '<path d="M162 192 L 216 138 L 194 117" stroke="black" fill="transparent" '
+    'stroke-width="11"/>'
+    '<path d="M184 124 L 201 107" stroke="black" fill="transparent" '
+    'stroke-width="5"/>'
+    '<text x="199" y="93" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_number}</text>'
+    '<text x="199" y="114" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_summary}'
+    '<title id="title">{base_2_title}</title>'
+    '</text>'
+)
+
+SVG_BASE_3_TEMPLATE = (
+    '<path d="M162 192 L 216 138 L 164 89 L 111 142" stroke="black" '
+    'fill="transparent" stroke-width="11"/>'
+    '<text x="199" y="93" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_number}</text>'
+    '<text x="199" y="114" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_summary}'
+    '<title id="title">{base_2_title}</title>'
+    '</text>'
+    '<text x="132" y="93" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_number}</text>'
+    '<text x="132" y="114" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_summary}'
+    '<title id="title">{base_3_title}</title>'
+    '</text>'
+)
+
+SVG_BASE_3_OUT_TEMPLATE = (
+    '<path d="M162 192 L 216 138 L 164 89 L 138 116" stroke="black" '
+    'fill="transparent" stroke-width="11"/>'
+    '<path d="M130 109 L 145 124" stroke="black" fill="transparent" '
+    'stroke-width="5"/>'
+    '<text x="199" y="93" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_number}</text>'
+    '<text x="199" y="114" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_summary}'
+    '<title id="title">{base_2_title}</title>'
+    '</text>'
+    '<text x="132" y="93" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_number}</text>'
+    '<text x="132" y="114" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_summary}'
+    '<title id="title">{base_3_title}</title>'
+    '</text>'
+)
+
+SVG_BASE_4_TEMPLATE = (
+    '<path d="M162 192 L 216 138 L 164 89 L 112 141" stroke="black" '
+    'fill="transparent" stroke-width="11"/>'
+    '<path d="M112 134 L 169 192" stroke="black" '
+    'fill="transparent" stroke-width="11"/>'
+    '<rect x="79" y="138" width="75" height="75" stroke="black" fill="black" '
+    'transform = "rotate(-45 100 100)"/>'
+    '<text x="199" y="93" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_number}</text>'
+    '<text x="199" y="114" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_summary}'
+    '<title id="title">{base_2_title}</title>'
+    '</text>'
+    '<text x="132" y="93" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_number}</text>'
+    '<text x="132" y="114" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_summary}'
+    '<title id="title">{base_3_title}</title>'
+    '</text>'
+    '<text x="164" y="133" font-family="Arial" text-anchor="middle" '
+    'font-size="22" fill="white">{base_4_number}</text>'
+    '<text x="164" y="158" font-family="Arial" text-anchor="middle" '
+    'font-size="22" fill="white">{base_4_summary}'
+    '<title id="title">{base_4_title}</title>'
+    '</text>'
+)
+
+SVG_BASE_4_OUT_TEMPLATE = (
+    '<path d="M162 192 L 216 138 L 164 89 L 111 142 L 137 167" stroke="black" '
+    'fill="transparent" stroke-width="11"/>'
+    '<path d="M128 174 L 143 158" stroke="black" fill="transparent" '
+    'stroke-width="5"/>'
+    '<text x="199" y="93" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_number}</text>'
+    '<text x="199" y="114" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_summary}'
+    '<title id="title">{base_2_title}</title>'
+    '</text>'
+    '<text x="132" y="93" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_number}</text>'
+    '<text x="132" y="114" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_summary}'
+    '<title id="title">{base_3_title}</title>'
+    '</text>'
+    '<text x="164" y="133" font-family="Arial" text-anchor="middle" '
+    'font-size="22">{base_4_number}</text>'
+    '<text x="164" y="158" font-family="Arial" text-anchor="middle" '
+    'font-size="22">{base_4_summary}'
+    '<title id="title">{base_4_title}</title>'
+    '</text>'
+)
+
+SVG_OUT_TEMPLATE = (
+    '<circle cx="255" cy="{y_val}" r="8" stroke="#c10000" stroke-width="1" '
+    'fill="transparent" />'
+    '<text x="251" y="{y_text}" fill="#c10000" font-family="Arial" '
+    'font-size="15">{out_number}</text>'
+)
+
+SVG_FIELDING_TEMPLATE = (
+    '<text x="165" y="68" font-family="Arial" font-size="43" '
+    'text-anchor="middle">{summary}'
+    '<title id="title">{title}</title>'
+    '</text>'
+)
+
+SVG_SWINGING_STRIKEOUT_TEMPLATE = (
+    '<text x="165" y="140" font-family="Arial" font-size="140" '
+    'text-anchor="middle">K'
+    '<title id="title">{title}</title>'
+    '</text>'
+)
+
+SVG_CALLED_STRIKEOUT_TEMPLATE = (
+    '<text x="155" y="140" font-family="Arial" font-size="140" '
+    'text-anchor="middle" transform="translate(320 0) scale(-1 1)">K'
+    '<title id="title">{title}</title>'
+    '</text>'
+)
+
+SVG_COUNT_TEMPLATE = (
+    '<text x="70" y="15" font-family="Arial" font-size="15">{count_str}'
+    '</text>'
+)
+
+SVG_RUNNER_TEMPLATE = ('<text x="70" y="{y_val}" font-family="Arial" '
+                       'stroke="{color}" font-size="16" '
+                       'text-anchor="start">{summary}'
+                       '<title id="title">{title}</title></text>')
+
+SVG_HIT_BALL_TEMPLATE = (
+    '<rect x="{hit_x}" y="{hit_y}" width="4" height="4" stroke="blue" '
+    'fill="blue"/>'
+)
+
+SVG_HIT_LINE_TEMPLATE = (
+    '<path d="M165 192 A 165 192 0 0 0 {hit_x} {hit_y}" stroke="blue" '
+    'fill="none"/>'
+)
+
+SVG_HIT_GROUNDER_TEMPLATE = (
+    '<path d="M165 192 L {hit_x} {hit_y}" stroke-dasharray="5, 5" '
+    'stroke="blue" fill="none"/>'
+)
+
+SVG_HIT_FLY_TEMPLATE = (
+    '<path d="M165 192 Q 20 20 {hit_x} {hit_y}" stroke="blue" '
+    'fill="none"/>'
+)
 
 
 def get_game_width(game):
-    inning_length = max(len(game.inning_list), constants.NUM_MINIMUM_INNINGS)
-    game_width = constants.BOX_WIDTH * (inning_length + constants.EXTRA_COLUMNS)
+    inning_length = max(len(game.inning_list), NUM_MINIMUM_INNINGS)
+    game_width = BOX_WIDTH * (inning_length + EXTRA_COLUMNS)
 
     return game_width
 
 def get_big_svg_header(game):
-    inning_length = max(len(game.inning_list), constants.NUM_MINIMUM_INNINGS)
+    inning_length = max(len(game.inning_list), NUM_MINIMUM_INNINGS)
     game_width = get_game_width(game)
 
-    big_svg_str = constants.BIG_SVG_HEADER.format(width=game_width)
+    big_svg_str = BIG_SVG_HEADER.format(width=game_width)
 
     for inning_num in range(1, inning_length + 1):
-        x_pos = inning_num * constants.BOX_WIDTH
-        text_x_pos = x_pos + (constants.BOX_WIDTH // 2)
+        x_pos = inning_num * BOX_WIDTH
+        text_x_pos = x_pos + (BOX_WIDTH // 2)
 
-        big_svg_str += constants.BIG_SVG_COLUMN.format(inning_num=inning_num,
+        big_svg_str += BIG_SVG_COLUMN.format(inning_num=inning_num,
                                                        x_pos=x_pos,
                                                        text_x_pos=text_x_pos,
                                                        width=game_width)
 
-    box_score_header_x_pos = (inning_length + 1) * constants.BOX_WIDTH
+    box_score_header_x_pos = (inning_length + 1) * BOX_WIDTH
     box_score_header_text_x_pos = box_score_header_x_pos + 13
 
-    big_svg_str += constants.BOX_SCORE_COLUMN_HEADER.format(
+    big_svg_str += BOX_SCORE_COLUMN_HEADER.format(
         x_pos=box_score_header_x_pos,
         text_x_pos=box_score_header_text_x_pos,
     )
@@ -49,29 +732,29 @@ def get_summary_svg(plate_appearance):
         )
 
     if plate_appearance.got_on_base:
-        return_str = constants.SVG_SUMMARY_TEMPLATE.format(
+        return_str = SVG_SUMMARY_TEMPLATE.format(
             summary=plate_appearance.scorecard_summary,
             title=plate_appearance.plate_appearance_description
         )
     else:
         if (plate_appearance.scorecard_summary == 'K' and
                 not batter_on_base):
-            return_str = constants.SVG_SWINGING_STRIKEOUT_TEMPLATE.format(
+            return_str = SVG_SWINGING_STRIKEOUT_TEMPLATE.format(
                 title=plate_appearance.plate_appearance_description
             )
         elif (plate_appearance.scorecard_summary == 'ꓘ' and
               not batter_on_base):
-            return_str = constants.SVG_CALLED_STRIKEOUT_TEMPLATE.format(
+            return_str = SVG_CALLED_STRIKEOUT_TEMPLATE.format(
                 title=plate_appearance.plate_appearance_description
             )
         else:
-            return_str = constants.SVG_FIELDING_TEMPLATE.format(
+            return_str = SVG_FIELDING_TEMPLATE.format(
                 summary=plate_appearance.scorecard_summary.replace('ꓘ', 'K'),
                 title=plate_appearance.plate_appearance_description
             )
 
     if plate_appearance.got_on_base and plate_appearance.error_str:
-        return_str += constants.SVG_FIELDING_TEMPLATE.format(
+        return_str += SVG_FIELDING_TEMPLATE.format(
             summary=plate_appearance.error_str,
             title=plate_appearance.plate_appearance_description
         )
@@ -81,26 +764,26 @@ def get_summary_svg(plate_appearance):
 def get_pitch_color(event):
     if ('Strike' in event.pitch_description or
             'Foul' in event.pitch_description):
-        color = constants.RED_COLOR
+        color = RED_COLOR
     elif 'In play' in event.pitch_description:
-        color = constants.BLUE_COLOR
+        color = BLUE_COLOR
     else:
-        color = constants.BLACK_COLOR
+        color = BLACK_COLOR
 
     return color
 
 def process_pitch_position(event):
-    if event.pitch_position == constants.AUTOMATIC_BALL_POSITION:
-        x_coord, y_coord = constants.AUTOMATIC_BALL_COORDINATE
+    if event.pitch_position == AUTOMATIC_BALL_POSITION:
+        x_coord, y_coord = AUTOMATIC_BALL_COORDINATE
     else:
-        x_scale_factor = event.pitch_position[0] / constants.PITCH_MAX_COORD
+        x_scale_factor = event.pitch_position[0] / PITCH_MAX_COORD
         x_coord = int(
-            constants.PITCH_X_MAX - (constants.PITCH_BOX_WIDTH * x_scale_factor)
+            PITCH_X_MAX - (PITCH_BOX_WIDTH * x_scale_factor)
         )
 
-        y_scale_factor = event.pitch_position[1] / constants.PITCH_MAX_COORD
+        y_scale_factor = event.pitch_position[1] / PITCH_MAX_COORD
         y_coord = int(
-            constants.PITCH_Y_MIN + (constants.PITCH_BOX_HEIGHT *
+            PITCH_Y_MIN + (PITCH_BOX_HEIGHT *
                                      y_scale_factor)
         )
 
@@ -109,7 +792,7 @@ def process_pitch_position(event):
 def process_pitch(x_val, y_val, event, pitch_svg):
     color = get_pitch_color(event)
     description = event.pitch_description.split(' (')[0]
-    code = constants.PITCH_TYPE_DESCRIPTION[description]
+    code = PITCH_TYPE_DESCRIPTION[description]
 
     pitch_type = event.pitch_type or ''
     x_coord, y_coord = process_pitch_position(event)
@@ -119,10 +802,10 @@ def process_pitch(x_val, y_val, event, pitch_svg):
     else:
         speed = ''
 
-    pitch_svg += constants.SVG_PITCH_TEMPLATE.format(
+    pitch_svg += SVG_PITCH_TEMPLATE.format(
         pitch_text_x_1=x_val,
-        pitch_text_x_2=x_val + constants.PITCH_TYPE_X_OFFSET,
-        pitch_text_x_3=x_val + constants.PITCH_SPEED_X_OFFSET,
+        pitch_text_x_2=x_val + PITCH_TYPE_X_OFFSET,
+        pitch_text_x_3=x_val + PITCH_SPEED_X_OFFSET,
         pitch_text_y=y_val,
         pitch_color=color,
         pitch_code=code,
@@ -139,15 +822,15 @@ def process_pickoff(x_val, y_val, event, pitch_svg):
     pickoff_base = event.pickoff_base[0]
 
     if event.pickoff_was_successful:
-        color = constants.RED_COLOR
+        color = RED_COLOR
         pickoff_result = 'OUT'
     else:
-        color = constants.BLACK_COLOR
+        color = BLACK_COLOR
         pickoff_result = 'SAFE'
 
-    pitch_svg += constants.SVG_PICKOFF_TEMPLATE.format(
+    pitch_svg += SVG_PICKOFF_TEMPLATE.format(
         pickoff_text_x_1=x_val,
-        pickoff_text_x_2=x_val + constants.PITCH_TYPE_X_OFFSET,
+        pickoff_text_x_2=x_val + PITCH_TYPE_X_OFFSET,
         pickoff_text_y=y_val,
         pickoff_color=color,
         pickoff_base=pickoff_base,
@@ -159,20 +842,20 @@ def process_pickoff(x_val, y_val, event, pitch_svg):
 
 def get_pitch_svg(plate_appearance):
     pitch_svg = ''
-    x_val = constants.FIRST_PITCH_X_VAL
-    y_val = constants.FIRST_PITCH_Y_VAL
+    x_val = FIRST_PITCH_X_VAL
+    y_val = FIRST_PITCH_Y_VAL
 
     for event in plate_appearance.event_list:
-        if y_val > constants.PITCH_Y_LIMIT:
-            y_val = constants.PITCH_ROW_2_Y_VAL
-            x_val += constants.PITCH_X_OFFSET
+        if y_val > PITCH_Y_LIMIT:
+            y_val = PITCH_ROW_2_Y_VAL
+            x_val += PITCH_X_OFFSET
 
         if isinstance(event, baseball_events.Pitch):
             pitch_svg = process_pitch(x_val, y_val, event, pitch_svg)
-            y_val += constants.PITCH_Y_OFFSET
+            y_val += PITCH_Y_OFFSET
         elif isinstance(event, baseball_events.Pickoff):
             pitch_svg += process_pickoff(x_val, y_val, event, pitch_svg)
-            y_val += constants.PITCH_Y_OFFSET
+            y_val += PITCH_Y_OFFSET
 
     return pitch_svg
 
@@ -195,11 +878,11 @@ def get_runner_title_str(event):
 
 def get_runner_color(event):
     if not event.end_base and not event.runner_scored:
-        color = constants.RED_COLOR
+        color = RED_COLOR
     elif event.runner_scored:
-        color = constants.DARK_GREEN_COLOR
+        color = DARK_GREEN_COLOR
     else:
-        color = constants.BLACK_COLOR
+        color = BLACK_COLOR
 
     return color
 
@@ -247,13 +930,13 @@ def get_runners_svg(plate_appearance):
                 title_flag_str
             )
 
-            y_val = constants.RUNNER_SUMMARY_Y_VAL
+            y_val = RUNNER_SUMMARY_Y_VAL
             if start_base_num == 2:
-                y_val += constants.RUNNER_SUMMARY_Y_OFFSET
+                y_val += RUNNER_SUMMARY_Y_OFFSET
             elif start_base_num == 3:
-                y_val += (constants.RUNNER_SUMMARY_Y_OFFSET * 2)
+                y_val += (RUNNER_SUMMARY_Y_OFFSET * 2)
 
-            runner_svg_str += constants.SVG_RUNNER_TEMPLATE.format(
+            runner_svg_str += SVG_RUNNER_TEMPLATE.format(
                 y_val=y_val,
                 color=color,
                 summary=summary,
@@ -275,15 +958,15 @@ def get_outs_svg(plate_appearance, prev_plate_appearance):
     if outs_this_pa > 0:
         outs_list = range(outs_before + 1, plate_appearance.inning_outs + 1)
 
-    y_val = constants.OUT_CIRCLE_Y_VAL
+    y_val = OUT_CIRCLE_Y_VAL
     for out in outs_list:
-        outs_svg += constants.SVG_OUT_TEMPLATE.format(
+        outs_svg += SVG_OUT_TEMPLATE.format(
             y_val=y_val,
-            y_text=y_val + constants.OUT_TEXT_Y_OFFSET,
+            y_text=y_val + OUT_TEXT_Y_OFFSET,
             out_number=out
         )
 
-        y_val += constants.OUT_CIRCLE_Y_OFFSET
+        y_val += OUT_CIRCLE_Y_OFFSET
 
     return outs_svg
 
@@ -341,13 +1024,13 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
         if batter_out_base == '1B':
             base_svg = ''
         elif batter_out_base == '2B':
-            base_svg = constants.SVG_BASE_2_OUT_TEMPLATE.format(
+            base_svg = SVG_BASE_2_OUT_TEMPLATE.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
                 base_2_title=base_2_title
             )
         elif batter_out_base == '3B':
-            base_svg = constants.SVG_BASE_3_OUT_TEMPLATE.format(
+            base_svg = SVG_BASE_3_OUT_TEMPLATE.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
                 base_2_title=base_2_title,
@@ -356,7 +1039,7 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                 base_3_title=base_3_title
             )
         elif batter_out_base == 'H':
-            base_svg = constants.SVG_BASE_4_OUT_TEMPLATE.format(
+            base_svg = SVG_BASE_4_OUT_TEMPLATE.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
                 base_2_title=base_2_title,
@@ -371,15 +1054,15 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
             raise ValueError('Invalid Base')
     elif batter_final_base:
         if batter_final_base == '1B':
-            base_svg = constants.SVG_BASE_1
+            base_svg = SVG_BASE_1
         elif batter_final_base == '2B':
-            base_svg = constants.SVG_BASE_2_TEMPLATE.format(
+            base_svg = SVG_BASE_2_TEMPLATE.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
                 base_2_title=base_2_title
             )
         elif batter_final_base == '3B':
-            base_svg = constants.SVG_BASE_3_TEMPLATE.format(
+            base_svg = SVG_BASE_3_TEMPLATE.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
                 base_2_title=base_2_title,
@@ -388,7 +1071,7 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                 base_3_title=base_3_title
             )
         elif batter_final_base == 'H':
-            base_svg = constants.SVG_BASE_4_TEMPLATE.format(
+            base_svg = SVG_BASE_4_TEMPLATE.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
                 base_2_title=base_2_title,
@@ -443,9 +1126,9 @@ def fix_pa(plate_appearance, event):
         )
 
     if summary and description:
-        return_pa = constants.FakePlateAppearance(summary,
-                                                  plate_appearance.batter,
-                                                  description)
+        return_pa = FakePlateAppearance(summary,
+                                        plate_appearance.batter,
+                                        description)
     else:
         return_pa = plate_appearance
 
@@ -525,43 +1208,43 @@ def get_hit_svg(plate_appearance):
 
             is_valid_hit_type = False
             if hit_type in ['B', 'G']:
-                template = constants.SVG_HIT_GROUNDER_TEMPLATE
+                template = SVG_HIT_GROUNDER_TEMPLATE
                 is_valid_hit_type = True
             elif hit_type in ['L', 'E']:
-                template = constants.SVG_HIT_LINE_TEMPLATE
+                template = SVG_HIT_LINE_TEMPLATE
                 is_valid_hit_type = True
             elif hit_type in ['P', 'F']:
-                template = constants.SVG_HIT_FLY_TEMPLATE
+                template = SVG_HIT_FLY_TEMPLATE
                 is_valid_hit_type = True
 
             if is_valid_hit_type:
                 if hit_position_num == 1:
-                    hit_svg = template.format(hit_x=constants.PITCHER_X,
-                                              hit_y=constants.PITCHER_Y)
+                    hit_svg = template.format(hit_x=PITCHER_X,
+                                              hit_y=PITCHER_Y)
                 elif hit_position_num == 2:
-                    hit_svg = template.format(hit_x=constants.PITCHER_X,
-                                              hit_y=constants.CATCHER_Y)
+                    hit_svg = template.format(hit_x=PITCHER_X,
+                                              hit_y=CATCHER_Y)
                 elif hit_position_num == 3:
-                    hit_svg = template.format(hit_x=constants.FIRST_BASE_X,
-                                              hit_y=constants.FIRST_BASE_Y)
+                    hit_svg = template.format(hit_x=FIRST_BASE_X,
+                                              hit_y=FIRST_BASE_Y)
                 elif hit_position_num == 4:
-                    hit_svg = template.format(hit_x=constants.SECOND_BASE_X,
-                                              hit_y=constants.SECOND_BASE_Y)
+                    hit_svg = template.format(hit_x=SECOND_BASE_X,
+                                              hit_y=SECOND_BASE_Y)
                 elif hit_position_num == 5:
-                    hit_svg = template.format(hit_x=constants.THIRD_BASE_X,
-                                              hit_y=constants.FIRST_BASE_Y)
+                    hit_svg = template.format(hit_x=THIRD_BASE_X,
+                                              hit_y=FIRST_BASE_Y)
                 elif hit_position_num == 6:
-                    hit_svg = template.format(hit_x=constants.SHORTSTOP_X,
-                                              hit_y=constants.SHORTSTOP_Y)
+                    hit_svg = template.format(hit_x=SHORTSTOP_X,
+                                              hit_y=SHORTSTOP_Y)
                 elif hit_position_num == 7:
-                    hit_svg = template.format(hit_x=constants.LEFT_FIELDER_X,
-                                              hit_y=constants.LEFT_FIELDER_Y)
+                    hit_svg = template.format(hit_x=LEFT_FIELDER_X,
+                                              hit_y=LEFT_FIELDER_Y)
                 elif hit_position_num == 8:
-                    hit_svg = template.format(hit_x=constants.PITCHER_X,
-                                              hit_y=constants.CENTER_FIELDER_Y)
+                    hit_svg = template.format(hit_x=PITCHER_X,
+                                              hit_y=CENTER_FIELDER_Y)
                 elif hit_position_num == 9:
-                    hit_svg = template.format(hit_x=constants.RIGHT_FIELDER_X,
-                                              hit_y=constants.LEFT_FIELDER_Y)
+                    hit_svg = template.format(hit_x=RIGHT_FIELDER_X,
+                                              hit_y=LEFT_FIELDER_Y)
 
     return hit_svg
 
@@ -581,7 +1264,7 @@ def get_count_svg(plate_appearance):
                 balls += 1
 
     count_str = '{}-{}'.format(balls, strikes)
-    count_svg = constants.SVG_COUNT_TEMPLATE.format(count_str=count_str)
+    count_svg = SVG_COUNT_TEMPLATE.format(count_str=count_str)
 
     return count_svg
 
@@ -635,28 +1318,28 @@ def get_svg_content_list(game):
 
 def get_batter_spacing_values(batter_list):
     if len(batter_list) <= 5:
-        batter_font_size = constants.BATTER_FONT_SIZE_BIG
-        batter_space_increment = constants.BATTER_SPACE_BIG
-        stats_y_offset = constants.BATTER_STATS_OFFSET_BIG
+        batter_font_size = BATTER_FONT_SIZE_BIG
+        batter_space_increment = BATTER_SPACE_BIG
+        stats_y_offset = BATTER_STATS_OFFSET_BIG
         box_score_line_template = (
-            ('&#160;' * (constants.BATTER_STATS_SPACES_BIG // 2)) + '%s' +
-            ('&#160;' * constants.BATTER_STATS_SPACES_BIG + '%s') * 6
+            ('&#160;' * (BATTER_STATS_SPACES_BIG // 2)) + '%s' +
+            ('&#160;' * BATTER_STATS_SPACES_BIG + '%s') * 6
         )
     elif len(batter_list) > 5 and len(batter_list) < 9:
-        batter_font_size = constants.BATTER_FONT_SIZE_MED
-        batter_space_increment = constants.BATTER_SPACE_MED
-        stats_y_offset = constants.BATTER_STATS_OFFSET_MED
+        batter_font_size = BATTER_FONT_SIZE_MED
+        batter_space_increment = BATTER_SPACE_MED
+        stats_y_offset = BATTER_STATS_OFFSET_MED
         box_score_line_template = (
-            ('&#160;' * (constants.BATTER_STATS_SPACES_MED // 2)) + '%s' +
-            ('&#160;' * constants.BATTER_STATS_SPACES_MED + '%s') * 6
+            ('&#160;' * (BATTER_STATS_SPACES_MED // 2)) + '%s' +
+            ('&#160;' * BATTER_STATS_SPACES_MED + '%s') * 6
         )
     else:
-        batter_font_size = constants.BATTER_FONT_SIZE_SMALL
-        batter_space_increment = constants.BATTER_SPACE_SMALL
-        stats_y_offset = constants.BATTER_STATS_OFFSET_SMALL
+        batter_font_size = BATTER_FONT_SIZE_SMALL
+        batter_space_increment = BATTER_SPACE_SMALL
+        stats_y_offset = BATTER_STATS_OFFSET_SMALL
         box_score_line_template = (
-            ('&#160;' * (constants.BATTER_STATS_SPACES_SMALL // 2)) + '%s' +
-            ('&#160;' * constants.BATTER_STATS_SPACES_SMALL + '%s') * 6
+            ('&#160;' * (BATTER_STATS_SPACES_SMALL // 2)) + '%s' +
+            ('&#160;' * BATTER_STATS_SPACES_SMALL + '%s') * 6
         )
 
     return (batter_font_size,
@@ -666,20 +1349,20 @@ def get_batter_spacing_values(batter_list):
 
 def get_team_batter_box_score_list(game, team, box_score_dict, offset):
     box_score_svg = ''
-    num_innings = max(len(game.inning_list), constants.NUM_MINIMUM_INNINGS)
-    box_score_x_offset = constants.BOX_WIDTH * (num_innings + 1)
+    num_innings = max(len(game.inning_list), NUM_MINIMUM_INNINGS)
+    box_score_x_offset = BOX_WIDTH * (num_innings + 1)
 
     for batter_list in team.batting_order_list_list:
-        box_score_svg += constants.BATTER_SVG_HEADER.format(
+        box_score_svg += BATTER_SVG_HEADER.format(
             x_pos=box_score_x_offset,
-            y_pos=offset + (constants.BOX_HEIGHT // 2)
+            y_pos=offset + (BOX_HEIGHT // 2)
         )
 
         batter_font_size, batter_space_increment, _, box_score_line_template = (
             get_batter_spacing_values(batter_list)
         )
 
-        batter_y_pos = constants.BATTER_INITIAL_Y_POS
+        batter_y_pos = BATTER_INITIAL_Y_POS
         last_batter = None
         for batter_appearance in batter_list:
             if last_batter == batter_appearance.player_obj:
@@ -690,7 +1373,7 @@ def get_team_batter_box_score_list(game, team, box_score_dict, offset):
                     box_score_dict[batter_appearance.player_obj]
                 )
 
-            box_score_svg += constants.BOX_SCORE_LINE_TEMPLATE.format(
+            box_score_svg += BOX_SCORE_LINE_TEMPLATE.format(
                 name_y_pos=batter_y_pos,
                 box_score_line=box_score_line_str,
                 batter_font_size=batter_font_size
@@ -699,24 +1382,24 @@ def get_team_batter_box_score_list(game, team, box_score_dict, offset):
             batter_y_pos += batter_space_increment
             last_batter = batter_appearance.player_obj
 
-        box_score_svg += constants.SVG_FOOTER
-        offset += constants.BOX_HEIGHT
+        box_score_svg += SVG_FOOTER
+        offset += BOX_HEIGHT
 
     return box_score_svg
 
 def get_team_batter_list(team, offset):
     batter_svg = ''
     for batter_list in team.batting_order_list_list:
-        batter_svg += constants.BATTER_SVG_HEADER.format(
+        batter_svg += BATTER_SVG_HEADER.format(
             x_pos=0,
-            y_pos=offset + (constants.BOX_HEIGHT // 2)
+            y_pos=offset + (BOX_HEIGHT // 2)
         )
 
         batter_font_size, batter_space_increment, stats_y_offset, _ = (
             get_batter_spacing_values(batter_list)
         )
 
-        batter_y_pos = constants.BATTER_INITIAL_Y_POS
+        batter_y_pos = BATTER_INITIAL_Y_POS
         last_batter = None
         for batter_appearance in batter_list:
             if last_batter == batter_appearance.player_obj:
@@ -736,7 +1419,7 @@ def get_team_batter_list(team, offset):
             appears_str = '({}, {})'.format(batter_appearance.start_inning_num,
                                             batter_appearance.position)
 
-            batter_svg += constants.BATTER_NAME_TEMPLATE.format(
+            batter_svg += BATTER_NAME_TEMPLATE.format(
                 batter_id=batter_appearance.player_obj.mlb_id,
                 name_y_pos=batter_y_pos,
                 stats_y_pos=batter_y_pos + stats_y_offset,
@@ -750,8 +1433,8 @@ def get_team_batter_list(team, offset):
             batter_y_pos += batter_space_increment
             last_batter = batter_appearance.player_obj
 
-        batter_svg += constants.SVG_FOOTER
-        offset += constants.BOX_HEIGHT
+        batter_svg += SVG_FOOTER
+        offset += BOX_HEIGHT
 
     return batter_svg
 
@@ -760,7 +1443,7 @@ def get_batter_list_and_stats(game):
 
     tuple_list = [
         (game.away_team, game.away_batter_box_score_dict, 0),
-        (game.home_team, game.home_batter_box_score_dict, constants.HEIGHT // 2)
+        (game.home_team, game.home_batter_box_score_dict, HEIGHT // 2)
     ]
 
     for team, box_score_dict, offset in tuple_list:
@@ -773,7 +1456,7 @@ def get_batter_list_and_stats(game):
 
 def get_team_stats_box(box_x, box_y, stats_tuple):
     box_1_x = box_x
-    stats_box_1_svg = constants.INNING_STATS_BOX.format(
+    stats_box_1_svg = INNING_STATS_BOX.format(
         box_x=box_1_x,
         box_y=box_y,
         stats_str_1='1B: &#160;{}'.format(stats_tuple.B1),
@@ -790,8 +1473,8 @@ def get_team_stats_box(box_x, box_y, stats_tuple):
         stats_str_12='{}'.format(stats_tuple.HBP)
     )
 
-    box_2_x = box_x + constants.BOX_WIDTH
-    stats_box_2_svg = constants.INNING_STATS_BOX.format(
+    box_2_x = box_x + BOX_WIDTH
+    stats_box_2_svg = INNING_STATS_BOX.format(
         box_x=box_2_x,
         box_y=box_y,
         stats_str_1='WP: {}'.format(stats_tuple.WP),
@@ -814,7 +1497,7 @@ def get_team_stats_box(box_x, box_y, stats_tuple):
 
 def get_inning_stats_box(box_x, box_y, stats_tuple):
     stats_box_svg = (
-        constants.INNING_STATS_BOX.format(
+        INNING_STATS_BOX.format(
             box_x=box_x,
             box_y=box_y,
             stats_str_1='R: {}'.format(stats_tuple.R),
@@ -854,9 +1537,9 @@ def add_away_batter_sub_division_lines(game):
         for batter_app in batter_appearance_list:
             same_last_batter = last_batter == batter_app.player_obj
             if not same_last_batter:
-                x_pos = constants.BOX_WIDTH * batter_app.start_inning_num
-                y_pos = ((constants.BOX_HEIGHT * batting_pos_index) +
-                         (constants.BOX_HEIGHT // 2))
+                x_pos = BOX_WIDTH * batter_app.start_inning_num
+                y_pos = ((BOX_HEIGHT * batting_pos_index) +
+                         (BOX_HEIGHT // 2))
 
                 for inning_index, inning in enumerate(game.inning_list):
                     if batter_app.start_inning_num == inning_index + 1:
@@ -868,16 +1551,16 @@ def add_away_batter_sub_division_lines(game):
                         if (not inning_pa_num or
                                 batter_app.start_inning_batter_num > inning_pa_num
                                 or batter_app.start_inning_half == 'bottom'):
-                            x_pos += constants.BOX_WIDTH
+                            x_pos += BOX_WIDTH
 
                 if not (batter_app.start_inning_num == 1 and
                         batter_app.start_inning_batter_num == 1 and
                         batter_app.start_inning_half == 'top'):
                     sub_divisions_svg += (
-                        constants.BATTER_SUB_DIVISION_LINE.format(
+                        BATTER_SUB_DIVISION_LINE.format(
                             x_pos=x_pos,
                             y_pos_1=y_pos,
-                            y_pos_2=y_pos + constants.BOX_HEIGHT
+                            y_pos_2=y_pos + BOX_HEIGHT
                         )
                     )
 
@@ -896,9 +1579,9 @@ def add_home_batter_sub_division_lines(game):
             same_last_batter = last_batter == batter_app.player_obj
 
             if not same_last_batter:
-                x_pos = constants.BOX_WIDTH * batter_app.start_inning_num
-                y_pos = ((constants.BOX_HEIGHT * batting_pos_index) +
-                         (constants.HEIGHT // 2 + constants.BOX_HEIGHT // 2))
+                x_pos = BOX_WIDTH * batter_app.start_inning_num
+                y_pos = ((BOX_HEIGHT * batting_pos_index) +
+                         (HEIGHT // 2 + BOX_HEIGHT // 2))
 
                 for inning_index, inning in enumerate(game.inning_list):
                     if batter_app.start_inning_num == inning_index + 1:
@@ -910,16 +1593,16 @@ def add_home_batter_sub_division_lines(game):
                         if ((not inning_pa_num or
                              batter_app.start_inning_batter_num > inning_pa_num)
                                 and batter_app.start_inning_half == 'bottom'):
-                            x_pos += constants.BOX_WIDTH
+                            x_pos += BOX_WIDTH
 
                 if not (batter_app.start_inning_num == 1 and
                         batter_app.start_inning_batter_num == 1 and
                         batter_app.start_inning_half == 'top'):
                     sub_divisions_svg += (
-                        constants.BATTER_SUB_DIVISION_LINE.format(
+                        BATTER_SUB_DIVISION_LINE.format(
                             x_pos=x_pos,
                             y_pos_1=y_pos,
-                            y_pos_2=y_pos + constants.BOX_HEIGHT
+                            y_pos_2=y_pos + BOX_HEIGHT
                         )
                     )
 
@@ -946,19 +1629,19 @@ def add_away_pitcher_sub_division_lines(game):
                             (inning_pa_num == pitcher_app.end_inning_batter_num
                              or pitcher_app.end_inning_half == 'top')):
 
-                        x_pos = (constants.BOX_WIDTH *
+                        x_pos = (BOX_WIDTH *
                                  pitcher_app.end_inning_num)
 
                         y_pos = (
-                            (constants.BOX_HEIGHT *
-                             (total_pa_num % constants.LEN_BATTING_LIST)) +
-                            (constants.HEIGHT // 2 + constants.BOX_HEIGHT // 2)
+                            (BOX_HEIGHT *
+                             (total_pa_num % LEN_BATTING_LIST)) +
+                            (HEIGHT // 2 + BOX_HEIGHT // 2)
                         )
 
                         sub_divisions_svg += (
-                            constants.PITCHER_SUB_DIVISION_LINE.format(
+                            PITCHER_SUB_DIVISION_LINE.format(
                                 x_pos_1=x_pos,
-                                x_pos_2=x_pos + constants.BOX_WIDTH,
+                                x_pos_2=x_pos + BOX_WIDTH,
                                 y_pos=y_pos
                             )
                         )
@@ -986,15 +1669,15 @@ def add_home_pitcher_sub_division_lines(game):
                             inning_pa_num == pitcher_app.end_inning_batter_num
                             and pitcher_app.end_inning_half != 'bottom'):
 
-                        x_pos = constants.BOX_WIDTH * pitcher_app.end_inning_num
-                        y_pos = ((constants.BOX_HEIGHT *
-                                  (total_pa_num % constants.LEN_BATTING_LIST)) +
-                                 (constants.BOX_HEIGHT // 2))
+                        x_pos = BOX_WIDTH * pitcher_app.end_inning_num
+                        y_pos = ((BOX_HEIGHT *
+                                  (total_pa_num % LEN_BATTING_LIST)) +
+                                 (BOX_HEIGHT // 2))
 
                         sub_divisions_svg += (
-                            constants.PITCHER_SUB_DIVISION_LINE.format(
+                            PITCHER_SUB_DIVISION_LINE.format(
                                 x_pos_1=x_pos,
-                                x_pos_2=x_pos + constants.BOX_WIDTH,
+                                x_pos_2=x_pos + BOX_WIDTH,
                                 y_pos=y_pos
                             )
                         )
@@ -1017,18 +1700,18 @@ def add_home_pitcher_sub_division_lines(game):
 
 def add_end_inning_pitcher_sub(pitcher_app, total_pa_num, last_batter_no_pa):
     batting_pos_index = (
-        (total_pa_num % constants.LEN_BATTING_LIST) +
+        (total_pa_num % LEN_BATTING_LIST) +
         int(last_batter_no_pa)
     )
 
-    x_pos = constants.BOX_WIDTH * pitcher_app.end_inning_num
-    y_pos = ((constants.BOX_HEIGHT * batting_pos_index) +
-             (constants.BOX_HEIGHT // 2))
+    x_pos = BOX_WIDTH * pitcher_app.end_inning_num
+    y_pos = ((BOX_HEIGHT * batting_pos_index) +
+             (BOX_HEIGHT // 2))
 
     this_sub_division_svg = (
-        constants.PITCHER_SUB_DIVISION_LINE.format(
+        PITCHER_SUB_DIVISION_LINE.format(
             x_pos_1=x_pos,
-            x_pos_2=x_pos + constants.BOX_WIDTH,
+            x_pos_2=x_pos + BOX_WIDTH,
             y_pos=y_pos
         )
     )
@@ -1058,28 +1741,28 @@ def get_pitcher_box_score_lines(pitcher_app_list, chunk_size, box_score_dict):
     pitcher_rows_svg = ''
     row_increment = 0
 
-    if chunk_size == constants.SMALL_CHUNK_SIZE:
-        initial_y = constants.PITCHER_BOX_SCORE_LARGE_Y
-        text_size_1 = constants.PITCHER_LARGE_FONT_SIZE
-        text_size_2 = constants.PITCHER_STATS_LARGE_FONT_SIZE
-        stats_offset = constants.PITCHER_BOX_STATS_LARGE_Y_OFFSET
-        defined_text_increment = constants.PITCHER_BOX_SCORE_LARGE_Y_INCREMENT
-    elif chunk_size == constants.LARGE_CHUNK_SIZE:
-        initial_y = constants.PITCHER_BOX_SCORE_SMALL_Y
-        text_size_1 = constants.PITCHER_SMALL_FONT_SIZE
-        text_size_2 = constants.PITCHER_STATS_SMALL_FONT_SIZE
-        stats_offset = constants.PITCHER_BOX_STATS_SMALL_Y_OFFSET
-        defined_text_increment = constants.PITCHER_BOX_SCORE_SMALL_Y_INCREMENT
+    if chunk_size == SMALL_CHUNK_SIZE:
+        initial_y = PITCHER_BOX_SCORE_LARGE_Y
+        text_size_1 = PITCHER_LARGE_FONT_SIZE
+        text_size_2 = PITCHER_STATS_LARGE_FONT_SIZE
+        stats_offset = PITCHER_BOX_STATS_LARGE_Y_OFFSET
+        defined_text_increment = PITCHER_BOX_SCORE_LARGE_Y_INCREMENT
+    elif chunk_size == LARGE_CHUNK_SIZE:
+        initial_y = PITCHER_BOX_SCORE_SMALL_Y
+        text_size_1 = PITCHER_SMALL_FONT_SIZE
+        text_size_2 = PITCHER_STATS_SMALL_FONT_SIZE
+        stats_offset = PITCHER_BOX_STATS_SMALL_Y_OFFSET
+        defined_text_increment = PITCHER_BOX_SCORE_SMALL_Y_INCREMENT
 
     for pitcher_app in pitcher_app_list:
-        initial_y = constants.PITCHER_BOX_SCORE_SMALL_Y
+        initial_y = PITCHER_BOX_SCORE_SMALL_Y
         box_score_tuple = box_score_dict[pitcher_app.player_obj]
         era_str, whip_str = get_box_score_whip_era(box_score_tuple)
         initial_era_stat_str = 'ERA: ' + str(pitcher_app.player_obj.era)
         appears_str = '({}, {})'.format(pitcher_app.start_inning_num,
                                         pitcher_app.position)
 
-        pitcher_rows_svg += constants.PITCHER_STATS_LINE_TEMPLATE.format(
+        pitcher_rows_svg += PITCHER_STATS_LINE_TEMPLATE.format(
             pitcher_id=pitcher_app.player_obj.mlb_id,
             name_y_pos=initial_y + row_increment,
             stats_y_pos=stats_offset + row_increment,
@@ -1111,14 +1794,14 @@ def create_pitcher_stats_svg(chunk_tuple_list, chunk_size, box_score_dict):
     pitcher_stats_svg = ''
     for location, pitcher_chunk in chunk_tuple_list:
         x_box, y_box = location
-        pitcher_stats_svg += constants.PITCHER_STATS_HEADER.format(x_box=x_box,
+        pitcher_stats_svg += PITCHER_STATS_HEADER.format(x_box=x_box,
                                                                    y_box=y_box)
 
         pitcher_stats_svg += '{}{}'.format(
             get_pitcher_box_score_lines(pitcher_chunk,
                                         chunk_size,
                                         box_score_dict),
-            constants.SVG_FOOTER
+            SVG_FOOTER
         )
 
     return pitcher_stats_svg
@@ -1126,14 +1809,14 @@ def create_pitcher_stats_svg(chunk_tuple_list, chunk_size, box_score_dict):
 def add_team_pitcher_box_score(team, box_score_dict, offset):
     pitcher_app_list = team.pitcher_list
     if len(pitcher_app_list) <= 10:
-        chunk_size = constants.SMALL_CHUNK_SIZE
+        chunk_size = SMALL_CHUNK_SIZE
     else:
-        chunk_size = constants.LARGE_CHUNK_SIZE
+        chunk_size = LARGE_CHUNK_SIZE
 
     pitcher_chunk_list = list(chunks(pitcher_app_list, chunk_size))
     location_tuple_list = [
-        (0, constants.BOX_HEIGHT * 10 + offset),
-        (constants.WIDTH // 2, constants.BOX_HEIGHT * 10 + offset)
+        (0, BOX_HEIGHT * 10 + offset),
+        (WIDTH // 2, BOX_HEIGHT * 10 + offset)
     ]
 
     chunk_tuple_list = []
@@ -1160,7 +1843,7 @@ def add_all_pitcher_box_scores(game):
          0),
         (game.away_team,
          game.away_pitcher_box_score_dict,
-         constants.HEIGHT // 2)
+         HEIGHT // 2)
     ]
 
     for this_tuple in tuple_list:
@@ -1176,15 +1859,15 @@ def get_team_stats_svg(game):
     game_width = get_game_width(game)
     tuple_list = [
         (
-            game_width - (constants.BOX_WIDTH * 2),
-            (constants.BOX_HEIGHT * constants.LEN_BATTING_LIST +
-             constants.BOX_HEIGHT // 2),
+            game_width - (BOX_WIDTH * 2),
+            (BOX_HEIGHT * LEN_BATTING_LIST +
+             BOX_HEIGHT // 2),
             game.away_team_stats
         ), (
-            game_width - (constants.BOX_WIDTH * 2),
-            (constants.HEIGHT // 2 +
-             constants.BOX_HEIGHT * constants.LEN_BATTING_LIST +
-             constants.BOX_HEIGHT // 2),
+            game_width - (BOX_WIDTH * 2),
+            (HEIGHT // 2 +
+             BOX_HEIGHT * LEN_BATTING_LIST +
+             BOX_HEIGHT // 2),
             game.home_team_stats
         )
     ]
@@ -1201,19 +1884,19 @@ def get_box_score_totals(game):
     tuple_list = [
         (
             game.away_batter_box_score_dict,
-            game_width - constants.BOX_WIDTH,
-            6 * constants.BOX_HEIGHT + constants.BOX_HEIGHT // 2
+            game_width - BOX_WIDTH,
+            6 * BOX_HEIGHT + BOX_HEIGHT // 2
         ),
         (
             game.home_batter_box_score_dict,
-            game_width - constants.BOX_WIDTH,
-            (6 * constants.BOX_HEIGHT + constants.BOX_HEIGHT // 2 +
-             constants.HEIGHT // 2)
+            game_width - BOX_WIDTH,
+            (6 * BOX_HEIGHT + BOX_HEIGHT // 2 +
+             HEIGHT // 2)
         )
     ]
 
     for box_score_dict, x_pos, y_pos in tuple_list:
-        box_score_totals_svg += constants.TOTAL_BOX_SCORE_STATS_BOX.format(
+        box_score_totals_svg += TOTAL_BOX_SCORE_STATS_BOX.format(
             box_x=x_pos,
             box_y=y_pos,
             stats_str_1=box_score_dict['TOTAL'].AB,
@@ -1229,10 +1912,10 @@ def get_box_score_totals(game):
 
 def is_bat_around(this_inning_tuple_list, inning_pa_num):
     return (
-        len(this_inning_tuple_list) > constants.LEN_BATTING_LIST and
-        (inning_pa_num > constants.LEN_BATTING_LIST or
+        len(this_inning_tuple_list) > LEN_BATTING_LIST and
+        (inning_pa_num > LEN_BATTING_LIST or
          inning_pa_num <= (len(this_inning_tuple_list) %
-                           constants.LEN_BATTING_LIST))
+                           LEN_BATTING_LIST))
     )
 
 def assemble_stats_svg(game):
@@ -1240,15 +1923,15 @@ def assemble_stats_svg(game):
     inning_half_stats_list = get_inning_half_stats_tuple_list(game)
     for inning_num, inning_half_str, stats_tuple in inning_half_stats_list:
         if stats_tuple:
-            box_x = inning_num * constants.BOX_WIDTH
+            box_x = inning_num * BOX_WIDTH
 
             if inning_half_str == 'bottom':
-                box_y = (constants.HEIGHT // 2 +
-                         constants.BOX_HEIGHT * constants.LEN_BATTING_LIST +
-                         constants.BOX_HEIGHT // 2)
+                box_y = (HEIGHT // 2 +
+                         BOX_HEIGHT * LEN_BATTING_LIST +
+                         BOX_HEIGHT // 2)
             elif inning_half_str == 'top':
-                box_y = (constants.BOX_HEIGHT * constants.LEN_BATTING_LIST +
-                         constants.BOX_HEIGHT // 2)
+                box_y = (BOX_HEIGHT * LEN_BATTING_LIST +
+                         BOX_HEIGHT // 2)
             else:
                 raise ValueError('Invalid inning half str')
 
@@ -1262,18 +1945,18 @@ def get_signature(game):
 
     tuple_list = [
         (
-            game_width - constants.BOX_WIDTH,
-            8 * constants.BOX_HEIGHT + constants.BOX_HEIGHT // 2
+            game_width - BOX_WIDTH,
+            8 * BOX_HEIGHT + BOX_HEIGHT // 2
         ),
         (
-            game_width - constants.BOX_WIDTH,
-            (8 * constants.BOX_HEIGHT + constants.BOX_HEIGHT // 2 +
-             constants.HEIGHT // 2)
+            game_width - BOX_WIDTH,
+            (8 * BOX_HEIGHT + BOX_HEIGHT // 2 +
+             HEIGHT // 2)
         )
     ]
 
     for x_pos, y_pos in tuple_list:
-        signature_svg += constants.SIGNATURE.format(x_pos=x_pos, y_pos=y_pos)
+        signature_svg += SIGNATURE.format(x_pos=x_pos, y_pos=y_pos)
 
     return signature_svg
 
@@ -1282,21 +1965,21 @@ def write_individual_pa_svg(svg_content, inning_pa_num, this_inning_tuple_list,
     this_svg = ''
     bat_around_flag = is_bat_around(this_inning_tuple_list, inning_pa_num)
     if bat_around_flag:
-        this_svg += constants.HALF_SCALE_HEADER
+        this_svg += HALF_SCALE_HEADER
         this_x_pos *= 2
         this_y_pos *= 2
         if inning_pa_num > 9:
-            this_x_pos += constants.BOX_WIDTH
-            this_y_pos += constants.BOX_HEIGHT
+            this_x_pos += BOX_WIDTH
+            this_y_pos += BOX_HEIGHT
 
     this_svg += '{}{}{}'.format(
-        constants.SVG_HEADER.format(x_pos=this_x_pos, y_pos=this_y_pos),
+        SVG_HEADER.format(x_pos=this_x_pos, y_pos=this_y_pos),
         svg_content,
-        constants.SVG_FOOTER
+        SVG_FOOTER
     )
 
     if bat_around_flag:
-        this_svg += constants.HALF_SCALE_FOOTER
+        this_svg += HALF_SCALE_FOOTER
 
     return this_svg
 
@@ -1307,22 +1990,22 @@ def assemble_box_content_dict(game):
     bottom_pa_index = 0
     for id_tuple, svg_content, summary in svg_content_list:
         inning_num, inning_half_str, inning_pa_num = id_tuple
-        top_offset = top_pa_index % constants.LEN_BATTING_LIST
-        bottom_offset = bottom_pa_index % constants.LEN_BATTING_LIST
-        this_x_pos = inning_num * constants.BOX_WIDTH
+        top_offset = top_pa_index % LEN_BATTING_LIST
+        bottom_offset = bottom_pa_index % LEN_BATTING_LIST
+        this_x_pos = inning_num * BOX_WIDTH
         if inning_half_str == 'bottom':
             if summary != 'Runner Out':
                 bottom_pa_index += 1
 
-            this_y_pos = (constants.HEIGHT // 2 +
-                          bottom_offset * constants.BOX_HEIGHT +
-                          constants.BOX_HEIGHT // 2)
+            this_y_pos = (HEIGHT // 2 +
+                          bottom_offset * BOX_HEIGHT +
+                          BOX_HEIGHT // 2)
         elif inning_half_str == 'top':
             if summary != 'Runner Out':
                 top_pa_index += 1
 
-            this_y_pos = (top_offset * constants.BOX_HEIGHT +
-                          constants.BOX_HEIGHT // 2)
+            this_y_pos = (top_offset * BOX_HEIGHT +
+                          BOX_HEIGHT // 2)
         else:
             raise ValueError('Invalid inning half str')
 
@@ -1359,10 +2042,10 @@ def assemble_game_title_svg(game):
 
     game_width = get_game_width(game)
 
-    tuple_list = [('TOP', 0), ('BOTTOM', constants.HEIGHT // 2)]
+    tuple_list = [('TOP', 0), ('BOTTOM', HEIGHT // 2)]
     for inning_half_str, y_pos in tuple_list:
-        game_title_svg += constants.BIG_SVG_TITLE.format(
-            x_pos=game_width - constants.BOX_WIDTH,
+        game_title_svg += BIG_SVG_TITLE.format(
+            x_pos=game_width - BOX_WIDTH,
             y_pos=y_pos,
             inning_half=inning_half_str,
             game_str=game_str,
@@ -1376,11 +2059,11 @@ def get_big_rectangles(game):
     game_width = get_game_width(game)
 
     big_rectangles_svg = '{}{}'.format(
-        constants.BIG_RECTANGLE.format(y_pos=0,
-                                       y_pos_2=constants.HEIGHT // 2,
+        BIG_RECTANGLE.format(y_pos=0,
+                                       y_pos_2=HEIGHT // 2,
                                        width=game_width),
-        constants.BIG_RECTANGLE.format(y_pos=constants.HEIGHT // 2,
-                                       y_pos_2=constants.HEIGHT,
+        BIG_RECTANGLE.format(y_pos=HEIGHT // 2,
+                                       y_pos_2=HEIGHT,
                                        width=game_width)
     )
 
@@ -1388,7 +2071,7 @@ def get_big_rectangles(game):
 
 def get_footer_box(game):
     game_width = get_game_width(game)
-    footer_box_svg = '{}'.format(constants.FOOTER_BOX.format(width=game_width))
+    footer_box_svg = '{}'.format(FOOTER_BOX.format(width=game_width))
 
     return footer_box_svg
 
@@ -1409,13 +2092,13 @@ def write_big_svg(game):
         get_box_score_totals(game),
         get_big_rectangles(game),
         get_footer_box(game),
-        constants.SVG_FOOTER
+        SVG_FOOTER
     )
 
     return big_svg_text
 
 def wrap_in_html(title, filename):
-    return constants.HTML_WRAPPER.format(title=title,
+    return HTML_WRAPPER.format(title=title,
                                          filename=filename)
 
 def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
@@ -1429,7 +2112,7 @@ def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
 
     list_of_filename_tuple_lists = fetch_game.get_list_of_lists(
         filename_tuple_list,
-        constants.NUM_SUBLISTS
+        fetch_game.NUM_PROCESS_SUBLISTS
     )
 
     for this_filename_tuple_list in list_of_filename_tuple_lists:
@@ -1487,7 +2170,7 @@ def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print(constants.GENERATE_SVG_USAGE_STR)
+        print(GENERATE_SVG_USAGE_STR)
         exit()
     if sys.argv[1] == 'files' and len(sys.argv) == 6:
         generate_from_files(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
@@ -1495,4 +2178,4 @@ if __name__ == '__main__':
         generate_from_url(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5],
                           sys.argv[6])
     else:
-        print(constants.GENERATE_SVG_USAGE_STR)
+        print(GENERATE_SVG_USAGE_STR)
