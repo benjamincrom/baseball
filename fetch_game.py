@@ -28,6 +28,14 @@ GET_XML_USAGE_STR = ('Usage:\n'
                      '[INPUT DIRECTORY]\n')
 
 
+def get_formatted_date_str(input_date_str):
+    this_date = parse(input_date_str)
+    this_date_str = '{}-{}-{}'.format(str(this_date.year),
+                                      str(this_date.month).zfill(2),
+                                      str(this_date.day).zfill(2))
+
+    return this_date_str
+
 def get_list_of_lists(this_list, num_lists):
     chunk_size = int(ceil(len(this_list) / float(num_lists)))
     return [this_list[i:i+chunk_size]
@@ -82,6 +90,14 @@ def get_filename_list(start_date_str, end_date_str, input_path):
 
     return filename_list
 
+def get_input_path(input_dir):
+    if not exists(input_dir):
+        raise ValueError('Invalid input directory')
+
+    input_path = abspath(input_dir)
+
+    return input_path
+
 def get_game_from_files(boxscore_file, player_file, inning_file):
     this_game = None
     if (isfile(boxscore_file) and isfile(player_file) and isfile(inning_file)):
@@ -95,13 +111,11 @@ def get_game_from_files(boxscore_file, player_file, inning_file):
 
     return this_game
 
-def get_input_path(input_dir):
-    if not exists(input_dir):
-        raise ValueError('Invalid input directory')
-
-    input_path = abspath(input_dir)
-
-    return input_path
+def get_game_generator(filename_list):
+    for game_id, boxscore_file, player_file, inning_file in filename_list:
+        this_game = get_game_from_files(boxscore_file, player_file, inning_file)
+        if this_game:
+            yield game_id, this_game
 
 def get_game_sublist(filename_list, return_queue):
     game_sublist = [game_tup for game_tup in get_game_generator(filename_list)]
@@ -139,28 +153,14 @@ def get_game_generator_from_file_range(start_date_str, end_date_str, input_dir):
     for game_id, game in get_game_generator(filename_list):
         yield game_id, game
 
-def get_game_generator(filename_list):
-    for game_id, boxscore_file, player_file, inning_file in filename_list:
-        this_game = get_game_from_files(boxscore_file, player_file, inning_file)
-        if this_game:
-            yield game_id, this_game
-
 def print_list_from_file_range(start_date_str, end_date_str, input_dir):
-    input_path = get_input_path(input_dir)
-    filename_list = get_filename_list(start_date_str, end_date_str, input_path)
-    game_generator = get_game_generator(filename_list)
+    game_generator = get_game_generator_from_file_range(start_date_str,
+                                                        end_date_str,
+                                                        input_dir)
 
-    for filename, game in game_generator:
-        print(filename)
+    for game_id, game in game_generator:
+        print(game_id)
         print(game)
-
-def get_formatted_date_str(input_date_str):
-    this_date = parse(input_date_str)
-    this_date_str = '{}-{}-{}'.format(str(this_date.year),
-                                      str(this_date.month).zfill(2),
-                                      str(this_date.day).zfill(2))
-
-    return this_date_str
 
 def get_game_xml_data(date, away_team_code, home_team_code, game_number):
     request_url_base = MLB_URL_PATTERN.format(
