@@ -150,8 +150,8 @@ def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
 def get_game_generator_from_file_range(start_date_str, end_date_str, input_dir):
     input_path = get_input_path(input_dir)
     filename_list = get_filename_list(start_date_str, end_date_str, input_path)
-    for game_id, game in get_game_generator(filename_list):
-        yield game_id, game
+
+    return get_game_generator(filename_list)
 
 def print_list_from_file_range(start_date_str, end_date_str, input_dir):
     game_generator = get_game_generator_from_file_range(start_date_str,
