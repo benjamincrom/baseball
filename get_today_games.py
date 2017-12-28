@@ -283,19 +283,19 @@ GET_TODAY_GAMES_USAGE_STR = (
 )
 
 
-def get_page(today):
+def get_page(this_datetime):
     page = get(
-        MLB_URL_BASE_PATTERN.format(year=today.year,
-                                    month=str(today.month).zfill(2),
-                                    day=str(today.day).zfill(2))
+        MLB_URL_BASE_PATTERN.format(year=this_datetime.year,
+                                    month=str(this_datetime.month).zfill(2),
+                                    day=str(this_datetime.day).zfill(2))
     )
 
     return page
 
-def get_today_date_str(today):
-    today_date_str = '{}-{}-{}'.format(today.year,
-                                       str(today.month).zfill(2),
-                                       str(today.day).zfill(2))
+def get_today_date_str(this_datetime):
+    today_date_str = '{}-{}-{}'.format(this_datetime.year,
+                                       str(this_datetime.month).zfill(2),
+                                       str(this_datetime.day).zfill(2))
 
     return today_date_str
 
@@ -348,15 +348,12 @@ def get_object_html_str(game_html_id_list):
 
     return object_html_str
 
-def get_today_games(output_dir):
+def generate_game_svgs_for_datetime(this_datetime, output_dir):
     if not exists(output_dir):
         mkdir(output_dir)
 
-    time_shift = timedelta(hours=11)
-    today = datetime.utcnow() - time_shift
-
-    today_date_str = get_today_date_str(today)
-    page = get_page(today)
+    today_date_str = get_today_date_str(this_datetime)
+    page = get_page(this_datetime)
 
     game_id_list = findall(r'>\s*(gid\_\w+)/<', page.text)
     game_html_id_list = get_generated_html_id_list(game_id_list,
@@ -369,8 +366,13 @@ def get_today_games(output_dir):
         with open(output_dir + '/index.html', 'w', encoding='utf-8') as fh:
             fh.write(output_html)
 
+def generate_today_game_svgs(output_dir):
+    time_shift = timedelta(hours=11)
+    today_datetime = datetime.utcnow() - time_shift
+    generate_game_svgs_for_datetime(today_datetime, output_dir)
+
 if __name__ == '__main__':
     if len(argv) < 2:
         print(GET_TODAY_GAMES_USAGE_STR)
     else:
-        get_today_games(argv[1])
+        generate_today_game_svgs(argv[1])
