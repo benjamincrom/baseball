@@ -2093,7 +2093,7 @@ def write_big_svg(game):
 def wrap_in_html(title, filename):
     return HTML_WRAPPER.format(title=title, filename=filename)
 
-def write_file(game_id, this_game, output_dir):
+def write_files(game_id, this_game, output_dir):
     if not exists(output_dir):
         mkdir(output_dir)
 
@@ -2128,7 +2128,7 @@ def write_list_of_files(filename_tuple_list, output_dir):
                                                    inning_file)
 
         if this_game:
-            write_file(game_id, this_game, output_dir)
+            write_files(game_id, this_game, output_dir)
         else:
             raise ValueError('Game ID {} does not exist'.format(game_id))
 
@@ -2161,7 +2161,7 @@ def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
                                                       game_num)
 
     if this_game:
-        write_file(game_id, this_game, output_dir)
+        write_files(game_id, this_game, output_dir)
         status = True
     else:
         status = False
