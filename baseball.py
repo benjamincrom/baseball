@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from textwrap import TextWrapper
-from re import search, sub
+from re import search, sub, findall, escape
 
 from pytz import timezone
 
