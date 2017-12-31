@@ -111,7 +111,7 @@ def write_game_svg_and_html(game_id, game, output_path):
     html_filename = game_id + '.html'
 
     svg_text = game.get_svg_str()
-    html_text = HTML_WRAPPER.format(title=game_id, filename=html_filename)
+    html_text = HTML_WRAPPER.format(title=game_id, filename=svg_filename)
 
     output_svg_path = join(output_path, svg_filename)
     output_html_path = join(output_path, html_filename)
