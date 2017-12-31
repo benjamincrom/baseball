@@ -1,8 +1,8 @@
 from datetime import timedelta
 from math import ceil
 from multiprocessing import Process, Manager
-from os import listdir
-from os.path import isdir, isfile, exists, abspath
+from os import listdir, makedirs
+from os.path import isdir, isfile, exists, abspath, join
 from xml.etree.ElementTree import fromstring
 
 from dateutil.parser import parse
@@ -106,13 +106,21 @@ def get_filename_list(start_date_str, end_date_str, input_path):
 
     return filename_list
 
-def get_input_path(input_dir):
-    if not exists(input_dir):
-        raise ValueError('Invalid input directory')
+def write_game_svg_and_html(game_id, game, output_path):
+    svg_filename = game_id + '.svg'
+    html_filename = game_id + '.html'
 
-    input_path = abspath(input_dir)
+    svg_text = game.get_svg_str()
+    html_text = HTML_WRAPPER.format(title=game_id, filename=html_filename)
 
-    return input_path
+    output_svg_path = join(output_path, svg_filename)
+    output_html_path = join(output_path, html_filename)
+
+    with open(output_svg_path, 'w') as filehandle:
+        filehandle.write(svg_text)
+
+    with open(output_html_path, 'w') as filehandle:
+        filehandle.write(html_text)
 
 def get_game_from_files(boxscore_file, player_file, inning_file):
     this_game = None
@@ -133,12 +141,16 @@ def get_game_generator(filename_list):
         if this_game:
             yield game_id, this_game
 
+def write_game_sublist_to_svg_and_html(filename_list, output_path):
+    for game_id, game in get_game_generator(filename_list):
+        write_game_svg_and_html(game_id, game, output_path)
+
 def get_game_sublist(filename_list, return_queue):
     game_sublist = [game_tup for game_tup in get_game_generator(filename_list)]
     return_queue.put(game_sublist)
 
 def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
-    input_path = get_input_path(input_dir)
+    input_path = abspath(input_dir)
     filename_list = get_filename_list(start_date_str, end_date_str, input_path)
 
     manager = Manager()
@@ -163,8 +175,25 @@ def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
 
     return game_tuple_list
 
+def write_game_list_svg_html_from_files(start_date_str, end_date_str, input_dir,
+                                        output_dir):
+    if not exists(output_dir):
+        makedirs(output_dir)
+
+    input_path = abspath(input_dir)
+    output_path = abspath(output_dir)
+    filename_list = get_filename_list(start_date_str, end_date_str, input_path)
+    list_of_filename_lists = get_list_of_lists(filename_list,
+                                               NUM_PROCESS_SUBLISTS)
+
+    for filename_list in list_of_filename_lists:
+        process = Process(target=write_game_sublist_to_svg_and_html,
+                          args=(filename_list, output_path))
+
+        process.start()
+
 def get_game_generator_from_file_range(start_date_str, end_date_str, input_dir):
-    input_path = get_input_path(input_dir)
+    input_path = abspath(input_dir)
     filename_list = get_filename_list(start_date_str, end_date_str, input_path)
 
     return get_game_generator(filename_list)
