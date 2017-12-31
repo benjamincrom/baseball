@@ -4,7 +4,12 @@ from re import search, sub, findall, escape
 
 from pytz import timezone
 
-import stats
+from generate_svg import get_game_svg_str
+from stats import (get_all_pitcher_stats,
+                   get_all_batter_stats,
+                   get_box_score_total,
+                   get_team_stats,
+                   get_half_inning_stats)
 
 
 POSITION_CODE_DICT = {'pitcher': 1,
@@ -336,6 +341,9 @@ class Game(object):
         self.first_pitch_str = ''
         self.last_pitch_str = ''
 
+    def get_svg_str(self):
+        return get_game_svg_str(self)
+
     def set_gametimes(self):
         if self.first_pitch_datetime:
             self.first_pitch_str = self.first_pitch_datetime.astimezone(
@@ -374,10 +382,7 @@ class Game(object):
             for pitcher_appearance in team.pitcher_list:
                 pitcher = pitcher_appearance.player_obj
                 box_score_dict[pitcher] = (
-                    stats.get_all_pitcher_stats(self,
-                                                team,
-                                                pitcher,
-                                                inning_half_str)
+                    get_all_pitcher_stats(self, team, pitcher, inning_half_str)
                 )
 
     def set_batting_box_score_dict(self):
@@ -395,16 +400,14 @@ class Game(object):
                     batter = batter_appearance.player_obj
                     if batter not in box_score_dict:
                         box_score_dict[batter] = (
-                            stats.get_all_batter_stats(self,
-                                                       batter,
-                                                       inning_half_str)
+                            get_all_batter_stats(self, batter, inning_half_str)
                         )
 
-            box_score_dict['TOTAL'] = stats.get_box_score_total(box_score_dict)
+            box_score_dict['TOTAL'] = get_box_score_total(box_score_dict)
 
     def set_team_stats(self):
-        self.away_team_stats = stats.get_team_stats(self, 'top')
-        self.home_team_stats = stats.get_team_stats(self, 'bottom')
+        self.away_team_stats = get_team_stats(self, 'top')
+        self.home_team_stats = get_team_stats(self, 'bottom')
 
     def __repr__(self):
         return_str = '{}\n'.format(self.location)
@@ -457,8 +460,8 @@ class Inning(object):
         self.bottom_half_appearance_list = bottom_half_appearance_list
         (self.top_half_inning_stats,
          self.bottom_half_inning_stats) = (
-             stats.get_half_inning_stats(top_half_appearance_list,
-                                         bottom_half_appearance_list)
+             get_half_inning_stats(top_half_appearance_list,
+                                   bottom_half_appearance_list)
          )
 
     def __repr__(self):

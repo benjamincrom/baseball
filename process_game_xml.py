@@ -3,11 +3,21 @@ from re import search, sub
 
 from pytz import UTC
 
-import baseball
-import baseball_events
+from baseball import (POSITION_CODE_DICT,
+                      PlateAppearance,
+                      Player,
+                      PlayerAppearance,
+                      Inning,
+                      Team,
+                      Game)
 
+from baseball_events import (AUTOMATIC_BALL_POSITION,
+                             Pitch,
+                             Pickoff,
+                             RunnerAdvance,
+                             Substitution,
+                             Switch)
 
-AUTOMATIC_BALL_POSITION = (1.0, 1.0)
 
 MLB_TEAM_CODE_DICT = {'LAA': 'ana',
                       'SEA': 'sea',
@@ -93,10 +103,10 @@ def process_pitch(event):
     else:
         pitch_speed = None
 
-    pitch_obj = baseball_events.Pitch(pitch_description,
-                                      pitch_type,
-                                      pitch_speed,
-                                      pitch_position)
+    pitch_obj = Pitch(pitch_description,
+                      pitch_type,
+                      pitch_speed,
+                      pitch_position)
 
     return pitch_obj
 
@@ -112,9 +122,9 @@ def process_pickoff(event):
     else:
         raise ValueError('Bad Pickoff description.')
 
-    pickoff_obj = baseball_events.Pickoff(pickoff_description,
-                                          pickoff_base,
-                                          pickoff_was_successful)
+    pickoff_obj = Pickoff(pickoff_description,
+                          pickoff_base,
+                          pickoff_was_successful)
 
     return pickoff_obj
 
@@ -135,13 +145,13 @@ def process_runner_advance(event, game_obj):
     run_earned = (event.get('earned') == 'T')
     is_rbi = (event.get('rbi') == 'T')
 
-    runner_advance_obj = baseball_events.RunnerAdvance(run_description,
-                                                       runner,
-                                                       start_base,
-                                                       end_base,
-                                                       runner_scored,
-                                                       run_earned,
-                                                       is_rbi)
+    runner_advance_obj = RunnerAdvance(run_description,
+                                       runner,
+                                       start_base,
+                                       end_base,
+                                       runner_scored,
+                                       run_earned,
+                                       is_rbi)
 
     return runner_advance_obj
 
@@ -273,16 +283,16 @@ def parse_substitution(description, event_summary, inning_half_str, game_obj):
     outgoing_player_name = get_name_only(outgoing_player_name)
     incoming_player = this_team[incoming_player_name]
     outgoing_player = this_team[outgoing_player_name]
-    substitution_obj = baseball_events.Substitution(incoming_player,
-                                                    outgoing_player,
-                                                    batting_order,
-                                                    position_num)
+    substitution_obj = Substitution(incoming_player,
+                                    outgoing_player,
+                                    batting_order,
+                                    position_num)
 
     return this_team, substitution_obj
 
 def get_position_number(position_str):
-    if position_str in baseball.POSITION_CODE_DICT:
-        position = baseball.POSITION_CODE_DICT[position_str]
+    if position_str in POSITION_CODE_DICT:
+        position = POSITION_CODE_DICT[position_str]
     elif position_str in POSITION_ABBREV_DICT:
         position = POSITION_ABBREV_DICT[position_str]
     elif position_str == 'PH':
@@ -354,21 +364,21 @@ def process_at_bat(plate_appearance, event_list, game_obj):
         raise ValueError('Batter ID not in player_dict')
 
     plate_appearance_summary = plate_appearance.get('event').strip()
-    plate_appearance_obj = baseball.PlateAppearance(batting_team,
-                                                    plate_appearance_desc,
-                                                    plate_appearance_summary,
-                                                    pitcher,
-                                                    batter,
-                                                    inning_outs,
-                                                    scoring_runners_list,
-                                                    runners_batted_in_list,
-                                                    event_list)
+    plate_appearance_obj = PlateAppearance(batting_team,
+                                           plate_appearance_desc,
+                                           plate_appearance_summary,
+                                           pitcher,
+                                           batter,
+                                           inning_outs,
+                                           scoring_runners_list,
+                                           runners_batted_in_list,
+                                           event_list)
 
     return plate_appearance_obj
 
 def process_substitution(substitution_obj, inning_num, inning_half_str,
                          next_batter_num, substituting_team):
-    player_appearance_obj = baseball.PlayerAppearance(
+    player_appearance_obj = PlayerAppearance(
         substitution_obj.incoming_player,
         substitution_obj.position,
         inning_num,
@@ -414,7 +424,7 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
 
 def process_switch(switch_obj, inning_num, inning_half_str,
                    next_batter_num, switching_team):
-    player_appearance_obj = baseball.PlayerAppearance(
+    player_appearance_obj = PlayerAppearance(
         switch_obj.player,
         switch_obj.new_position_num,
         inning_num,
@@ -478,13 +488,13 @@ def parse_switch_description(description, event_summary, game_obj,
 
     if 'remains' in description:
         position_str = description.split(' as the ')[1].strip(' .')
-        new_position = baseball.POSITION_CODE_DICT[position_str.split()[0]]
+        new_position = POSITION_CODE_DICT[position_str.split()[0]]
         player_name = description.split(' remains ')[0]
     elif 'switch from' in description:
         position_str = description.split(' switch from ')[1]
         position_str = position_str.split(' for ')[0]
         new_position_str = position_str.split(' to ')[1]
-        new_position = baseball.POSITION_CODE_DICT[new_position_str.split()[0]]
+        new_position = POSITION_CODE_DICT[new_position_str.split()[0]]
         player_name = description.split(' for ')[1]
         player_name = player_name.strip(' .')
     else:
@@ -504,8 +514,7 @@ def parse_switch_description(description, event_summary, game_obj,
     if not old_position:
         raise ValueError('Cannot find player\'s position')
 
-    switch_obj = baseball_events.Switch(player, old_position, new_position,
-                                        new_batting_order)
+    switch_obj = Switch(player, old_position, new_position, new_batting_order)
 
     return switch_obj, switching_team
 
@@ -596,15 +605,15 @@ def create_player(player_xml):
     else:
         player_num = None
 
-    return baseball.Player(player_xml.get('last'),
-                           player_xml.get('first'),
-                           int(player_xml.get('id')),
-                           None,
-                           None,
-                           player_num)
+    return Player(player_xml.get('last'),
+                  player_xml.get('first'),
+                  int(player_xml.get('id')),
+                  None,
+                  None,
+                  player_num)
 
 def init_player_list(player_obj, position):
-    return [baseball.PlayerAppearance(player_obj, position, 1, 'top', 1)]
+    return [PlayerAppearance(player_obj, position, 1, 'top', 1)]
 
 def parse_name(batter):
     batter_name = batter.get('name_display_first_last')
@@ -616,7 +625,7 @@ def parse_name(batter):
     return player_first_name, player_last_name
 
 def initialize_team(team_name, team_code, batter_xml_list):
-    this_team = baseball.Team(team_name, team_code)
+    this_team = Team(team_name, team_code)
     for batter in batter_xml_list:
         if batter.tag == 'batter':
             player_id = int(batter.get('id'))
@@ -638,12 +647,12 @@ def initialize_team(team_name, team_code, batter_xml_list):
             else:
                 player_order = None
 
-            this_player = baseball.Player(player_last_name,
-                                          player_first_name,
-                                          player_id,
-                                          player_obp,
-                                          player_slg,
-                                          None)
+            this_player = Player(player_last_name,
+                                 player_first_name,
+                                 player_id,
+                                 player_obp,
+                                 player_slg,
+                                 None)
 
             this_team.append(this_player)
             this_player_appearance_list = init_player_list(this_player,
@@ -671,8 +680,8 @@ def process_inning_xml(baseball_inning, game_obj):
     else:
         bottom_half_appearance_list = None
 
-    this_inning_obj = baseball.Inning(top_half_appearance_list,
-                                      bottom_half_appearance_list)
+    this_inning_obj = Inning(top_half_appearance_list,
+                             bottom_half_appearance_list)
 
     return this_inning_obj
 
@@ -759,7 +768,7 @@ def initialize_game_object(boxscore_xml):
                     else:
                         home_pitcher_status_dict[pitcher_id] = ''
 
-    game_obj = baseball.Game(home_team, away_team, game_venue, boxscore_date)
+    game_obj = Game(home_team, away_team, game_venue, boxscore_date)
 
     return (game_obj,
             away_pitcher_status_dict,
@@ -784,14 +793,14 @@ def set_pitcher_wls_codes(game, away_pitcher_status_dict,
 def set_starting_pitchers(game, away_starting_pitcher_id,
                           home_starting_pitcher_id):
     game.away_team.pitcher_list.append(
-        baseball.PlayerAppearance(
+        PlayerAppearance(
             game.away_team[away_starting_pitcher_id],
             1, 1, 'top', 1
         )
     )
 
     game.home_team.pitcher_list.append(
-        baseball.PlayerAppearance(
+        PlayerAppearance(
             game.home_team[home_starting_pitcher_id],
             1, 1, 'top', 1
         )

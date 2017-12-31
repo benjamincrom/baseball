@@ -1,12 +1,10 @@
 from collections import namedtuple
-from multiprocessing import Process
-from os import mkdir
-from os.path import exists, abspath
-from sys import argv
 
-import baseball_events
-import fetch_game
-from process_game_xml import AUTOMATIC_BALL_POSITION
+from baseball_events import (AUTOMATIC_BALL_POSITION,
+                             Substitution,
+                             Pitch,
+                             Pickoff,
+                             RunnerAdvance)
 
 
 FakePlateAppearance = namedtuple(
@@ -20,7 +18,6 @@ WIDTH = 3192
 BOX_WIDTH = 266
 BOX_HEIGHT = 200
 EXTRA_COLUMNS = 3
-
 NUM_MINIMUM_INNINGS = 9
 LEN_BATTING_LIST = 9
 AUTOMATIC_BALL_COORDINATE = (300, 300)
@@ -82,19 +79,13 @@ BATTER_STATS_SPACES_BIG = 4
 BATTER_STATS_SPACES_MED = 6
 BATTER_STATS_SPACES_SMALL = 10
 BATTER_INITIAL_Y_POS = 25
-
 RED_COLOR = '#c10000'
 BLUE_COLOR = 'blue'
 DARK_GREEN_COLOR = 'darkgreen'
 BLACK_COLOR = 'black'
-
-GENERATE_SVG_USAGE_STR = (
-    'Usage:\n'
-    '  - ./generate_svg.py url [DATE] [AWAY CODE] [HOME CODE] '
-    '[GAME NUMBER] [OUTPUT DIRECTORY]\n'
-    '  - ./generate_svg.py files [START DATE] [END DATE] '
-    '[OUTPUT DIRECTORY] [INPUT DIRECTORY]\n'
-)
+HALF_SCALE_HEADER = '<g transform="scale(0.5)">'
+HALF_SCALE_FOOTER = '</g>'
+SVG_FOOTER = '</svg>'
 
 PITCH_TYPE_DESCRIPTION = {'Ball': 'B',
                           'Ball In Dirt': 'D',
@@ -116,32 +107,6 @@ PITCH_TYPE_DESCRIPTION = {'Ball': 'B',
                           'In play, run(s)': 'X',
                           'In play, out(s)': 'X',
                           'In play, no out': 'X'}
-
-HALF_SCALE_HEADER = '<g transform="scale(0.5)">'
-HALF_SCALE_FOOTER = '</g>'
-
-HTML_WRAPPER = (
-    '<html>'
-    '<head>'
-    '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
-    '<!-- Global site tag (gtag.js) - Google Analytics -->'
-    '<script async '
-    'src="https://www.googletagmanager.com/gtag/js?id=UA-108577160-1"></script>'
-    '<script>'
-    'window.dataLayer = window.dataLayer || [];'
-    'function gtag(){{dataLayer.push(arguments);}}'
-    'gtag(\'js\', new Date());'
-    'gtag(\'config\', \'UA-108577160-1\');'
-    '</script>'
-    '<title>{title}</title>'
-    '</head>'
-    '<body style="background-color:black;">'
-    '<div align="center">'
-    '<object width="1160px" data="{filename}" type="image/svg+xml">'
-    '</div>'
-    '</body>'
-    '</html>'
-)
 
 BIG_SVG_HEADER = (
     '<?xml version="1.0" standalone="no"?>'
@@ -483,8 +448,6 @@ FOOTER_BOX = (
     'stroke="black" stroke-width="4"/>'
 )
 
-SVG_FOOTER = '</svg>'
-
 SVG_PITCH_TEMPLATE = (
     '<text x="{pitch_text_x_1}" y="{pitch_text_y}" font-family="Arial" '
     'fill="{pitch_color}" font-size="13">{pitch_code}'
@@ -686,8 +649,7 @@ SVG_HIT_GROUNDER_TEMPLATE = (
 )
 
 SVG_HIT_FLY_TEMPLATE = (
-    '<path d="M165 192 Q 20 20 {hit_x} {hit_y}" stroke="blue" '
-    'fill="none"/>'
+    '<path d="M165 192 Q 20 20 {hit_x} {hit_y}" stroke="blue" fill="none"/>'
 )
 
 
@@ -727,7 +689,7 @@ def get_summary_svg(plate_appearance):
 
     for event in plate_appearance.event_list:
         batter_on_base = (
-            isinstance(event, baseball_events.RunnerAdvance) and
+            isinstance(event, RunnerAdvance) and
             event.runner == plate_appearance.batter and
             event.end_base
         )
@@ -851,10 +813,10 @@ def get_pitch_svg(plate_appearance):
             y_val = PITCH_ROW_2_Y_VAL
             x_val += PITCH_X_OFFSET
 
-        if isinstance(event, baseball_events.Pitch):
+        if isinstance(event, Pitch):
             pitch_svg = process_pitch(x_val, y_val, event, pitch_svg)
             y_val += PITCH_Y_OFFSET
-        elif isinstance(event, baseball_events.Pickoff):
+        elif isinstance(event, Pickoff):
             pitch_svg += process_pickoff(x_val, y_val, event, pitch_svg)
             y_val += PITCH_Y_OFFSET
 
@@ -905,7 +867,7 @@ def get_runner_end_base_str(plate_appearance, event):
 def get_runners_svg(plate_appearance):
     runner_svg_str = ''
     for event in plate_appearance.event_list:
-        if (isinstance(event, baseball_events.RunnerAdvance) and
+        if (isinstance(event, RunnerAdvance) and
                 event.start_base):
             color = get_runner_color(event)
             start_base_num = int(event.start_base[0])
@@ -1093,7 +1055,7 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
 def player_got_on_base(plate_appearance):
     got_on_base = False
     for event in plate_appearance.event_list:
-        if (isinstance(event, baseball_events.RunnerAdvance) and
+        if (isinstance(event, RunnerAdvance) and
                 event.runner == plate_appearance.batter):
             got_on_base = True
 
@@ -1145,7 +1107,7 @@ def get_base_svg(plate_appearance, plate_appearance_list):
     batter = plate_appearance.batter
     for this_pa in plate_appearance_list:
         for event in this_pa.event_list:
-            if (isinstance(event, baseball_events.RunnerAdvance) and
+            if (isinstance(event, RunnerAdvance) and
                     event.runner == batter):
                 if not event.end_base:
                     batter_is_done = True
@@ -1181,7 +1143,7 @@ def get_base_svg(plate_appearance, plate_appearance_list):
                     batter_final_base = 'H'
                     if plate_appearance != this_pa:
                         home_plate_pa = fix_pa(this_pa, event)
-            elif isinstance(event, baseball_events.Substitution):
+            elif isinstance(event, Substitution):
                 if event.outgoing_player == batter and event.position == 'PR':
                     batter = event.incoming_player
 
@@ -1253,7 +1215,7 @@ def get_count_svg(plate_appearance):
     balls = 0
     strikes = 0
     for event in plate_appearance.event_list:
-        if (isinstance(event, baseball_events.Pitch) and
+        if (isinstance(event, Pitch) and
                 'In play' not in event.pitch_description):
             if ('Strike' in event.pitch_description or
                     'Missed Bunt' in event.pitch_description or
@@ -2068,7 +2030,7 @@ def get_footer_box(game):
 
     return footer_box_svg
 
-def write_big_svg(game):
+def get_game_svg_str(game):
     big_svg_text = '{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}'.format(
         get_big_svg_header(game),
         get_batter_list_and_stats(game),
@@ -2089,90 +2051,3 @@ def write_big_svg(game):
     )
 
     return big_svg_text
-
-def wrap_in_html(title, filename):
-    return HTML_WRAPPER.format(title=title, filename=filename)
-
-def write_files(game_id, this_game, output_dir):
-    if not exists(output_dir):
-        mkdir(output_dir)
-
-    output_path = abspath(output_dir)
-    svg_filename = game_id + '.svg'
-    html_filename = game_id + '.html'
-
-    if this_game:
-        print('Writing: ' + svg_filename)
-        print('Writing: ' + html_filename)
-
-        title = get_game_title_str(this_game)
-        svg_text = write_big_svg(this_game)
-        html_text = wrap_in_html(title, svg_filename)
-
-        with open(output_path + '/' + svg_filename,
-                  'w',
-                  encoding='utf-8') as filehandle:
-            filehandle.write(svg_text)
-
-        with open(output_path + '/' + html_filename,
-                  'w',
-                  encoding='utf-8') as filehandle:
-            filehandle.write(html_text)
-
-        status = True
-    else:
-        status = False
-
-    return status
-
-def write_list_of_files(filename_tuple_list, output_dir):
-    for game_id, boxscore_file, player_file, inning_file in filename_tuple_list:
-        this_game = fetch_game.get_game_from_files(boxscore_file,
-                                                   player_file,
-                                                   inning_file)
-
-        write_files(game_id, this_game, output_dir)
-
-def generate_from_files(start_date_str, end_date_str, output_dir, input_dir):
-    if not exists(input_dir):
-        raise ValueError('Invalid input directory')
-
-    input_path = abspath(input_dir)
-    filename_tuple_list = fetch_game.get_filename_list(start_date_str,
-                                                       end_date_str,
-                                                       input_path)
-
-    list_of_filename_tuple_lists = fetch_game.get_list_of_lists(
-        filename_tuple_list,
-        fetch_game.NUM_PROCESS_SUBLISTS
-    )
-
-    for this_filename_tuple_list in list_of_filename_tuple_lists:
-        process = Process(
-            target=write_list_of_files,
-            args=(this_filename_tuple_list, output_dir)
-        )
-
-        process.start()
-
-def generate_from_url(date_str, away_code, home_code, game_num, output_dir):
-    game_id, this_game = fetch_game.get_game_from_url(date_str,
-                                                      away_code,
-                                                      home_code,
-                                                      game_num)
-
-    status = write_files(game_id, this_game, output_dir)
-
-    return status
-
-if __name__ == '__main__':
-    if len(argv) < 3:
-        print(GENERATE_SVG_USAGE_STR)
-        exit()
-    if argv[1] == 'files' and len(argv) == 6:
-        generate_from_files(argv[2], argv[3], argv[4], argv[5])
-    elif argv[1] == 'url' and len(argv) == 7:
-        generate_from_url(argv[2], argv[3], argv[4], argv[5],
-                          argv[6])
-    else:
-        print(GENERATE_SVG_USAGE_STR)

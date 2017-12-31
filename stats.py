@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-import baseball_events
+from baseball_events import Pickoff, RunnerAdvance, Pitch
 
 
 NOT_AT_BAT_CODE_LIST = ['SB', 'SF', 'BB', 'CI', 'FI', 'IBB', 'HBP', 'CS', 'PO']
@@ -23,7 +23,7 @@ TeamBoxScore = namedtuple(
 
 def process_pickoffs(plate_appearance, first_base, second_base, third_base):
     for event in plate_appearance.event_list:
-        if (isinstance(event, baseball_events.Pickoff) and
+        if (isinstance(event, Pickoff) and
                 event.pickoff_was_successful):
             if event.pickoff_base == '1B':
                 first_base = None
@@ -31,7 +31,7 @@ def process_pickoffs(plate_appearance, first_base, second_base, third_base):
                 second_base = None
             elif event.pickoff_base == '3B':
                 third_base = None
-        elif (isinstance(event, baseball_events.RunnerAdvance) and
+        elif (isinstance(event, RunnerAdvance) and
               'Picked off stealing' in event.run_description):
             if event.start_base == '1B':
                 first_base = None
@@ -45,7 +45,7 @@ def process_pickoffs(plate_appearance, first_base, second_base, third_base):
 def process_baserunners(plate_appearance, last_plate_appearance,
                         first_base, second_base, third_base):
     for event in plate_appearance.event_list:
-        if isinstance(event, baseball_events.RunnerAdvance):
+        if isinstance(event, RunnerAdvance):
             if (plate_appearance == last_plate_appearance and
                     'out' in event.run_description):
                 break
@@ -408,7 +408,7 @@ def get_pitcher_runs(pitcher, inning_half_list):
                                                    third_base)
 
                 for event in plate_appearance.event_list:
-                    if (isinstance(event, baseball_events.RunnerAdvance) and
+                    if (isinstance(event, RunnerAdvance) and
                             event.runner_scored):
                         if pitcher_change_flag and change_baserunner_count:
                             change_baserunner_count -= 1
@@ -433,7 +433,7 @@ def get_pitcher_errors(pitcher, inning_half_list):
                 last_description = None
 
                 for event in plate_appearance.event_list:
-                    if isinstance(event, baseball_events.RunnerAdvance):
+                    if isinstance(event, RunnerAdvance):
                         if ('Pickoff Error' in event.run_description and
                                 last_description != event.run_description):
                             num_errors += 1
@@ -471,7 +471,7 @@ def get_pitcher_earned_runs(pitcher, inning_half_list):
                                                    third_base)
 
                 for event in plate_appearance.event_list:
-                    if (isinstance(event, baseball_events.RunnerAdvance) and
+                    if (isinstance(event, RunnerAdvance) and
                             event.runner_scored and
                             event.run_earned):
                         if pitcher_change_flag and change_baserunner_count:
@@ -545,7 +545,7 @@ def get_pitcher_balks(pitcher, inning_half_list):
                 last_description = None
 
                 for event in plate_appearance.event_list:
-                    if isinstance(event, baseball_events.RunnerAdvance):
+                    if isinstance(event, RunnerAdvance):
                         if (event.run_description == 'Balk' and
                                 last_description != event.run_description):
                             num_balks += 1
@@ -564,7 +564,7 @@ def get_pitcher_wild_pitches(pitcher, inning_half_list):
                 last_description = None
 
                 for event in plate_appearance.event_list:
-                    if isinstance(event, baseball_events.RunnerAdvance):
+                    if isinstance(event, RunnerAdvance):
                         if (event.run_description == 'Wild Pitch' and
                                 last_description != event.run_description):
                             num_wp += 1
@@ -592,7 +592,7 @@ def get_pitcher_strikes(pitcher, inning_half_list):
         for plate_appearance in inning_half:
             if pitcher == plate_appearance.pitcher:
                 for event in plate_appearance.event_list:
-                    if (isinstance(event, baseball_events.Pitch) and
+                    if (isinstance(event, Pitch) and
                             event.pitch_description != 'Ball' and
                             event.pitch_description != 'Ball In Dirt' and
                             event.pitch_description != 'Hit By Pitch'):
@@ -607,7 +607,7 @@ def get_pitcher_pitches(pitcher, inning_half_list):
         for plate_appearance in inning_half:
             if pitcher == plate_appearance.pitcher:
                 for event in plate_appearance.event_list:
-                    if isinstance(event, baseball_events.Pitch):
+                    if isinstance(event, Pitch):
                         num_pitches += 1
 
     return num_pitches
@@ -668,7 +668,7 @@ def get_strikes(appearance_list):
 
     for plate_appearance in appearance_list:
         for event in plate_appearance.event_list:
-            if (isinstance(event, baseball_events.Pitch) and
+            if (isinstance(event, Pitch) and
                     event.pitch_description != 'Ball' and
                     event.pitch_description != 'Ball In Dirt' and
                     event.pitch_description != 'Hit By Pitch'):
@@ -681,7 +681,7 @@ def get_pitches(appearance_list):
 
     for plate_appearance in appearance_list:
         for event in plate_appearance.event_list:
-            if isinstance(event, baseball_events.Pitch):
+            if isinstance(event, Pitch):
                 num_pitches += 1
 
     return num_pitches
@@ -741,7 +741,7 @@ def get_errors(appearance_list):
         last_description = None
 
         for event in plate_appearance.event_list:
-            if isinstance(event, baseball_events.RunnerAdvance):
+            if isinstance(event, RunnerAdvance):
                 if ('Pickoff Error' in event.run_description and
                         last_description != event.run_description):
                     num_errors += 1
@@ -786,9 +786,9 @@ def count_runner_advance_unique_keywords(inning_half_list, keyword):
     for appearance_list in inning_half_list:
         for appearance in appearance_list:
             for event in appearance.event_list:
-                if isinstance(event, baseball_events.Pitch):
+                if isinstance(event, Pitch):
                     after_pitch = True
-                elif isinstance(event, baseball_events.RunnerAdvance):
+                elif isinstance(event, RunnerAdvance):
                     if after_pitch and keyword in event.run_description:
                         num_keyword_appearances += 1
 
@@ -802,7 +802,7 @@ def count_runner_advance_total_keywords(inning_half_list, keyword):
     for appearance_list in inning_half_list:
         for appearance in appearance_list:
             for event in appearance.event_list:
-                if isinstance(event, baseball_events.RunnerAdvance):
+                if isinstance(event, RunnerAdvance):
                     if keyword in event.run_description:
                         num_keyword_appearances += 1
 

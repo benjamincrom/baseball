@@ -3,7 +3,6 @@ from math import ceil
 from multiprocessing import Process, Manager
 from os import listdir
 from os.path import isdir, isfile, exists, abspath
-from sys import argv
 from xml.etree.ElementTree import fromstring
 
 from dateutil.parser import parse
@@ -15,17 +14,34 @@ from process_game_xml import MLB_TEAM_CODE_DICT, get_game_obj
 NUM_PROCESS_SUBLISTS = 16
 BOXSCORE_SUFFIX = 'boxscore.xml'
 PLAYERS_SUFFIX = 'players.xml'
-GAME_SUFFIX = 'inning/inning_all.xml'
+INNING_SUFFIX = 'inning/inning_all.xml'
 
 MLB_URL_PATTERN = ('http://gd2.mlb.com/components/game/mlb/year_{year}/'
                    'month_{month}/day_{day}/gid_{year}_{month}_{day}_'
                    '{away_mlb_code}mlb_{home_mlb_code}mlb_{game_number}/')
 
-GET_XML_USAGE_STR = ('Usage:\n'
-                     '  - ./fetch_game.py url [DATE] [AWAY CODE] [HOME CODE] '
-                     '[GAME NUMBER]\n'
-                     '  - ./fetch_game.py files [START DATE] [END DATE] '
-                     '[INPUT DIRECTORY]\n')
+HTML_WRAPPER = (
+    '<html>'
+    '<head>'
+    '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
+    '<!-- Global site tag (gtag.js) - Google Analytics -->'
+    '<script async '
+    'src="https://www.googletagmanager.com/gtag/js?id=UA-108577160-1"></script>'
+    '<script>'
+    'window.dataLayer = window.dataLayer || [];'
+    'function gtag(){{dataLayer.push(arguments);}}'
+    'gtag(\'js\', new Date());'
+    'gtag(\'config\', \'UA-108577160-1\');'
+    '</script>'
+    '<title>{title}</title>'
+    '</head>'
+    '<body style="background-color:black;">'
+    '<div align="center">'
+    '<object width="1160px" data="{filename}" type="image/svg+xml">'
+    '</div>'
+    '</body>'
+    '</html>'
+)
 
 
 def get_formatted_date_str(input_date_str):
@@ -173,60 +189,61 @@ def get_game_xml_data(date, away_team_code, home_team_code, game_number):
     )
 
     boxscore_request_text = get(request_url_base + BOXSCORE_SUFFIX).text
-
     if boxscore_request_text == 'GameDay - 404 Not Found':
-        boxscore_raw_xml, team_raw_xml, game_raw_xml = None, None, None
+        boxscore_raw_xml, players_raw_xml, inning_raw_xml = None, None, None
     else:
-        boxscore_raw_xml = fromstring(boxscore_request_text)
-        team_raw_xml = fromstring(
-            get(request_url_base + PLAYERS_SUFFIX).text
-        )
+        boxscore_raw_xml = boxscore_request_text
+        players_raw_xml = get(request_url_base + PLAYERS_SUFFIX).text
+        inning_raw_xml = get(request_url_base + INNING_SUFFIX).text
 
-        game_raw_xml = fromstring(
-            get(request_url_base + GAME_SUFFIX).text
-        )
+    return boxscore_raw_xml, players_raw_xml, inning_raw_xml
 
-    return boxscore_raw_xml, team_raw_xml, game_raw_xml
-
-def get_game_from_url(date_str, away_code, home_code, game_num):
+def get_game_xml_from_url(date_str, away_code, home_code, game_num):
     formatted_date_str = get_formatted_date_str(date_str)
     game_id = '-'.join(
         [formatted_date_str, away_code, home_code, str(game_num)]
     )
 
     date = parse(formatted_date_str)
-    boxscore_xml, team_xml, game_xml = get_game_xml_data(date,
-                                                         away_code,
-                                                         home_code,
-                                                         game_num)
+    (boxscore_raw_xml,
+     players_raw_xml,
+     inning_raw_xml) = get_game_xml_data(date,
+                                         away_code,
+                                         home_code,
+                                         game_num)
 
-    if boxscore_xml:
-        this_game = get_game_obj(boxscore_xml, team_xml, game_xml)
+    return game_id, boxscore_raw_xml, players_raw_xml, inning_raw_xml
+
+def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml, inning_raw_xml):
+    if boxscore_raw_xml and players_raw_xml and inning_raw_xml:
+        boxscore_xml_obj = fromstring(boxscore_raw_xml)
+        players_xml_obj = fromstring(players_raw_xml)
+        inning_xml_obj = fromstring(inning_raw_xml)
+        this_game = get_game_obj(boxscore_xml_obj,
+                                 players_xml_obj,
+                                 inning_xml_obj)
     else:
         this_game = None
+
+    return this_game
+
+def get_game_from_url(date_str, away_code, home_code, game_num):
+    (game_id,
+     boxscore_raw_xml,
+     players_raw_xml,
+     inning_raw_xml) = get_game_xml_from_url(date_str,
+                                             away_code,
+                                             home_code,
+                                             game_num)
+
+    this_game = get_game_from_xml_strings(boxscore_raw_xml,
+                                          players_raw_xml,
+                                          inning_raw_xml)
+
+    if not this_game:
         print('No data found for {} {} {} {}'.format(date_str,
                                                      away_code,
                                                      home_code,
                                                      game_num))
 
     return game_id, this_game
-
-def print_from_url(date_str, away_code, home_code, game_num):
-    game_id, this_game = get_game_from_url(
-        date_str, away_code, home_code, game_num
-    )
-
-    if this_game:
-        print(game_id)
-        print(this_game)
-
-if __name__ == '__main__':
-    if len(argv) < 3:
-        print(GET_XML_USAGE_STR)
-        exit()
-    if argv[1] == 'files' and len(argv) == 5:
-        print_list_from_file_range(argv[2], argv[3], argv[4])
-    elif argv[1] == 'url' and len(argv) == 6:
-        print_from_url(argv[2], argv[3], argv[4], argv[5])
-    else:
-        print(GET_XML_USAGE_STR)

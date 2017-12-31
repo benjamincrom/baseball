@@ -1,3 +1,6 @@
+AUTOMATIC_BALL_POSITION = (1.0, 1.0)
+
+
 class Substitution(object):
     def __init__(self, incoming_player, outgoing_player, batting_order,
                  position):
