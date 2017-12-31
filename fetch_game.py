@@ -169,15 +169,6 @@ def get_game_generator_from_file_range(start_date_str, end_date_str, input_dir):
 
     return get_game_generator(filename_list)
 
-def print_list_from_file_range(start_date_str, end_date_str, input_dir):
-    game_generator = get_game_generator_from_file_range(start_date_str,
-                                                        end_date_str,
-                                                        input_dir)
-
-    for game_id, game in game_generator:
-        print(game_id)
-        print(game)
-
 def get_game_xml_data(date, away_team_code, home_team_code, game_number):
     request_url_base = MLB_URL_PATTERN.format(
         year=date.year,
