@@ -207,6 +207,16 @@ def get_game_generator_from_file_range(start_date_str, end_date_str, input_dir):
 
     return get_game_generator(filename_list)
 
+def write_svg_from_url(date_str, away_code, home_code, game_number, output_dir):
+    if not exists(output_dir):
+        makedirs(output_dir)
+
+    output_path = abspath(output_dir)
+    game_id, game = get_game_from_url(date_str, away_code, home_code,
+                                      game_number)
+
+    write_game_svg_and_html(game_id, game, output_path)
+
 def get_game_xml_from_url(date_str, away_code, home_code, game_number):
     formatted_date_str = get_formatted_date_str(date_str)
     date = parse(formatted_date_str)
