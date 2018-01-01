@@ -57,8 +57,80 @@ def get_list_of_lists(this_list, num_lists):
     return [this_list[i:i+chunk_size]
             for i in range(0, len(this_list), chunk_size)]
 
-def get_filename_list(start_date_str, end_date_str, input_path):
+def write_game_svg_and_html(game_id, game, output_path):
+    svg_filename = game_id + '.svg'
+    html_filename = game_id + '.html'
+
+    svg_text = game.get_svg_str()
+    html_text = HTML_WRAPPER.format(title=game_id, filename=svg_filename)
+
+    output_svg_path = join(output_path, svg_filename)
+    output_html_path = join(output_path, html_filename)
+
+    with open(output_svg_path, 'w') as filehandle:
+        filehandle.write(svg_text)
+
+    with open(output_html_path, 'w') as filehandle:
+        filehandle.write(html_text)
+
+def get_game_from_files(boxscore_file, player_file, inning_file):
+    this_game = None
+    if (isfile(boxscore_file) and isfile(player_file) and isfile(inning_file)):
+        boxscore_raw = open(boxscore_file, 'r', encoding='utf-8').read()
+        boxscore_xml = fromstring(boxscore_raw)
+        player_raw = open(player_file, 'r', encoding='utf-8').read()
+        player_xml = fromstring(player_raw)
+        inning_raw = open(inning_file, 'r', encoding='utf-8').read()
+        inning_xml = fromstring(inning_raw)
+        this_game = get_game_obj(boxscore_xml, player_xml, inning_xml)
+
+    return this_game
+
+def get_game_generator(filename_list):
+    for game_id, boxscore_file, player_file, inning_file in filename_list:
+        this_game = get_game_from_files(boxscore_file, player_file, inning_file)
+        if this_game:
+            yield game_id, this_game
+
+def write_game_sublist_to_svg_and_html(filename_list, output_path):
+    for game_id, game in get_game_generator(filename_list):
+        write_game_svg_and_html(game_id, game, output_path)
+
+def get_game_sublist(filename_list, return_queue):
+    game_sublist = [game_tup for game_tup in get_game_generator(filename_list)]
+    return_queue.put(game_sublist)
+
+def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml, inning_raw_xml):
+    if boxscore_raw_xml and players_raw_xml and inning_raw_xml:
+        boxscore_xml_obj = fromstring(boxscore_raw_xml)
+        players_xml_obj = fromstring(players_raw_xml)
+        inning_xml_obj = fromstring(inning_raw_xml)
+        this_game = get_game_obj(boxscore_xml_obj,
+                                 players_xml_obj,
+                                 inning_xml_obj)
+    else:
+        this_game = None
+
+    return this_game
+
+def write_svg_from_files(start_date_str, end_date_str, input_dir, output_dir):
+    if not exists(output_dir):
+        makedirs(output_dir)
+
+    output_path = abspath(output_dir)
+    filename_list = get_filename_list(start_date_str, end_date_str, input_dir)
+    list_of_filename_lists = get_list_of_lists(filename_list,
+                                               NUM_PROCESS_SUBLISTS)
+
+    for filename_list in list_of_filename_lists:
+        process = Process(target=write_game_sublist_to_svg_and_html,
+                          args=(filename_list, output_path))
+
+        process.start()
+
+def get_filename_list(start_date_str, end_date_str, input_dir):
     filename_list = []
+    input_path = abspath(input_dir)
     start_date = parse(start_date_str)
     end_date = parse(end_date_str)
     day_delta = timedelta(days=1)
@@ -106,53 +178,8 @@ def get_filename_list(start_date_str, end_date_str, input_path):
 
     return filename_list
 
-def write_game_svg_and_html(game_id, game, output_path):
-    svg_filename = game_id + '.svg'
-    html_filename = game_id + '.html'
-
-    svg_text = game.get_svg_str()
-    html_text = HTML_WRAPPER.format(title=game_id, filename=svg_filename)
-
-    output_svg_path = join(output_path, svg_filename)
-    output_html_path = join(output_path, html_filename)
-
-    with open(output_svg_path, 'w') as filehandle:
-        filehandle.write(svg_text)
-
-    with open(output_html_path, 'w') as filehandle:
-        filehandle.write(html_text)
-
-def get_game_from_files(boxscore_file, player_file, inning_file):
-    this_game = None
-    if (isfile(boxscore_file) and isfile(player_file) and isfile(inning_file)):
-        boxscore_raw = open(boxscore_file, 'r', encoding='utf-8').read()
-        boxscore_xml = fromstring(boxscore_raw)
-        player_raw = open(player_file, 'r', encoding='utf-8').read()
-        player_xml = fromstring(player_raw)
-        inning_raw = open(inning_file, 'r', encoding='utf-8').read()
-        inning_xml = fromstring(inning_raw)
-        this_game = get_game_obj(boxscore_xml, player_xml, inning_xml)
-
-    return this_game
-
-def get_game_generator(filename_list):
-    for game_id, boxscore_file, player_file, inning_file in filename_list:
-        this_game = get_game_from_files(boxscore_file, player_file, inning_file)
-        if this_game:
-            yield game_id, this_game
-
-def write_game_sublist_to_svg_and_html(filename_list, output_path):
-    for game_id, game in get_game_generator(filename_list):
-        write_game_svg_and_html(game_id, game, output_path)
-
-def get_game_sublist(filename_list, return_queue):
-    game_sublist = [game_tup for game_tup in get_game_generator(filename_list)]
-    return_queue.put(game_sublist)
-
 def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
-    input_path = abspath(input_dir)
-    filename_list = get_filename_list(start_date_str, end_date_str, input_path)
-
+    filename_list = get_filename_list(start_date_str, end_date_str, input_dir)
     manager = Manager()
     return_queue = manager.Queue()
     list_of_filename_lists = get_list_of_lists(filename_list,
@@ -175,36 +202,25 @@ def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
 
     return game_tuple_list
 
-def write_game_list_svg_html_from_files(start_date_str, end_date_str, input_dir,
-                                        output_dir):
-    if not exists(output_dir):
-        makedirs(output_dir)
-
-    input_path = abspath(input_dir)
-    output_path = abspath(output_dir)
-    filename_list = get_filename_list(start_date_str, end_date_str, input_path)
-    list_of_filename_lists = get_list_of_lists(filename_list,
-                                               NUM_PROCESS_SUBLISTS)
-
-    for filename_list in list_of_filename_lists:
-        process = Process(target=write_game_sublist_to_svg_and_html,
-                          args=(filename_list, output_path))
-
-        process.start()
-
 def get_game_generator_from_file_range(start_date_str, end_date_str, input_dir):
-    input_path = abspath(input_dir)
-    filename_list = get_filename_list(start_date_str, end_date_str, input_path)
+    filename_list = get_filename_list(start_date_str, end_date_str, input_dir)
 
     return get_game_generator(filename_list)
 
-def get_game_xml_data(date, away_team_code, home_team_code, game_number):
+def get_game_xml_from_url(date_str, away_code, home_code, game_number):
+    formatted_date_str = get_formatted_date_str(date_str)
+    date = parse(formatted_date_str)
+
+    game_id = '-'.join(
+        [formatted_date_str, away_code, home_code, str(game_number)]
+    )
+
     request_url_base = MLB_URL_PATTERN.format(
         year=date.year,
         month=str(date.month).zfill(2),
         day=str(date.day).zfill(2),
-        away_mlb_code=MLB_TEAM_CODE_DICT[away_team_code],
-        home_mlb_code=MLB_TEAM_CODE_DICT[home_team_code],
+        away_mlb_code=MLB_TEAM_CODE_DICT[away_code],
+        home_mlb_code=MLB_TEAM_CODE_DICT[home_code],
         game_number=game_number
     )
 
@@ -216,45 +232,16 @@ def get_game_xml_data(date, away_team_code, home_team_code, game_number):
         players_raw_xml = get(request_url_base + PLAYERS_SUFFIX).text
         inning_raw_xml = get(request_url_base + INNING_SUFFIX).text
 
-    return boxscore_raw_xml, players_raw_xml, inning_raw_xml
-
-def get_game_xml_from_url(date_str, away_code, home_code, game_num):
-    formatted_date_str = get_formatted_date_str(date_str)
-    game_id = '-'.join(
-        [formatted_date_str, away_code, home_code, str(game_num)]
-    )
-
-    date = parse(formatted_date_str)
-    (boxscore_raw_xml,
-     players_raw_xml,
-     inning_raw_xml) = get_game_xml_data(date,
-                                         away_code,
-                                         home_code,
-                                         game_num)
-
     return game_id, boxscore_raw_xml, players_raw_xml, inning_raw_xml
 
-def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml, inning_raw_xml):
-    if boxscore_raw_xml and players_raw_xml and inning_raw_xml:
-        boxscore_xml_obj = fromstring(boxscore_raw_xml)
-        players_xml_obj = fromstring(players_raw_xml)
-        inning_xml_obj = fromstring(inning_raw_xml)
-        this_game = get_game_obj(boxscore_xml_obj,
-                                 players_xml_obj,
-                                 inning_xml_obj)
-    else:
-        this_game = None
-
-    return this_game
-
-def get_game_from_url(date_str, away_code, home_code, game_num):
+def get_game_from_url(date_str, away_code, home_code, game_number):
     (game_id,
      boxscore_raw_xml,
      players_raw_xml,
      inning_raw_xml) = get_game_xml_from_url(date_str,
                                              away_code,
                                              home_code,
-                                             game_num)
+                                             game_number)
 
     this_game = get_game_from_xml_strings(boxscore_raw_xml,
                                           players_raw_xml,
@@ -264,6 +251,6 @@ def get_game_from_url(date_str, away_code, home_code, game_num):
         print('No data found for {} {} {} {}'.format(date_str,
                                                      away_code,
                                                      home_code,
-                                                     game_num))
+                                                     game_number))
 
     return game_id, this_game
