@@ -38,6 +38,7 @@ game_id, game = baseball.get_game_from_url('2017-11-1', 'HOU', 'LAD', 1)
 * __get_game_list_from_file_range(__*start_date_str, end_date_str, input_dir*__)__
 
 Fetch a list of game objects which each contain metadata and events for a single MLB game.
+
 First, download and unzip the source data:
 ```shell
 wget https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_files_2008-2017.zip
