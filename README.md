@@ -55,50 +55,50 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 ### Game
 - away_batter_box_score_dict
 - away_pitcher_box_score_dict
-- away_team (Team)
+- away_team __(Team)__
 - away_team_stats
 - first_pitch_datetime
 - first_pitch_str
 - game_date_str
 - home_batter_box_score_dict
 - home_pitcher_box_score_dict
-- home_team (Team)
+- home_team __(Team)__
 - home_team_stats
-- inning_list (Inning list)
+- inning_list __(Inning list)__
 - last_pitch_datetime
 - last_pitch_str
 - location
 
 ### Team
 - abbreviation
-- batting_order_list_list (List of nine PlayerApperance lists)
+- batting_order_list_list __(List of nine PlayerApperance lists)__
 - name
-- pitcher_list (PlayerApperance list)
+- pitcher_list __(PlayerApperance list)__
 - player_id_dict
 - player_last_name_dict
 - player_name_dict
 
 ### Inning
-- bottom_half_appearance_list (PlateAppearance list)
+- bottom_half_appearance_list __(PlateAppearance list)__
 - bottom_half_inning_stats
-- top_half_appearance_list (PlateAppearance list)
+- top_half_appearance_list __(PlateAppearance list)__
 - top_half_inning_stats
 
 ### PlateAppearance
-- batter (Player)
-- batting_team (Team)
+- batter __(Player)__
+- batting_team __(Team)__
 - error_str
-- event_list (list: Pitch, Pickoff, RunnerAdvance, Substitution, Switch objects)
+- event_list __(list: Pitch, Pickoff, RunnerAdvance, Substitution, Switch objects)__
 - got_on_base
 - hit_location
 - inning_outs
-- out_runners_list (Player list)
-- pitcher (Player)
+- out_runners_list __(Player list)__
+- pitcher __(Player)__
 - plate_appearance_description
 - plate_appearance_summary
-- runners_batted_in_list (Player list)
+- runners_batted_in_list __(Player list)__
 - scorecard_summary
-- scoring_runners_list (Player list)
+- scoring_runners_list __(Player list)__
 
 ### Player
 - era
@@ -141,13 +141,13 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 - is_rbi
 
 ### Substitution
-- incoming_player (Player)
-- outgoing_player (Player)
+- incoming_player __(Player)__
+- outgoing_player __(Player)__
 - batting_order
 - position
 
 ### Switch
-- player (Player)
+- player __(Player)__
 - old_position_num
 - new_position_num
 - new_batting_order
