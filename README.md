@@ -117,7 +117,7 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 - end_inning_half
 - end_inning_num
 - pitcher_credit_code
-- player_obj (Player)
+- player_obj __(Player)__
 - position
 
 ### Pitch
@@ -133,7 +133,7 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 
 ### RunnerAdvance
 - run_description
-- runner (Player)
+- runner __(Player)__
 - start_base
 - end_base
 - runner_scored
