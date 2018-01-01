@@ -4,12 +4,12 @@ from re import search, sub, findall, escape
 
 from pytz import timezone
 
-from generate_svg import get_game_svg_str
-from stats import (get_all_pitcher_stats,
-                   get_all_batter_stats,
-                   get_box_score_total,
-                   get_team_stats,
-                   get_half_inning_stats)
+from baseball.generate_svg import get_game_svg_str
+from baseball.stats import (get_all_pitcher_stats,
+                            get_all_batter_stats,
+                            get_box_score_total,
+                            get_team_stats,
+                            get_half_inning_stats)
 
 
 POSITION_CODE_DICT = {'pitcher': 1,

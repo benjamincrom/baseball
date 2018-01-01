@@ -1,10 +1,10 @@
 from collections import namedtuple
 
-from baseball_events import (AUTOMATIC_BALL_POSITION,
-                             Substitution,
-                             Pitch,
-                             Pickoff,
-                             RunnerAdvance)
+from baseball.baseball_events import (AUTOMATIC_BALL_POSITION,
+                                      Substitution,
+                                      Pitch,
+                                      Pickoff,
+                                      RunnerAdvance)
 
 
 FakePlateAppearance = namedtuple(

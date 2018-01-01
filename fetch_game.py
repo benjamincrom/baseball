@@ -8,7 +8,7 @@ from xml.etree.ElementTree import fromstring
 from dateutil.parser import parse
 from requests import get
 
-from process_game_xml import MLB_TEAM_CODE_DICT, get_game_obj
+from baseball.process_game_xml import MLB_TEAM_CODE_DICT, get_game_obj
 
 
 NUM_PROCESS_SUBLISTS = 16

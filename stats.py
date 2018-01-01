@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from baseball_events import Pickoff, RunnerAdvance, Pitch
+from baseball.baseball_events import Pickoff, RunnerAdvance, Pitch
 
 
 NOT_AT_BAT_CODE_LIST = ['SB', 'SF', 'BB', 'CI', 'FI', 'IBB', 'HBP', 'CS', 'PO']

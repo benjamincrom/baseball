@@ -3,20 +3,20 @@ from re import search, sub
 
 from pytz import UTC
 
-from baseball import (POSITION_CODE_DICT,
-                      PlateAppearance,
-                      Player,
-                      PlayerAppearance,
-                      Inning,
-                      Team,
-                      Game)
+from baseball.baseball import (POSITION_CODE_DICT,
+                               PlateAppearance,
+                               Player,
+                               PlayerAppearance,
+                               Inning,
+                               Team,
+                               Game)
 
-from baseball_events import (AUTOMATIC_BALL_POSITION,
-                             Pitch,
-                             Pickoff,
-                             RunnerAdvance,
-                             Substitution,
-                             Switch)
+from baseball.baseball_events import (AUTOMATIC_BALL_POSITION,
+                                      Pitch,
+                                      Pickoff,
+                                      RunnerAdvance,
+                                      Substitution,
+                                      Switch)
 
 
 MLB_TEAM_CODE_DICT = {'LAA': 'ana',
