@@ -33,6 +33,11 @@ Fetch an object which contains metadata and events for a single MLB game.
 import baseball
 game_id, game = baseball.get_game_from_url('2017-11-1', 'HOU', 'LAD', 1)
 ```
+### Write scorecard as SVG image
+```python
+with open(game_id + '.svg') as fh:
+    fh.write(game.get_svg_str())
+```
 
 ## Fetch list of MLB games
 * __get_game_list_from_file_range(__*start_date_str, end_date_str, input_dir*__)__
@@ -51,7 +56,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 ```
 See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to use a game object for analysis.
 
-## Game Structure
+## Game Class Structure
 ### Game
 - away_batter_box_score_dict
 - away_pitcher_box_score_dict
@@ -68,6 +73,7 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 - last_pitch_datetime
 - last_pitch_str
 - location
+- get_svg_str()
 
 ### Team
 - abbreviation
@@ -154,7 +160,6 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 
 ## Functions
 
-get_game_xml_from_url
 write_svg_from_url
 write_svg_from_file_range
 write_game_svg_and_html
