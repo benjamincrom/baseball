@@ -4,8 +4,6 @@ from baseball.fetch_game import (get_game_from_url,
 								 write_svg_from_files,
 								 get_game_generator_from_file_range,
 								 get_game_list_from_file_range,
-								 get_filename_list,
-								 get_game_generator,
 								 get_game_from_xml_strings,
 								 get_game_from_files,
 								 write_game_svg_and_html)
