@@ -113,7 +113,7 @@ def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml, inning_raw_xml)
 
     return this_game
 
-def write_svg_from_files(start_date_str, end_date_str, input_dir, output_dir):
+def write_svg_from_file_range(start_date_str, end_date_str, input_dir, output_dir):
     if not exists(output_dir):
         makedirs(output_dir)
 
