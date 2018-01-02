@@ -68,15 +68,18 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 ```
 
 ## Get raw XML files for an individual MLB game
-* __get_game_xml_from_url(__*date_str, away_code, home_code, game_number*__)__,
+* __get_game_xml_from_url(__*date_str, away_code, home_code, game_number*__)__
+
 Returns game_id and three strings containing XML documents: (game_id, boxscore_raw_xml, players_raw_xml, inning_raw_xml)
 
 ## Convert XML documents into [Game](#game) object
-* __get_game_from_xml_strings(__*boxscore_raw_xml, players_raw_xml, inning_raw_xml*__)__,
+* __get_game_from_xml_strings(__*boxscore_raw_xml, players_raw_xml, inning_raw_xml*__)__
+
 Returns [Game](#game) object
 
 ## Get [Game](#game) gengerator given target directory and date range
-* __get_game_generator_from_file_range(__*start_date_str, end_date_str, input_dir*__)__,
+* __get_game_generator_from_file_range(__*start_date_str, end_date_str, input_dir*__)__
+
 Returns generator which yields [Game](#game) objects
 
 ## Game Class Structure
