@@ -174,11 +174,9 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 
 
 ```python
-from pandas import DataFrame, read_csv
+import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
-import sys
-import matplotlib
 
 import baseball
 
