@@ -103,7 +103,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 
 #### Team
 - abbreviation
-- batting_order_list_list (List of nine [PlayerAppearance](#playerappearance) lists)
+- batting_order_list_list (list of nine [PlayerAppearance](#playerappearance) lists)
 - name
 - pitcher_list ([PlayerAppearance](#playerappearance) list)
 - player_id_dict
