@@ -67,14 +67,14 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 ### Game
 - away_batter_box_score_dict
 - away_pitcher_box_score_dict
-- away_team __(Team)__
+- away_team __([Team](#team))__
 - away_team_stats
 - first_pitch_datetime
 - first_pitch_str
 - game_date_str
 - home_batter_box_score_dict
 - home_pitcher_box_score_dict
-- home_team __(Team)__
+- home_team __([Team](#team))__
 - home_team_stats
 - inning_list __(Inning list)__
 - last_pitch_datetime
@@ -84,34 +84,34 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 
 ### Team
 - abbreviation
-- batting_order_list_list __(List of nine PlayerApperance lists)__
+- batting_order_list_list __(List of nine [PlayerApperance](#playerappearance) lists)__
 - name
-- pitcher_list __(PlayerApperance list)__
+- pitcher_list __([PlayerApperance](#playerappearance) list)__
 - player_id_dict
 - player_last_name_dict
 - player_name_dict
 
 ### Inning
-- bottom_half_appearance_list __(PlateAppearance list)__
+- bottom_half_appearance_list __([PlateAppearance](#plateappearance) list)__
 - bottom_half_inning_stats
-- top_half_appearance_list __(PlateAppearance list)__
+- top_half_appearance_list __([PlateAppearance](#plateappearance) list)__
 - top_half_inning_stats
 
 ### PlateAppearance
 - batter __(Player)__
-- batting_team __(Team)__
+- batting_team __([Team](#team))__
 - error_str
 - event_list __(list: Pitch, Pickoff, RunnerAdvance, Substitution, Switch objects)__
 - got_on_base
 - hit_location
 - inning_outs
-- out_runners_list __(Player list)__
+- out_runners_list __([Player](#player) list)__
 - pitcher __(Player)__
 - plate_appearance_description
 - plate_appearance_summary
-- runners_batted_in_list __(Player list)__
+- runners_batted_in_list __([Player](#player) list)__
 - scorecard_summary
-- scoring_runners_list __(Player list)__
+- scoring_runners_list __([Player](#player) list)__
 
 ### Player
 - era
@@ -146,7 +146,7 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 
 ### RunnerAdvance
 - run_description
-- runner __(Player)__
+- runner __([Player](#player))__
 - start_base
 - end_base
 - runner_scored
@@ -154,13 +154,13 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 - is_rbi
 
 ### Substitution
-- incoming_player __(Player)__
-- outgoing_player __(Player)__
+- incoming_player __([Player](#player))__
+- outgoing_player __([Player](#player))__
 - batting_order
 - position
 
 ### Switch
-- player __(Player)__
+- player __([Player](#player))__
 - old_position_num
 - new_position_num
 - new_batting_order
