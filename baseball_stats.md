@@ -217,18 +217,7 @@ data.groupby(['Pitcher', 'Pitch Description']).size().unstack().plot.bar(ax=ax)
 
 ```python
 game_list_2017 = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017', '/Users/benjamincrom/repos/livebaseballscorecards-artifacts/baseball_files')
-len(game_list_2017)
-```
 
-
-
-
-    3001
-
-
-
-
-```python
 pitch_tuple_list_2 = []
 for game_id, game in game_list_2017:
     if game.home_team.name == 'Atlanta Braves' or game.away_team.name == 'Atlanta Braves':
