@@ -101,7 +101,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - location
 - get_svg_str()
 
-### Team
+#### Team
 - abbreviation
 - batting_order_list_list (List of nine [PlayerAppearance](#playerappearance) lists)
 - name
@@ -110,13 +110,13 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - player_last_name_dict
 - player_name_dict
 
-### Inning
+#### Inning
 - bottom_half_appearance_list ([PlateAppearance](#plateappearance) list)
 - bottom_half_inning_stats
 - top_half_appearance_list ([PlateAppearance](#plateappearance) list)
 - top_half_inning_stats
 
-### PlateAppearance
+#### PlateAppearance
 - batter ([Player](#player))
 - batting_team ([Team](#team))
 - error_str
@@ -132,7 +132,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - scorecard_summary
 - scoring_runners_list ([Player](#player) list)
 
-### Player
+#### Player
 - era
 - first_name
 - last_name
@@ -141,7 +141,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - obp
 - slg
 
-### PlayerAppearance
+#### PlayerAppearance
 - start_inning_batter_num
 - start_inning_half
 - start_inning_num
@@ -152,18 +152,18 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - player_obj ([Player](#player))
 - position
 
-### Pitch
+#### Pitch
 - pitch_description
 - pitch_position
 - pitch_speed
 - pitch_type
 
-### Pickoff
+#### Pickoff
 - pickoff_description
 - pickoff_base
 - pickoff_was_successful
 
-### RunnerAdvance
+#### RunnerAdvance
 - run_description
 - runner ([Player](#player))
 - start_base
@@ -172,13 +172,13 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - run_earned
 - is_rbi
 
-### Substitution
+#### Substitution
 - incoming_player ([Player](#player))
 - outgoing_player ([Player](#player))
 - batting_order
 - position
 
-### Switch
+#### Switch
 - player ([Player](#player))
 - old_position_num
 - new_position_num
