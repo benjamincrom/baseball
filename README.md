@@ -103,7 +103,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - batter ([Player](#player))
 - batting_team ([Team](#team))
 - error_str
-- event_list (list: Pitch, Pickoff, RunnerAdvance, Substitution, Switch objects)
+- event_list (list: [Pitch](#pitch), [Pickoff](#pickoff), [RunnerAdvance](#runneradvance), [Substitution](#substitution), [Switch](#switch) objects)
 - got_on_base
 - hit_location
 - inning_outs
