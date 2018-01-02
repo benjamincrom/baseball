@@ -48,6 +48,7 @@ Write scorecard as SVG image:
 with open(game_id + '.svg') as fh:
     fh.write(game.get_svg_str())
 ```
+![svg](README_images/2017-11-01-HOU-LAD-1.svg)
 
 ## Fetch list of MLB games
 * __get_game_list_from_file_range(__*start_date_str, end_date_str, input_dir*__)__
