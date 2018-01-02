@@ -64,7 +64,6 @@ Then import the files in Python using this library:
 import baseball
 game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017', 'baseball_files_2008-2017')
 ```
-See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to use a game object for analysis.
 
 ## Game Class Structure
 ### Game
