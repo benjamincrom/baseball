@@ -10,3 +10,16 @@ from baseball.fetch_game import (get_game_from_url,
 								 get_filename_list)
 
 from baseball.process_game_xml import MLB_TEAM_CODE_DICT
+
+from baseball.baseball import (PlayerAppearance,
+							   Player,
+							   Team,
+							   Game,
+							   Inning,
+							   PlateAppearance)
+
+from baseball.baseball_events import (Substitution,
+									  Switch,
+									  Pitch,
+									  Pickoff,
+									  RunnerAdvance)
