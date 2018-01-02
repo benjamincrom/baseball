@@ -12,12 +12,7 @@ import matplotlib
 import baseball
 
 %matplotlib inline
-```
 
-### All game information can be returned in a single object
-
-
-```python
 game_id, game = baseball.get_game_from_url('11-1-2017', 'HOU', 'LAD', 1)
 ```
 
@@ -35,10 +30,7 @@ for inning in game.inning_list:
                      event.pitch_speed,
                      event.pitch_type)
                 )
-```
 
-
-```python
 data = pd.DataFrame(data=pitch_tuple_list, columns=['Pitcher', 'Pitch Description', 'Pitch Coordinate', 'Pitch Speed', 'Pitch Type'])
 data.head()
 ```
@@ -126,12 +118,12 @@ data['Pitcher'].value_counts().plot.bar()
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x10621cac8>
+    <matplotlib.axes._subplots.AxesSubplot at 0x151ceab00>
 
 
 
 
-![png](baseball_stats_files/baseball_stats_6_1.png)
+![png](baseball_stats_files/baseball_stats_3_1.png)
 
 
 
@@ -161,23 +153,23 @@ for pitcher in data['Pitcher'].unique():
 ```
 
 
-![png](baseball_stats_files/baseball_stats_7_0.png)
+![png](baseball_stats_files/baseball_stats_4_0.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_7_1.png)
+![png](baseball_stats_files/baseball_stats_4_1.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_7_2.png)
+![png](baseball_stats_files/baseball_stats_4_2.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_7_3.png)
+![png](baseball_stats_files/baseball_stats_4_3.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_7_4.png)
+![png](baseball_stats_files/baseball_stats_4_4.png)
 
 
 
@@ -194,7 +186,7 @@ data['Pitch Description'].value_counts().plot(kind='pie', radius=1.5, autopct='%
 
 
 
-![png](baseball_stats_files/baseball_stats_8_1.png)
+![png](baseball_stats_files/baseball_stats_5_1.png)
 
 
 
@@ -212,7 +204,7 @@ data.hist()
 
 
 
-![png](baseball_stats_files/baseball_stats_9_1.png)
+![png](baseball_stats_files/baseball_stats_6_1.png)
 
 
 
@@ -228,7 +220,7 @@ data.plot.kde()
 
 
 
-![png](baseball_stats_files/baseball_stats_10_1.png)
+![png](baseball_stats_files/baseball_stats_7_1.png)
 
 
 
@@ -250,7 +242,7 @@ ax.legend()
 
 
 
-![png](baseball_stats_files/baseball_stats_11_1.png)
+![png](baseball_stats_files/baseball_stats_8_1.png)
 
 
 
@@ -272,7 +264,7 @@ ax.legend()
 
 
 
-![png](baseball_stats_files/baseball_stats_12_1.png)
+![png](baseball_stats_files/baseball_stats_9_1.png)
 
 
 
@@ -289,7 +281,7 @@ data.groupby(['Pitcher', 'Pitch Description']).size().unstack().plot.bar(ax=ax)
 
 
 
-![png](baseball_stats_files/baseball_stats_13_1.png)
+![png](baseball_stats_files/baseball_stats_10_1.png)
 
 
 
@@ -306,7 +298,7 @@ data.groupby(['Pitcher', 'Pitch Type']).size().unstack().plot.bar(ax=ax)
 
 
 
-![png](baseball_stats_files/baseball_stats_14_1.png)
+![png](baseball_stats_files/baseball_stats_11_1.png)
 
 
 ## Analyze a player's season: R.A. Dickey - 2017
@@ -367,7 +359,7 @@ df['Pitch Type'].value_counts().plot.bar()
 
 
 
-![png](baseball_stats_files/baseball_stats_18_1.png)
+![png](baseball_stats_files/baseball_stats_15_1.png)
 
 
 
@@ -379,7 +371,7 @@ plt.show()
 ```
 
 
-![png](baseball_stats_files/baseball_stats_19_0.png)
+![png](baseball_stats_files/baseball_stats_16_0.png)
 
 
 
@@ -398,7 +390,7 @@ ax.legend()
 
 
 
-![png](baseball_stats_files/baseball_stats_20_1.png)
+![png](baseball_stats_files/baseball_stats_17_1.png)
 
 
 
@@ -421,7 +413,7 @@ ax.legend()
 
 
 
-![png](baseball_stats_files/baseball_stats_21_1.png)
+![png](baseball_stats_files/baseball_stats_18_1.png)
 
 
 ## Analyze a lineup of pitchers: Atlanta Braves - 2017 Regular Season
@@ -496,23 +488,23 @@ for pitcher in df3['Pitcher'].unique():
 ```
 
 
-![png](baseball_stats_files/baseball_stats_24_0.png)
+![png](baseball_stats_files/baseball_stats_21_0.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_24_1.png)
+![png](baseball_stats_files/baseball_stats_21_1.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_24_2.png)
+![png](baseball_stats_files/baseball_stats_21_2.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_24_3.png)
+![png](baseball_stats_files/baseball_stats_21_3.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_24_4.png)
+![png](baseball_stats_files/baseball_stats_21_4.png)
 
 
 
@@ -546,7 +538,7 @@ df4.sort_values(by=['Got on base']).nlargest(10, 'Did not get on base').plot.bar
 
 
 
-![png](baseball_stats_files/baseball_stats_26_1.png)
+![png](baseball_stats_files/baseball_stats_23_1.png)
 
 
 
@@ -619,7 +611,7 @@ df5.sort_values('Got on base', ascending=False)
 ```
 
 
-![png](baseball_stats_files/baseball_stats_28_0.png)
+![png](baseball_stats_files/baseball_stats_25_0.png)
 
 
 
