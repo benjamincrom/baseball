@@ -75,7 +75,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 ## Convert XML documents into Game object
 * __get_game_from_xml_strings(__*boxscore_raw_xml, players_raw_xml, inning_raw_xml*__)__
 
-  Returns [Game](#game) object
+  Returns [Game](#game) object if enough information to create one is provided.  Otherwise returns None.
 
 ## Get Game generator given target directory and date range
 * __get_game_generator_from_file_range(__*start_date_str, end_date_str, input_dir*__)__
