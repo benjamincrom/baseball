@@ -80,7 +80,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - home_pitcher_box_score_dict
 - home_team ([Team](#team))
 - home_team_stats
-- inning_list (Inning list)
+- inning_list ([Inning](#inning) list)
 - last_pitch_datetime
 - last_pitch_str
 - location
