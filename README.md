@@ -45,7 +45,7 @@ game_id, game = baseball.get_game_from_url('2017-11-1', 'HOU', 'LAD', 1)
 ```
 Write scorecard as SVG image:
 ```python
-with open(game_id + '.svg') as fh:
+with open(game_id + '.svg', 'w') as fh:
     fh.write(game.get_svg_str())
 ```
 2017-11-01-HOU-LAD-1.svg
