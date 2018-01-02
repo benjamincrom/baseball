@@ -98,7 +98,7 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 - top_half_inning_stats
 
 ### PlateAppearance
-- batter __(Player)__
+- batter __([Player](#player))__
 - batting_team __([Team](#team))__
 - error_str
 - event_list __(list: Pitch, Pickoff, RunnerAdvance, Substitution, Switch objects)__
@@ -106,7 +106,7 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 - hit_location
 - inning_outs
 - out_runners_list __([Player](#player) list)__
-- pitcher __(Player)__
+- pitcher __([Player](#player))__
 - plate_appearance_description
 - plate_appearance_summary
 - runners_batted_in_list __([Player](#player) list)__
@@ -130,7 +130,7 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 - end_inning_half
 - end_inning_num
 - pitcher_credit_code
-- player_obj __(Player)__
+- player_obj __([Player](#player))__
 - position
 
 ### Pitch
