@@ -212,14 +212,335 @@ data.groupby(['Pitcher', 'Pitch Description']).size().unstack().plot.bar(ax=ax)
 
 
 
+## Analyze a player's season: R.A. Dickey - 2017
+
+
 ```python
-fig, ax = plt.subplots(figsize=(15,7))
-data.groupby(['Pitcher', 'Pitch Type']).size().unstack().plot.bar(ax=ax)
+game_list_2017 = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017', '/Users/benjamincrom/repos/livebaseballscorecards-artifacts/baseball_files')
+len(game_list_2017)
 ```
 
 
 
 
-![png](baseball_stats_files/baseball_stats_23_1.png)
+    3001
+
+
+
+
+```python
+pitch_tuple_list_2 = []
+for game_id, game in game_list_2017:
+    if game.home_team.name == 'Atlanta Braves' or game.away_team.name == 'Atlanta Braves':
+        for inning in game.inning_list:
+            for appearance in (inning.top_half_appearance_list +
+                               (inning.bottom_half_appearance_list or [])):
+                if 'Dickey' in str(appearance.pitcher):
+                    for event in appearance.event_list:
+                        if isinstance(event, baseball.Pitch):
+                            pitch_tuple_list_2.append(
+                                (str(appearance.pitcher), 
+                                 event.pitch_description,
+                                 event.pitch_position,
+                                 event.pitch_speed,
+                                 event.pitch_type)
+                            )
+
+len(pitch_tuple_list_2)
+```
+
+
+
+
+    3123
+
+
+
+
+```python
+df = pd.DataFrame(data=pitch_tuple_list_2, columns=['Pitcher', 'Pitch Description', 'Pitch Coordinate', 'Pitch Speed', 'Pitch Type'])
+df['Pitch Type'].value_counts().plot.bar()
+```
+
+
+
+
+    <matplotlib.axes._subplots.AxesSubplot at 0x106226128>
+
+
+
+
+![png](baseball_stats_files/baseball_stats_14_1.png)
+
+
+
+```python
+plt.axis('equal')
+df['Pitch Description'].value_counts().plot(kind='pie', radius=2, autopct='%1.0f%%', pctdistance=1.1, labeldistance=1.2)
+plt.ylabel('')
+plt.show()
+```
+
+
+![png](baseball_stats_files/baseball_stats_15_0.png)
+
+
+
+```python
+df.dropna(inplace=True)
+ax.set_xlim(50, 100)
+df.plot.kde()
+ax.legend()
+```
+
+
+
+
+    <matplotlib.legend.Legend at 0x10c7883c8>
+
+
+
+
+![png](baseball_stats_files/baseball_stats_16_1.png)
+
+
+
+```python
+fig, ax = plt.subplots()
+ax.set_xlim(50, 100)
+for desc in df['Pitch Type'].unique():
+    if desc != 'PO':
+        s = df[df['Pitch Type'] == desc]['Pitch Speed']
+        s.plot.kde(ax=ax, label=desc)
+
+ax.legend()
+```
+
+
+
+
+    <matplotlib.legend.Legend at 0x15276ddd8>
+
+
+
+
+![png](baseball_stats_files/baseball_stats_17_1.png)
+
+
+## Analyze a lineup of pitchers: Atlanta Braves - 2017 Regular Season
+
+
+```python
+import datetime
+import dateutil.parser
+import pytz
+pitch_tuple_list_3 = []
+for game_id, game in game_list_2017:
+    if game.home_team.name == 'Atlanta Braves' and dateutil.parser.parse(game.game_date_str) > datetime.datetime(2017, 3, 31):
+        for inning in game.inning_list:
+            for appearance in inning.top_half_appearance_list:
+                pitch_tuple_list_3.append(
+                    (str(appearance.pitcher),
+                     str(appearance.batter),
+                     len(appearance.out_runners_list),
+                     len(appearance.scoring_runners_list),
+                     len(appearance.runners_batted_in_list),
+                     appearance.scorecard_summary,
+                     appearance.got_on_base,
+                     appearance.plate_appearance_summary,
+                     appearance.plate_appearance_description,
+                     appearance.error_str,
+                     appearance.inning_outs)
+                )
+    if game.away_team.name == 'Atlanta Braves' and dateutil.parser.parse(game.game_date_str) > datetime.datetime(2017, 3, 31):
+        for inning in game.inning_list:
+            if inning.bottom_half_appearance_list:
+                for appearance in inning.bottom_half_appearance_list:
+                    pitch_tuple_list_3.append(
+                        (str(appearance.pitcher),
+                         str(appearance.batter),
+                         len(appearance.out_runners_list),
+                         len(appearance.scoring_runners_list),
+                         len(appearance.runners_batted_in_list),
+                         appearance.scorecard_summary,
+                         appearance.got_on_base,
+                         appearance.plate_appearance_summary,
+                         appearance.plate_appearance_description,
+                         appearance.error_str,
+                         appearance.inning_outs)
+                    )
+
+df3 = pd.DataFrame(data=pitch_tuple_list_3, columns=['Pitcher',
+                                                     'Batter',
+                                                     'Out Runners',
+                                                     'Scoring Runners',
+                                                     'RBIs',
+                                                     'Scorecard',
+                                                     'On-base?',
+                                                     'Plate Summary',
+                                                     'Plate Description',
+                                                     'Error',
+                                                     'Inning Outs'])
+
+```
+
+
+```python
+for pitcher in df3['Pitcher'].unique():
+    summary = df3[df3['Pitcher'] == pitcher]['Plate Summary']
+    s = summary.value_counts(sort=False)
+    if len(summary) > 400:
+        fig, ax = plt.subplots()
+        ax.set_ylim(0, 250)
+        s.plot.bar()
+        plt.title(pitcher)
+        plt.show()
+
+```
+
+
+![png](baseball_stats_files/baseball_stats_20_0.png)
+
+
+
+![png](baseball_stats_files/baseball_stats_20_1.png)
+
+
+
+![png](baseball_stats_files/baseball_stats_20_2.png)
+
+
+
+![png](baseball_stats_files/baseball_stats_20_3.png)
+
+
+
+![png](baseball_stats_files/baseball_stats_20_4.png)
+
+
+
+```python
+x = []
+for pitcher in df3['Pitcher'].unique():
+    #f = df3[df3['Pitcher'] == pitcher]['On-base?'].value_counts()[0]
+    s = df3[df3['Pitcher'] == pitcher]['On-base?'].value_counts()
+    if len(s) == 2:
+        f = s[0]
+        t = s[1]
+        x.append((str(pitcher), f, t))
+
+df4 = pd.DataFrame(data=x, columns=['Pitcher',
+                                    'Did not get on base',
+                                    'Got on base'])
+
+```
+
+
+```python
+df4.index = df4['Pitcher']
+df4.sort_values(by=['Got on base']).nlargest(10, 'Did not get on base').plot.bar()
+```
+
+
+
+
+    <matplotlib.axes._subplots.AxesSubplot at 0x15206ec18>
+
+
+
+
+![png](baseball_stats_files/baseball_stats_22_1.png)
+
+
+
+```python
+x = []
+for batter in df3['Batter'].unique():
+    s = df3[df3['Batter'] == batter]['On-base?']
+    if True in s.value_counts():
+        t = s.value_counts()[True]
+    else:
+        t = 0
+
+    if False in s.value_counts():
+        f = s.value_counts()[False]
+    else:
+        f = 0        
+
+    if f != 0 or t != 0:
+        success = t / (f + t)
+    else:
+        success = None
+
+    if f or f == 0:
+        x.append((str(batter), success, t, f))
+
+df5 = pd.DataFrame(data=x, columns=['Batter',
+                                    'Success',
+                                    'Got on base',
+                                    'Did not get on base'])
+
+```
+
+
+```python
+fig, ax = plt.subplots(figsize=(15,15))
+plt.ylim(0, 70)
+plt.xlim(0, 70)
+
+lims = [0, 70]
+ax.plot(lims, lims, 'k-', alpha=1.0, zorder=0, color="blue", label="OBP .500")
+lims_600 = [0, 105]
+ax.plot(lims, lims_600, 'k-', alpha=1.0, zorder=0, color="indigo", label="OBP .600")
+lims_400 = [0, 46.667]
+ax.plot(lims, lims_400, 'k-', alpha=1.0, zorder=0, color="green", label="OBP .400")
+lims_300 = [0, 30]
+ax.plot(lims, lims_300, 'k-', alpha=1.0, zorder=0, color="orange", label="OBP .300")
+lims_200 = [0, 17.5]
+ax.plot(lims, lims_200, 'k-', alpha=1.0, zorder=0, color="red", label="OBP .200")
+
+horiz = [1, 1]
+ax.plot(lims, horiz, '--', alpha=1.0, zorder=0, color="black", label="25%")
+horiz = [3, 3]
+ax.plot(lims, horiz, '--', alpha=1.0, zorder=0, color="black", label="50%")
+horiz = [8, 8]
+ax.plot(lims, horiz, '--', alpha=1.0, zorder=0, color="black", label="75%")
+
+
+ax.set_aspect('equal')
+ax.set_xlim(lims)
+ax.set_ylim(lims)
+ax.set(xlabel="Failed to get on base", ylabel="Got on base")
+
+t = df5['Got on base']
+f = df5['Did not get on base']
+plt.legend()
+b = plt.scatter(f, t, c='b')
+plt.show()
+
+df5.sort_values('Got on base', ascending=False)
+```
+
+
+![png](baseball_stats_files/baseball_stats_24_0.png)
+
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 
 
