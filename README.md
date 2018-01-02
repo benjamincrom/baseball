@@ -80,7 +80,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 ## Get Game generator given target directory and date range
 * __get_game_generator_from_file_range(__*start_date_str, end_date_str, input_dir*__)__
 
-  Returns generator which yields [Game](#game) objects
+  Returns generator which yields (game_id, [Game](#game)) tuples
 
 ## Game Class Structure
 #### Game
