@@ -16,7 +16,6 @@ import baseball
 game_id, game = baseball.get_game_from_url('11-1-2017', 'HOU', 'LAD', 1)
 ```
 
-
 ```python
 pitch_tuple_list = []
 for inning in game.inning_list:
@@ -34,9 +33,6 @@ for inning in game.inning_list:
 data = pd.DataFrame(data=pitch_tuple_list, columns=['Pitcher', 'Pitch Description', 'Pitch Coordinate', 'Pitch Speed', 'Pitch Type'])
 data.head()
 ```
-
-
-
 
 <table border="1" class="dataframe">
   <thead>
@@ -94,24 +90,11 @@ data.head()
 </table>
 </div>
 
-
-
-
 ```python
 data['Pitcher'].value_counts().plot.bar()
 ```
 
-
-
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x151ceab00>
-
-
-
-
 ![png](baseball_stats_files/baseball_stats_3_1.png)
-
-
 
 ```python
 for pitcher in data['Pitcher'].unique():
