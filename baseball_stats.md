@@ -147,30 +147,6 @@ data['Pitch Description'].value_counts().plot(kind='pie', radius=1.5, autopct='%
 
 
 
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x1031987b8>
-
-
-
-
-![png](baseball_stats_files/baseball_stats_5_1.png)
-
-
-
-```python
-data.dropna(inplace=True)
-data.count()
-data.hist()
-```
-
-
-
-
-    array([[<matplotlib.axes._subplots.AxesSubplot object at 0x103193be0>]], dtype=object)
-
-
-
-
 ![png](baseball_stats_files/baseball_stats_6_1.png)
 
 
@@ -178,11 +154,6 @@ data.hist()
 ```python
 data.plot.kde()
 ```
-
-
-
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x10a5907b8>
 
 
 
@@ -204,9 +175,6 @@ ax.legend()
 
 
 
-    <matplotlib.legend.Legend at 0x10c382710>
-
-
 
 
 ![png](baseball_stats_files/baseball_stats_8_1.png)
@@ -226,9 +194,6 @@ ax.legend()
 
 
 
-    <matplotlib.legend.Legend at 0x10c39d550>
-
-
 
 
 ![png](baseball_stats_files/baseball_stats_9_1.png)
@@ -243,11 +208,6 @@ data.groupby(['Pitcher', 'Pitch Description']).size().unstack().plot.bar(ax=ax)
 
 
 
-    <matplotlib.axes._subplots.AxesSubplot at 0x10c44b7f0>
-
-
-
-
 ![png](baseball_stats_files/baseball_stats_10_1.png)
 
 
@@ -256,251 +216,6 @@ data.groupby(['Pitcher', 'Pitch Description']).size().unstack().plot.bar(ax=ax)
 fig, ax = plt.subplots(figsize=(15,7))
 data.groupby(['Pitcher', 'Pitch Type']).size().unstack().plot.bar(ax=ax)
 ```
-
-
-
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x10a34ccf8>
-
-
-
-
-![png](baseball_stats_files/baseball_stats_11_1.png)
-
-
-## Analyze a player's season: R.A. Dickey - 2017
-
-
-```python
-game_list_2017 = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017', '/Users/benjamincrom/repos/livebaseballscorecards-artifacts/baseball_files')
-len(game_list_2017)
-```
-
-
-
-
-    3001
-
-
-
-
-```python
-pitch_tuple_list_2 = []
-for game_id, game in game_list_2017:
-    if game.home_team.name == 'Atlanta Braves' or game.away_team.name == 'Atlanta Braves':
-        for inning in game.inning_list:
-            for appearance in (inning.top_half_appearance_list +
-                               (inning.bottom_half_appearance_list or [])):
-                if 'Dickey' in str(appearance.pitcher):
-                    for event in appearance.event_list:
-                        if isinstance(event, baseball.Pitch):
-                            pitch_tuple_list_2.append(
-                                (str(appearance.pitcher), 
-                                 event.pitch_description,
-                                 event.pitch_position,
-                                 event.pitch_speed,
-                                 event.pitch_type)
-                            )
-
-len(pitch_tuple_list_2)
-```
-
-
-
-
-    3123
-
-
-
-
-```python
-df = pd.DataFrame(data=pitch_tuple_list_2, columns=['Pitcher', 'Pitch Description', 'Pitch Coordinate', 'Pitch Speed', 'Pitch Type'])
-df['Pitch Type'].value_counts().plot.bar()
-```
-
-
-
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x106226128>
-
-
-
-
-![png](baseball_stats_files/baseball_stats_15_1.png)
-
-
-
-```python
-plt.axis('equal')
-df['Pitch Description'].value_counts().plot(kind='pie', radius=2, autopct='%1.0f%%', pctdistance=1.1, labeldistance=1.2)
-plt.ylabel('')
-plt.show()
-```
-
-
-![png](baseball_stats_files/baseball_stats_16_0.png)
-
-
-
-```python
-df.dropna(inplace=True)
-ax.set_xlim(50, 100)
-df.plot.kde()
-ax.legend()
-```
-
-
-
-
-    <matplotlib.legend.Legend at 0x10c7883c8>
-
-
-
-
-![png](baseball_stats_files/baseball_stats_17_1.png)
-
-
-
-```python
-fig, ax = plt.subplots()
-ax.set_xlim(50, 100)
-for desc in df['Pitch Type'].unique():
-    if desc != 'PO':
-        s = df[df['Pitch Type'] == desc]['Pitch Speed']
-        s.plot.kde(ax=ax, label=desc)
-
-ax.legend()
-```
-
-
-
-
-    <matplotlib.legend.Legend at 0x15276ddd8>
-
-
-
-
-![png](baseball_stats_files/baseball_stats_18_1.png)
-
-
-## Analyze a lineup of pitchers: Atlanta Braves - 2017 Regular Season
-
-
-```python
-import datetime
-import dateutil.parser
-import pytz
-pitch_tuple_list_3 = []
-for game_id, game in game_list_2017:
-    if game.home_team.name == 'Atlanta Braves' and dateutil.parser.parse(game.game_date_str) > datetime.datetime(2017, 3, 31):
-        for inning in game.inning_list:
-            for appearance in inning.top_half_appearance_list:
-                pitch_tuple_list_3.append(
-                    (str(appearance.pitcher),
-                     str(appearance.batter),
-                     len(appearance.out_runners_list),
-                     len(appearance.scoring_runners_list),
-                     len(appearance.runners_batted_in_list),
-                     appearance.scorecard_summary,
-                     appearance.got_on_base,
-                     appearance.plate_appearance_summary,
-                     appearance.plate_appearance_description,
-                     appearance.error_str,
-                     appearance.inning_outs)
-                )
-    if game.away_team.name == 'Atlanta Braves' and dateutil.parser.parse(game.game_date_str) > datetime.datetime(2017, 3, 31):
-        for inning in game.inning_list:
-            if inning.bottom_half_appearance_list:
-                for appearance in inning.bottom_half_appearance_list:
-                    pitch_tuple_list_3.append(
-                        (str(appearance.pitcher),
-                         str(appearance.batter),
-                         len(appearance.out_runners_list),
-                         len(appearance.scoring_runners_list),
-                         len(appearance.runners_batted_in_list),
-                         appearance.scorecard_summary,
-                         appearance.got_on_base,
-                         appearance.plate_appearance_summary,
-                         appearance.plate_appearance_description,
-                         appearance.error_str,
-                         appearance.inning_outs)
-                    )
-
-df3 = pd.DataFrame(data=pitch_tuple_list_3, columns=['Pitcher',
-                                                     'Batter',
-                                                     'Out Runners',
-                                                     'Scoring Runners',
-                                                     'RBIs',
-                                                     'Scorecard',
-                                                     'On-base?',
-                                                     'Plate Summary',
-                                                     'Plate Description',
-                                                     'Error',
-                                                     'Inning Outs'])
-
-```
-
-
-```python
-for pitcher in df3['Pitcher'].unique():
-    summary = df3[df3['Pitcher'] == pitcher]['Plate Summary']
-    s = summary.value_counts(sort=False)
-    if len(summary) > 400:
-        fig, ax = plt.subplots()
-        ax.set_ylim(0, 250)
-        s.plot.bar()
-        plt.title(pitcher)
-        plt.show()
-
-```
-
-
-![png](baseball_stats_files/baseball_stats_21_0.png)
-
-
-
-![png](baseball_stats_files/baseball_stats_21_1.png)
-
-
-
-![png](baseball_stats_files/baseball_stats_21_2.png)
-
-
-
-![png](baseball_stats_files/baseball_stats_21_3.png)
-
-
-
-![png](baseball_stats_files/baseball_stats_21_4.png)
-
-
-
-```python
-x = []
-for pitcher in df3['Pitcher'].unique():
-    #f = df3[df3['Pitcher'] == pitcher]['On-base?'].value_counts()[0]
-    s = df3[df3['Pitcher'] == pitcher]['On-base?'].value_counts()
-    if len(s) == 2:
-        f = s[0]
-        t = s[1]
-        x.append((str(pitcher), f, t))
-
-df4 = pd.DataFrame(data=x, columns=['Pitcher',
-                                    'Did not get on base',
-                                    'Got on base'])
-
-```
-
-
-```python
-df4.index = df4['Pitcher']
-df4.sort_values(by=['Got on base']).nlargest(10, 'Did not get on base').plot.bar()
-```
-
-
-
-
-    <matplotlib.axes._subplots.AxesSubplot at 0x15206ec18>
 
 
 
@@ -536,10 +251,6 @@ df5 = pd.DataFrame(data=x, columns=['Batter',
                                     'Got on base',
                                     'Did not get on base'])
 
-```
-
-
-```python
 fig, ax = plt.subplots(figsize=(15,15))
 plt.ylim(0, 70)
 plt.xlim(0, 70)
