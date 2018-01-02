@@ -261,7 +261,7 @@ data.head()
 data['Pitcher'].value_counts().plot.bar()
 ```
 
-![png](baseball_stats_files/baseball_stats_3_1.png)
+![png](baseball_stats_files/baseball_stats_2_1.png)
 
 ```python
 for pitcher in data['Pitcher'].unique():
@@ -289,23 +289,23 @@ for pitcher in data['Pitcher'].unique():
 ```
 
 
-![png](baseball_stats_files/baseball_stats_4_0.png)
+![png](baseball_stats_files/baseball_stats_3_0.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_4_1.png)
+![png](baseball_stats_files/baseball_stats_3_1.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_4_2.png)
+![png](baseball_stats_files/baseball_stats_3_2.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_4_3.png)
+![png](baseball_stats_files/baseball_stats_3_3.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_4_4.png)
+![png](baseball_stats_files/baseball_stats_3_4.png)
 
 
 
@@ -316,7 +316,7 @@ data['Pitch Description'].value_counts().plot(kind='pie', radius=1.5, autopct='%
 
 
 
-![png](baseball_stats_files/baseball_stats_6_1.png)
+![png](baseball_stats_files/baseball_stats_5_1.png)
 
 
 
@@ -327,7 +327,7 @@ data.plot.kde()
 
 
 
-![png](baseball_stats_files/baseball_stats_7_1.png)
+![png](baseball_stats_files/baseball_stats_6_1.png)
 
 
 
@@ -346,7 +346,7 @@ ax.legend()
 
 
 
-![png](baseball_stats_files/baseball_stats_8_1.png)
+![png](baseball_stats_files/baseball_stats_7_1.png)
 
 
 
@@ -365,7 +365,7 @@ ax.legend()
 
 
 
-![png](baseball_stats_files/baseball_stats_9_1.png)
+![png](baseball_stats_files/baseball_stats_8_1.png)
 
 
 
@@ -377,7 +377,7 @@ data.groupby(['Pitcher', 'Pitch Description']).size().unstack().plot.bar(ax=ax)
 
 
 
-![png](baseball_stats_files/baseball_stats_10_1.png)
+![png](baseball_stats_files/baseball_stats_9_1.png)
 
 
 
