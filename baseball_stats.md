@@ -14,9 +14,7 @@ import baseball
 %matplotlib inline
 
 game_id, game = baseball.get_game_from_url('11-1-2017', 'HOU', 'LAD', 1)
-```
 
-```python
 pitch_tuple_list = []
 for inning in game.inning_list:
     for appearance in inning.top_half_appearance_list:
