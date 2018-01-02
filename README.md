@@ -83,7 +83,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
   Returns generator which yields [Game](#game) objects
 
 ## Game Class Structure
-### Game
+#### Game
 - away_batter_box_score_dict
 - away_pitcher_box_score_dict
 - away_team ([Team](#team))
