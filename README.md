@@ -84,9 +84,9 @@ See [the included Jupyter notebook](baseball_stats.ipynb) for examples on how to
 
 ### Team
 - abbreviation
-- batting_order_list_list __(List of nine [PlayerApperance](#playerappearance) lists)__
+- batting_order_list_list __(List of nine [PlayerAppearance](#playerappearance) lists)__
 - name
-- pitcher_list __([PlayerApperance](#playerappearance) list)__
+- pitcher_list __([PlayerAppearance](#playerappearance) list)__
 - player_id_dict
 - player_last_name_dict
 - player_name_dict
