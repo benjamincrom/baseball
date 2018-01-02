@@ -261,7 +261,7 @@ data.head()
 data['Pitcher'].value_counts().plot.bar()
 ```
 
-![png](baseball_stats_files/baseball_stats_2_1.png)
+![png](README_images/baseball_stats_2_1.png)
 
 ```python
 for pitcher in data['Pitcher'].unique():
@@ -289,23 +289,23 @@ for pitcher in data['Pitcher'].unique():
 ```
 
 
-![png](baseball_stats_files/baseball_stats_3_0.png)
+![png](README_images/baseball_stats_3_0.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_3_1.png)
+![png](README_images/baseball_stats_3_1.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_3_2.png)
+![png](README_images/baseball_stats_3_2.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_3_3.png)
+![png](README_images/baseball_stats_3_3.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_3_4.png)
+![png](README_images/baseball_stats_3_4.png)
 
 
 
@@ -316,7 +316,7 @@ data['Pitch Description'].value_counts().plot(kind='pie', radius=1.5, autopct='%
 
 
 
-![png](baseball_stats_files/baseball_stats_5_1.png)
+![png](README_images/baseball_stats_5_1.png)
 
 
 
@@ -327,7 +327,7 @@ data.plot.kde()
 
 
 
-![png](baseball_stats_files/baseball_stats_6_1.png)
+![png](README_images/baseball_stats_6_1.png)
 
 
 
@@ -346,7 +346,7 @@ ax.legend()
 
 
 
-![png](baseball_stats_files/baseball_stats_7_1.png)
+![png](README_images/baseball_stats_7_1.png)
 
 
 
@@ -365,7 +365,7 @@ ax.legend()
 
 
 
-![png](baseball_stats_files/baseball_stats_8_1.png)
+![png](README_images/baseball_stats_8_1.png)
 
 
 
@@ -377,7 +377,7 @@ data.groupby(['Pitcher', 'Pitch Description']).size().unstack().plot.bar(ax=ax)
 
 
 
-![png](baseball_stats_files/baseball_stats_9_1.png)
+![png](README_images/baseball_stats_9_1.png)
 
 
 
@@ -410,7 +410,7 @@ df['Pitch Type'].value_counts().plot.bar()
 
 
 
-![png](baseball_stats_files/baseball_stats_14_1.png)
+![png](README_images/baseball_stats_14_1.png)
 
 
 
@@ -422,7 +422,7 @@ plt.show()
 ```
 
 
-![png](baseball_stats_files/baseball_stats_15_0.png)
+![png](README_images/baseball_stats_15_0.png)
 
 
 
@@ -437,7 +437,7 @@ ax.legend()
 
 
 
-![png](baseball_stats_files/baseball_stats_16_1.png)
+![png](README_images/baseball_stats_16_1.png)
 
 
 
@@ -457,7 +457,7 @@ ax.legend()
 
 
 
-![png](baseball_stats_files/baseball_stats_17_1.png)
+![png](README_images/baseball_stats_17_1.png)
 
 
 ## Analyze a lineup of pitchers: Atlanta Braves - 2017 Regular Season
@@ -528,23 +528,23 @@ for pitcher in df3['Pitcher'].unique():
 ```
 
 
-![png](baseball_stats_files/baseball_stats_20_0.png)
+![png](README_images/baseball_stats_20_0.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_20_1.png)
+![png](README_images/baseball_stats_20_1.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_20_2.png)
+![png](README_images/baseball_stats_20_2.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_20_3.png)
+![png](README_images/baseball_stats_20_3.png)
 
 
 
-![png](baseball_stats_files/baseball_stats_20_4.png)
+![png](README_images/baseball_stats_20_4.png)
 
 
 
@@ -568,4 +568,4 @@ df4.sort_values(by=['Got on base']).nlargest(10, 'Did not get on base').plot.bar
 
 
 
-![png](baseball_stats_files/baseball_stats_22_1.png)
+![png](README_images/baseball_stats_22_1.png)
