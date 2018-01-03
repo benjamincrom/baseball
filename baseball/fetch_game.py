@@ -1,6 +1,5 @@
 from datetime import timedelta
-from math import ceil
-from multiprocessing import Process, Manager
+from multiprocessing import Pool
 from os import listdir, makedirs
 from os.path import isdir, isfile, exists, abspath, join
 from xml.etree.ElementTree import fromstring
@@ -52,11 +51,6 @@ def get_formatted_date_str(input_date_str):
 
     return this_date_str
 
-def get_list_of_lists(this_list, num_lists):
-    chunk_size = int(ceil(len(this_list) / float(num_lists)))
-    return [this_list[i:i+chunk_size]
-            for i in range(0, len(this_list), chunk_size)]
-
 def write_game_svg_and_html(game_id, game, output_path):
     svg_filename = game_id + '.svg'
     html_filename = game_id + '.html'
@@ -86,19 +80,22 @@ def get_game_from_files(boxscore_file, player_file, inning_file):
 
     return this_game
 
+def get_game_from_filename_tuple(filename_tuple):
+    game_id, boxscore_file, player_file, inning_file = filename_tuple
+    game = get_game_from_files(boxscore_file, player_file, inning_file)
+
+    return game_id, game
+
 def get_game_generator(filename_list):
-    for game_id, boxscore_file, player_file, inning_file in filename_list:
-        this_game = get_game_from_files(boxscore_file, player_file, inning_file)
+    for filename_tuple in filename_list:
+        game_id, this_game = get_game_from_filename_tuple(filename_tuple)
         if this_game:
             yield game_id, this_game
 
-def write_game_sublist_to_svg_and_html(filename_list, output_path):
-    for game_id, game in get_game_generator(filename_list):
-        write_game_svg_and_html(game_id, game, output_path)
-
-def get_game_sublist(filename_list, return_queue):
-    game_sublist = [game_tup for game_tup in get_game_generator(filename_list)]
-    return_queue.put(game_sublist)
+def write_game_svg_html_from_filename_tuple(filename_output_path_tuple):
+    filename_tuple, output_path = filename_output_path_tuple
+    game_id, game = get_game_from_filename_tuple(filename_tuple)
+    write_game_svg_and_html(game_id, game, output_path)
 
 def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml, inning_raw_xml):
     if boxscore_raw_xml and players_raw_xml and inning_raw_xml:
@@ -118,15 +115,16 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir, output_di
         makedirs(output_dir)
 
     output_path = abspath(output_dir)
-    filename_list = get_filename_list(start_date_str, end_date_str, input_dir)
-    list_of_filename_lists = get_list_of_lists(filename_list,
-                                               NUM_PROCESS_SUBLISTS)
+    filename_output_path_tuple_list = [
+        (filename_tuple, output_path)
+        for filename_tuple in get_filename_list(start_date_str,
+                                                end_date_str,
+                                                input_dir)
+    ]
 
-    for filename_list in list_of_filename_lists:
-        process = Process(target=write_game_sublist_to_svg_and_html,
-                          args=(filename_list, output_path))
-
-        process.start()
+    process_pool = Pool(NUM_PROCESS_SUBLISTS)
+    process_pool.map(write_game_svg_html_from_filename_tuple,
+                     filename_output_path_tuple_list)
 
 def get_filename_list(start_date_str, end_date_str, input_dir):
     filename_list = []
@@ -180,25 +178,9 @@ def get_filename_list(start_date_str, end_date_str, input_dir):
 
 def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
     filename_list = get_filename_list(start_date_str, end_date_str, input_dir)
-    manager = Manager()
-    return_queue = manager.Queue()
-    list_of_filename_lists = get_list_of_lists(filename_list,
-                                               NUM_PROCESS_SUBLISTS)
-
-    job_list = []
-    for filename_list in list_of_filename_lists:
-        process = Process(target=get_game_sublist,
-                          args=(filename_list, return_queue))
-
-        job_list.append(process)
-        process.start()
-
-    for job in job_list:
-        job.join()
-
-    game_tuple_list = []
-    while not return_queue.empty():
-        game_tuple_list.extend(return_queue.get())
+    process_pool = Pool(NUM_PROCESS_SUBLISTS)
+    game_tuple_list = process_pool.map(get_game_from_filename_tuple,
+                                       filename_list)
 
     return game_tuple_list
 
