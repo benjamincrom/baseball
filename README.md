@@ -103,6 +103,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - last_pitch_str
 - location
 - get_svg_str()
+- json()
 
 #### Team
 - abbreviation
