@@ -545,10 +545,14 @@ class Inning(object):
 
     def _asdict(self):
         return (
-            {'top_half_appearance_list': [x._asdict()
-                                          for x in self.top_half_appearance_list],
-             'bottom_half_appearance_list': [x._asdict()
-                                             for x in self.bottom_half_appearance_list],
+            {'top_half_appearance_list': [
+                 x._asdict()
+                 for x in self.top_half_appearance_list
+             ],
+             'bottom_half_appearance_list': [
+                 x._asdict()
+                 for x in self.bottom_half_appearance_list
+             ],
              'top_half_inning_stats': self.top_half_inning_stats,
              'bottom_half_inning_stats': self.bottom_half_inning_stats}
         )
