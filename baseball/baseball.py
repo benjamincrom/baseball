@@ -2,6 +2,7 @@ from collections import OrderedDict
 from textwrap import TextWrapper
 from re import search, sub, findall, escape
 
+from json import dumps
 from pytz import timezone
 
 from baseball.generate_svg import get_game_svg_str
@@ -149,6 +150,19 @@ class PlayerAppearance(object):
         self.end_inning_batter_num = None
         self.pitcher_credit_code = None
 
+    def _asdict(self):
+        return (
+            {'player_obj': self.player_obj._asdict(),
+             'position': self.position,
+             'start_inning_num': self.start_inning_num,
+             'start_inning_half': self.start_inning_half,
+             'start_inning_batter_num': self.start_inning_batter_num,
+             'end_inning_num': self.end_inning_num,
+             'end_inning_half': self.end_inning_half,
+             'end_inning_batter_num': self.end_inning_batter_num,
+             'pitcher_credit_code': self.pitcher_credit_code}
+        )
+
     def __repr__(self):
         start_inning_str = '{}-{}'.format(self.start_inning_num,
                                           self.start_inning_half,)
@@ -194,6 +208,17 @@ class Player(object):
 
         self.era = None
 
+    def _asdict(self):
+        return (
+            {'last_name': self.last_name,
+             'first_name': self.first_name,
+             'mlb_id': self.mlb_id,
+             'obp': self.obp,
+             'slg': self.slg,
+             'number': self.number,
+             'era': self.era}
+        )
+
     def full_name(self):
         return '{} {}'.format(self.first_name, self.last_name)
 
@@ -231,6 +256,15 @@ class Team(object):
         self.player_id_dict = {}
         self.player_name_dict = {}
         self.player_last_name_dict = {}
+
+    def _asdict(self):
+        return (
+            {'name': self.name,
+             'abbreviation': self.abbreviation,
+             'pitcher_list': [x._asdict() for x in self.pitcher_list],
+             'batting_order_list_list': [[x._asdict() for x in y]
+                                         for y in self.batting_order_list_list]}
+        )
 
     def find_player(self, player_key):
         player = None
@@ -340,6 +374,51 @@ class Game(object):
         self.home_team_stats = None
         self.first_pitch_str = ''
         self.last_pitch_str = ''
+
+    def json(self):
+        return dumps(self._asdict())
+
+    @staticmethod
+    def denormalize_box_score_dict(box_score_dict):
+        tuple_list = []
+        for x, y in box_score_dict.items():
+            if isinstance(x, str):
+                value = x
+            elif isinstance(x, Player):
+                value = x._asdict()
+            else:
+                raise ValueError('Wrong type.')
+
+            tuple_list.append((value, y._asdict()))
+
+        return tuple_list
+
+    def _asdict(self):
+        return (
+            {'home_team': self.home_team._asdict(),
+             'away_team': self.away_team._asdict(),
+             'location': self.location,
+             'game_date_str': self.game_date_str,
+             'first_pitch_datetime': str(self.first_pitch_datetime),
+             'last_pitch_datetime': str(self.last_pitch_datetime),
+             'inning_list': [x._asdict() for x in self.inning_list],
+             'away_batter_box_score_dict': self.denormalize_box_score_dict(
+                 self.away_batter_box_score_dict
+             ),
+             'home_batter_box_score_dict': self.denormalize_box_score_dict(
+                 self.home_batter_box_score_dict
+             ),
+             'away_pitcher_box_score_dict': self.denormalize_box_score_dict(
+                 self.away_pitcher_box_score_dict
+             ),
+             'home_pitcher_box_score_dict': self.denormalize_box_score_dict(
+                 self.home_pitcher_box_score_dict
+             ),
+             'away_team_stats': self.away_team_stats._asdict(),
+             'home_team_stats': self.home_team_stats._asdict(),
+             'first_pitch_str': self.first_pitch_str,
+             'last_pitch_str': self.last_pitch_str}
+        )
 
     def get_svg_str(self):
         return get_game_svg_str(self)
@@ -464,6 +543,14 @@ class Inning(object):
                                    bottom_half_appearance_list)
          )
 
+    def _asdict(self):
+        return (
+            {'top_half_appearance_list': [x._asdict() for x in self.top_half_appearance_list],
+             'bottom_half_appearance_list': [x._asdict() for x in self.bottom_half_appearance_list],
+             'top_half_inning_stats': self.top_half_inning_stats,
+             'bottom_half_inning_stats': self.bottom_half_inning_stats}
+        )
+
     def __repr__(self):
         return (
             ('-' * 32) + ' TOP OF INNING ' + ('-' * 32) + '\n{}\n{}\n\n' +
@@ -495,6 +582,27 @@ class PlateAppearance(object):
         self.error_str = self.get_error_str()
         (self.got_on_base,
          self.scorecard_summary) = self.get_on_base_and_summary()
+
+    def _asdict(self):
+        return (
+            {'batting_team': self.batting_team.name,
+             'event_list': [x._asdict() for x in self.event_list],
+             'plate_appearance_description': self.plate_appearance_description,
+             'plate_appearance_summary': self.plate_appearance_summary,
+             'pitcher': self.pitcher._asdict(),
+             'batter': self.batter._asdict(),
+             'inning_outs': self.inning_outs,
+             'scoring_runners_list': [x._asdict()
+                                      for x in self.scoring_runners_list],
+             'runners_batted_in_list': [x._asdict()
+                                        for x in self.runners_batted_in_list],
+             'out_runners_list': [(x[0]._asdict(), x[1])
+                                  for x in self.out_runners_list],
+             'hit_location': self.hit_location,
+             'error_str': self.error_str,
+             'got_on_base': self.got_on_base,
+             'scorecard_summary': self.scorecard_summary}
+        )
 
     @staticmethod
     def process_defense_predicate_list(defense_player_order):

@@ -9,6 +9,14 @@ class Substitution(object):
         self.batting_order = batting_order
         self.position = position
 
+    def _asdict(self):
+        return (
+            {'incoming_player': self.incoming_player._asdict(),
+             'outgoing_player': self.outgoing_player._asdict(),
+             'batting_order': self.batting_order,
+             'position': self.position}
+        )
+
     def __repr__(self):
         incoming_player_name = str(self.incoming_player)
 
@@ -49,6 +57,14 @@ class Switch(object):
         self.new_position_num = new_position_num
         self.new_batting_order = new_batting_order
 
+    def _asdict(self):
+        return (
+            {'player': self.player._asdict(),
+             'old_position_num': self.old_position_num,
+             'new_position_num': self.new_position_num,
+             'new_batting_order': self.new_batting_order}
+        )
+
     def __repr__(self):
         position_str = (
             '(from position {} to position {}'
@@ -80,6 +96,9 @@ class Pitch(object):
         self.pitch_speed = pitch_speed
         self.pitch_position = pitch_position
 
+    def _asdict(self):
+        return self.__dict__
+
     def __repr__(self):
         position_str = (
             '(' +
@@ -106,6 +125,9 @@ class Pickoff(object):
         self.pickoff_description = pickoff_description
         self.pickoff_base = pickoff_base
         self.pickoff_was_successful = pickoff_was_successful
+
+    def _asdict(self):
+        return self.__dict__
 
     def __repr__(self):
         if self.pickoff_was_successful:
@@ -134,6 +156,16 @@ class RunnerAdvance(object):
         self.run_earned = run_earned
         self.is_rbi = is_rbi
 
+    def _asdict(self):
+        return (
+            {'run_description': self.run_description,
+             'runner': self.runner._asdict(),
+             'start_base': self.start_base,
+             'end_base': self.end_base,
+             'runner_scored': self.runner_scored,
+             'run_earned': self.run_earned,
+             'is_rbi': self.is_rbi}
+        )
     def __repr__(self):
         score_str = ''
         if self.runner_scored:
