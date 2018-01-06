@@ -114,12 +114,14 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - player_id_dict
 - player_last_name_dict
 - player_name_dict
+- \_asdict()
 
 #### Inning
 - bottom_half_appearance_list ([PlateAppearance](#plateappearance) list)
 - bottom_half_inning_stats
 - top_half_appearance_list ([PlateAppearance](#plateappearance) list)
 - top_half_inning_stats
+- \_asdict()
 
 #### PlateAppearance
 - batter ([Player](#player))
@@ -136,6 +138,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - runners_batted_in_list ([Player](#player) list)
 - scorecard_summary
 - scoring_runners_list ([Player](#player) list)
+- \_asdict()
 
 #### Player
 - era
@@ -145,6 +148,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - number
 - obp
 - slg
+- \_asdict()
 
 #### PlayerAppearance
 - start_inning_batter_num
@@ -156,17 +160,20 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - pitcher_credit_code
 - player_obj ([Player](#player))
 - position
+- \_asdict()
 
 #### Pitch
 - pitch_description
 - pitch_position
 - pitch_speed
 - pitch_type
+- \_asdict()
 
 #### Pickoff
 - pickoff_description
 - pickoff_base
 - pickoff_was_successful
+- \_asdict()
 
 #### RunnerAdvance
 - run_description
@@ -176,19 +183,21 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - runner_scored
 - run_earned
 - is_rbi
+- \_asdict()
 
 #### Substitution
 - incoming_player ([Player](#player))
 - outgoing_player ([Player](#player))
 - batting_order
 - position
+- \_asdict()
 
 #### Switch
 - player ([Player](#player))
 - old_position_num
 - new_position_num
 - new_batting_order
-
+- \_asdict()
 
 ## Analyze a game: 2017 World Series - Game 7
 
