@@ -2,8 +2,9 @@ AUTOMATIC_BALL_POSITION = (1.0, 1.0)
 
 
 class Substitution(object):
-    def __init__(self, incoming_player, outgoing_player, batting_order,
-                 position):
+    def __init__(self, substitution_datetime, incoming_player, outgoing_player,
+                 batting_order, position):
+        self.substitution_datetime = substitution_datetime
         self.incoming_player = incoming_player
         self.outgoing_player = outgoing_player
         self.batting_order = batting_order
@@ -11,7 +12,8 @@ class Substitution(object):
 
     def _asdict(self):
         return (
-            {'incoming_player': self.incoming_player._asdict(),
+            {'substitution_datetime': str(self.substitution_datetime),
+             'incoming_player': self.incoming_player._asdict(),
              'outgoing_player': self.outgoing_player._asdict(),
              'batting_order': self.batting_order,
              'position': self.position}
@@ -50,8 +52,9 @@ class Substitution(object):
 
 
 class Switch(object):
-    def __init__(self, player, old_position_num, new_position_num,
-                 new_batting_order):
+    def __init__(self, switch_datetime, player, old_position_num,
+                 new_position_num, new_batting_order):
+        self.switch_datetime = switch_datetime
         self.player = player
         self.old_position_num = old_position_num
         self.new_position_num = new_position_num
@@ -59,7 +62,8 @@ class Switch(object):
 
     def _asdict(self):
         return (
-            {'player': self.player._asdict(),
+            {'switch_datetime': str(self.switch_datetime),
+             'player': self.player._asdict(),
              'old_position_num': self.old_position_num,
              'new_position_num': self.new_position_num,
              'new_batting_order': self.new_batting_order}
@@ -89,15 +93,22 @@ class Switch(object):
 
 
 class Pitch(object):
-    def __init__(self, pitch_description, pitch_type, pitch_speed,
-                 pitch_position):
+    def __init__(self, pitch_datetime, pitch_description, pitch_type,
+                 pitch_speed, pitch_position):
+        self.pitch_datetime = pitch_datetime
         self.pitch_description = pitch_description
         self.pitch_type = pitch_type
         self.pitch_speed = pitch_speed
         self.pitch_position = pitch_position
 
     def _asdict(self):
-        return self.__dict__
+        return (
+            {'pitch_datetime': str(self.pitch_datetime),
+             'pitch_description': self.pitch_description,
+             'pitch_type': self.pitch_type,
+             'pitch_speed': self.pitch_speed,
+             'pitch_position': self.pitch_position}
+        )
 
     def __repr__(self):
         position_str = (

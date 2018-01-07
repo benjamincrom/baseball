@@ -356,14 +356,14 @@ class Team(object):
 
 class Game(object):
     def __init__(self, home_team, away_team, location, game_date_str,
-                 first_pitch_datetime=None, last_pitch_datetime=None,
+                 start_datetime=None, end_datetime=None,
                  inning_list=None):
         self.home_team = home_team
         self.away_team = away_team
         self.location = location or ''
         self.game_date_str = game_date_str
-        self.first_pitch_datetime = first_pitch_datetime
-        self.last_pitch_datetime = last_pitch_datetime
+        self.start_datetime = start_datetime
+        self.end_datetime = end_datetime
         self.inning_list = inning_list or []
 
         self.away_batter_box_score_dict = None
@@ -372,8 +372,8 @@ class Game(object):
         self.home_pitcher_box_score_dict = None
         self.away_team_stats = None
         self.home_team_stats = None
-        self.first_pitch_str = ''
-        self.last_pitch_str = ''
+        self.start_str = ''
+        self.end_str = ''
 
     def json(self):
         return dumps(self._asdict())
@@ -399,8 +399,8 @@ class Game(object):
              'away_team': self.away_team._asdict(),
              'location': self.location,
              'game_date_str': self.game_date_str,
-             'first_pitch_datetime': str(self.first_pitch_datetime),
-             'last_pitch_datetime': str(self.last_pitch_datetime),
+             'start_datetime': str(self.start_datetime),
+             'end_datetime': str(self.end_datetime),
              'inning_list': [x._asdict() for x in self.inning_list],
              'away_batter_box_score_dict': self.denormalize_box_score_dict(
                  self.away_batter_box_score_dict
@@ -416,16 +416,27 @@ class Game(object):
              ),
              'away_team_stats': self.away_team_stats._asdict(),
              'home_team_stats': self.home_team_stats._asdict(),
-             'first_pitch_str': self.first_pitch_str,
-             'last_pitch_str': self.last_pitch_str}
+             'start_str': self.start_str,
+             'end_str': self.end_str}
         )
 
     def get_svg_str(self):
         return get_game_svg_str(self)
 
     def set_gametimes(self):
-        if self.first_pitch_datetime:
-            self.first_pitch_str = self.first_pitch_datetime.astimezone(
+        self.start_datetime = (
+            self.inning_list[0].top_half_appearance_list[0].start_datetime
+        )
+
+        last_inning_half_appearance_list = (
+            self.inning_list[0].bottom_half_appearance_list or
+            self.inning_list[0].top_half_appearance_list
+        )
+
+        self.end_datetime = last_inning_half_appearance_list[-1].end_datetime
+
+        if self.start_datetime:
+            self.start_str = self.start_datetime.astimezone(
                 timezone(
                     STADIUM_TIMEZONE_DICT.get(self.location,
                                               'America/New_York')
@@ -434,10 +445,10 @@ class Game(object):
                 '%a %b %d %Y, %-I:%M %p'
             )
         else:
-            self.first_pitch_str = ''
+            self.start_str = ''
 
-        if self.last_pitch_datetime:
-            self.last_pitch_str = self.last_pitch_datetime.astimezone(
+        if self.end_datetime:
+            self.end_str = self.end_datetime.astimezone(
                 timezone(
                     STADIUM_TIMEZONE_DICT.get(self.location,
                                               'America/New_York')
@@ -446,7 +457,7 @@ class Game(object):
                 ' - %-I:%M %p %Z'
             )
         else:
-            self.last_pitch_str = ''
+            self.end_str = ''
 
     def set_pitching_box_score_dict(self):
         self.away_pitcher_box_score_dict = OrderedDict([])
@@ -490,9 +501,8 @@ class Game(object):
 
     def __repr__(self):
         return_str = '{}\n'.format(self.location)
-        if self.first_pitch_str and self.last_pitch_str:
-            return_str += '{}{}\n\n'.format(self.first_pitch_str,
-                                            self.last_pitch_str)
+        if self.start_str and self.end_str:
+            return_str += '{}{}\n\n'.format(self.start_str, self.end_str)
         else:
             return_str += '{}\n\n'.format(self.game_date_str)
 
@@ -575,9 +585,12 @@ class Inning(object):
 
 
 class PlateAppearance(object):
-    def __init__(self, batting_team, plate_appearance_description,
-                 plate_appearance_summary, pitcher, batter, inning_outs,
-                 scoring_runners_list, runners_batted_in_list, event_list):
+    def __init__(self, start_datetime, end_datetime, batting_team,
+                 plate_appearance_description, plate_appearance_summary,
+                 pitcher, batter, inning_outs, scoring_runners_list,
+                 runners_batted_in_list, event_list):
+        self.start_datetime = start_datetime
+        self.end_datetime = end_datetime
         self.batting_team = batting_team
         self.event_list = event_list or []
         self.plate_appearance_description = plate_appearance_description
@@ -596,7 +609,9 @@ class PlateAppearance(object):
 
     def _asdict(self):
         return (
-            {'batting_team': self.batting_team.name,
+            {'start_datetime': str(self.start_datetime),
+             'end_datetime': str(self.end_datetime),
+             'batting_team': self.batting_team.name,
              'event_list': [x._asdict() for x in self.event_list],
              'plate_appearance_description': self.plate_appearance_description,
              'plate_appearance_summary': self.plate_appearance_summary,

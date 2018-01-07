@@ -69,9 +69,8 @@ def get_team_abbreviation(mlb_code):
 
     raise ValueError('Invalid mlb code')
 
-def set_pitch_times(event, game_obj):
-    if event.get('tfs_zulu'):
-        tfs_zulu_str = event.get('tfs_zulu')
+def get_datetime(tfs_zulu_str):
+    if tfs_zulu_str:
         year = int(tfs_zulu_str[0:4])
         month = int(tfs_zulu_str[5:7])
         day = int(tfs_zulu_str[8:10])
@@ -80,15 +79,15 @@ def set_pitch_times(event, game_obj):
         second = int(tfs_zulu_str[17:19])
         event_datetime = datetime(year, month, day, hour, minute, second,
                                   tzinfo=UTC)
+    else:
+        event_datetime = None
 
-        if not game_obj.first_pitch_datetime:
-            game_obj.first_pitch_datetime = event_datetime
-
-        game_obj.last_pitch_datetime = event_datetime
+    return event_datetime
 
 def process_pitch(event):
     pitch_description = event.get('des')
     pitch_type = event.get('pitch_type')
+    pitch_datetime = get_datetime(event.get('tfs_zulu'))
 
     if not (event.get('x') and event.get('y')):
         (pitch_x, pitch_y) = AUTOMATIC_BALL_POSITION
@@ -103,7 +102,8 @@ def process_pitch(event):
     else:
         pitch_speed = None
 
-    pitch_obj = Pitch(pitch_description,
+    pitch_obj = Pitch(pitch_datetime,
+                      pitch_description,
                       pitch_type,
                       pitch_speed,
                       pitch_position)
@@ -162,7 +162,6 @@ def process_plate_appearance(plate_appearance, game_obj):
 
     for event in plate_appearance:
         if event.tag == 'pitch':
-            set_pitch_times(event, game_obj)
             pitch_obj = process_pitch(event)
             event_list.append(pitch_obj)
         elif event.tag == 'po':
@@ -239,7 +238,8 @@ def get_player_names(player_list):
 
     return incoming_player_name.strip(), outgoing_player_name.strip()
 
-def parse_substitution(description, event_summary, inning_half_str, game_obj):
+def parse_substitution(substitution_datetime, description, event_summary,
+                       inning_half_str, game_obj):
     player_list, action_list = parse_substitution_description(description)
     incoming_player_name, outgoing_player_name = get_player_names(player_list)
     batting_order, position_str = None, None
@@ -283,7 +283,8 @@ def parse_substitution(description, event_summary, inning_half_str, game_obj):
     outgoing_player_name = get_name_only(outgoing_player_name)
     incoming_player = this_team[incoming_player_name]
     outgoing_player = this_team[outgoing_player_name]
-    substitution_obj = Substitution(incoming_player,
+    substitution_obj = Substitution(substitution_datetime,
+                                    incoming_player,
                                     outgoing_player,
                                     batting_order,
                                     position_num)
@@ -363,8 +364,12 @@ def process_at_bat(plate_appearance, event_list, game_obj):
     else:
         raise ValueError('Batter ID not in player_dict')
 
+    start_datetime = get_datetime(plate_appearance.get('start_tfs_zulu'))
+    end_datetime = get_datetime(plate_appearance.get('end_tfs_zulu'))
     plate_appearance_summary = plate_appearance.get('event').strip()
-    plate_appearance_obj = PlateAppearance(batting_team,
+    plate_appearance_obj = PlateAppearance(start_datetime,
+                                           end_datetime,
+                                           batting_team,
                                            plate_appearance_desc,
                                            plate_appearance_summary,
                                            pitcher,
@@ -464,8 +469,8 @@ def process_switch(switch_obj, inning_num, inning_half_str,
     if player_appearance_obj.position == 1:
         switching_team.pitcher_list.append(player_appearance_obj)
 
-def parse_switch_description(description, event_summary, game_obj,
-                             inning_half_str):
+def parse_switch_description(event_datetime, description, event_summary,
+                             game_obj, inning_half_str):
     if 'Substitution: ' in description:
         description = description.split('Substitution: ')[1]
 
@@ -514,7 +519,8 @@ def parse_switch_description(description, event_summary, game_obj,
     if not old_position:
         raise ValueError('Cannot find player\'s position')
 
-    switch_obj = Switch(player, old_position, new_position, new_batting_order)
+    switch_obj = Switch(event_datetime, player, old_position, new_position,
+                        new_batting_order)
 
     return switch_obj, switching_team
 
@@ -544,6 +550,7 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
     plate_appearance_list = []
     event_list = []
     for event_container in baseball_half_inning:
+        event_datetime = get_datetime(event_container.get('tfs_zulu'))
         event_description = event_container.get('des')
         event_summary = event_container.get('event')
         inning_num = len(game_obj.inning_list) + 1
@@ -562,7 +569,8 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
 
             if substitution_flag:
                 (substituting_team,
-                 substitution_obj) = parse_substitution(event_description,
+                 substitution_obj) = parse_substitution(event_datetime,
+                                                        event_description,
                                                         event_summary,
                                                         inning_half_str,
                                                         game_obj)
@@ -573,7 +581,8 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
                                      substituting_team)
             elif switch_flag:
                 (switch_obj,
-                 switching_team) = parse_switch_description(event_description,
+                 switching_team) = parse_switch_description(event_datetime,
+                                                            event_description,
                                                             event_summary,
                                                             game_obj,
                                                             inning_half_str)

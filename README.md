@@ -91,16 +91,16 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - away_pitcher_box_score_dict
 - away_team ([Team](#team))
 - away_team_stats
-- first_pitch_datetime
-- first_pitch_str
+- start_datetime
+- start_str
 - game_date_str
 - home_batter_box_score_dict
 - home_pitcher_box_score_dict
 - home_team ([Team](#team))
 - home_team_stats
 - inning_list ([Inning](#inning) list)
-- last_pitch_datetime
-- last_pitch_str
+- end_datetime
+- end_str
 - location
 - get_svg_str()
 - json()
@@ -124,6 +124,8 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - \_asdict()
 
 #### PlateAppearance
+- start_datetime
+- end_datetime
 - batter ([Player](#player))
 - batting_team ([Team](#team))
 - error_str
@@ -163,6 +165,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - \_asdict()
 
 #### Pitch
+- pitch_datetime
 - pitch_description
 - pitch_position
 - pitch_speed
@@ -176,6 +179,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - \_asdict()
 
 #### RunnerAdvance
+- runner_advance_datetime
 - run_description
 - runner ([Player](#player))
 - start_base
@@ -186,6 +190,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - \_asdict()
 
 #### Substitution
+- substitution_datetime
 - incoming_player ([Player](#player))
 - outgoing_player ([Player](#player))
 - batting_order
@@ -193,6 +198,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - \_asdict()
 
 #### Switch
+- switch_datetime
 - player ([Player](#player))
 - old_position_num
 - new_position_num
