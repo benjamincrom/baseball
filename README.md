@@ -45,6 +45,8 @@ Fetch an object which contains metadata and events for a single MLB game.
 ```python
 import baseball
 game_id, game = baseball.get_game_from_url('2017-11-1', 'HOU', 'LAD', 1)
+game_dict = game._asdict()
+game_json_str = game.json()
 ```
 Write scorecard as SVG image:
 ```python
