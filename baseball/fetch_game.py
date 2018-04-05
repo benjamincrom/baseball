@@ -102,9 +102,14 @@ def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml, inning_raw_xml)
         boxscore_xml_obj = fromstring(boxscore_raw_xml)
         players_xml_obj = fromstring(players_raw_xml)
         inning_xml_obj = fromstring(inning_raw_xml)
-        this_game = get_game_obj(boxscore_xml_obj,
-                                 players_xml_obj,
-                                 inning_xml_obj)
+        if (boxscore_xml_obj.tag == 'Error' or
+                players_xml_obj.tag == 'Error' or
+                inning_xml_obj.tag == 'Error'):
+            this_game = None
+        else:
+            this_game = get_game_obj(boxscore_xml_obj,
+                                     players_xml_obj,
+                                     inning_xml_obj)
     else:
         this_game = None
 

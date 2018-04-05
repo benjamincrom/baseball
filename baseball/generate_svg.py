@@ -1994,8 +1994,8 @@ def get_game_title_str(game):
 def assemble_game_title_svg(game):
     game_title_svg = ''
     game_str = '{} @ {}'.format(game.away_team.name, game.home_team.name)
-    if game.first_pitch_str and game.last_pitch_str:
-        game_datetime = '{}{}'.format(game.first_pitch_str, game.last_pitch_str)
+    if game.start_str and game.end_str:
+        game_datetime = '{}{}'.format(game.start_str, game.end_str)
     else:
         game_datetime = game.game_date_str
 
