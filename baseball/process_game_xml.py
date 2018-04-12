@@ -334,7 +334,7 @@ def fix_description(input_str):
 
     return input_str
 
-def process_at_bat(plate_appearance, event_list, game_obj):
+def process_at_bat(plate_appearance, event_list, game_obj, steal_description):
     (new_event_list,
      scoring_runners_list,
      runners_batted_in_list) = process_plate_appearance(plate_appearance,
@@ -342,19 +342,25 @@ def process_at_bat(plate_appearance, event_list, game_obj):
 
     event_list += new_event_list
     plate_appearance_desc = fix_description(plate_appearance.get('des'))
+
     pitcher_id = int(plate_appearance.get('pitcher'))
     inning_outs = int(plate_appearance.get('o'))
 
+    out_runner_supplemental_list = None
     pitcher = None
     for this_team in [game_obj.home_team, game_obj.away_team]:
         if pitcher_id in this_team:
             pitcher = this_team[pitcher_id]
+        elif steal_description:
+            out_runner_supplemental_list = (
+                PlateAppearance.get_out_runners_list(steal_description,
+                                                     this_team)
+            )
 
     if not pitcher:
         raise ValueError('Batter ID not in player_dict')
 
     batter_id = int(plate_appearance.get('batter'))
-
     if batter_id in game_obj.home_team:
         batter = game_obj.home_team[batter_id]
         batting_team = game_obj.home_team
@@ -378,6 +384,9 @@ def process_at_bat(plate_appearance, event_list, game_obj):
                                            scoring_runners_list,
                                            runners_batted_in_list,
                                            event_list)
+
+    if out_runner_supplemental_list:
+        plate_appearance_obj.out_runners_list += out_runner_supplemental_list
 
     return plate_appearance_obj
 
@@ -524,7 +533,7 @@ def parse_switch_description(event_datetime, description, event_summary,
 
     return switch_obj, switching_team
 
-def get_substitution_switch_flags(event_summary, event_description):
+def get_sub_switch_steal_flags(event_summary, event_description):
     substitution_flag = (
         ('Sub' in event_summary or 'sub' in event_summary) and
         'remains in the game' not in event_description and
@@ -541,7 +550,9 @@ def get_substitution_switch_flags(event_summary, event_description):
         'Dropped foul pop error' not in event_description
     )
 
-    return substitution_flag, switch_flag
+    steal_flag = 'Steal' in event_summary or 'steal' in event_description
+
+    return substitution_flag, switch_flag, steal_flag
 
 def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
     if inning_half_str != 'top' and inning_half_str != 'bottom':
@@ -549,6 +560,7 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
 
     plate_appearance_list = []
     event_list = []
+    steal_description = None
     for event_container in baseball_half_inning:
         event_datetime = get_datetime(event_container.get('tfs_zulu'))
         event_description = event_container.get('des')
@@ -557,15 +569,16 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
         next_batter_num = len(plate_appearance_list) + 1
         if event_container.tag == 'atbat':
             plate_appearance_obj = process_at_bat(event_container, event_list,
-                                                  game_obj)
+                                                  game_obj, steal_description)
 
             plate_appearance_list.append(plate_appearance_obj)
             event_list = []
+            steal_description = None
         elif event_container.tag == 'action':
-            substitution_flag, switch_flag = get_substitution_switch_flags(
-                event_summary,
-                event_description
-            )
+            (substitution_flag,
+             switch_flag,
+             steal_flag) = get_sub_switch_steal_flags(event_summary,
+                                                      event_description)
 
             if substitution_flag:
                 (substituting_team,
@@ -590,6 +603,9 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
                 event_list.append(switch_obj)
                 process_switch(switch_obj, inning_num, inning_half_str,
                                next_batter_num, switching_team)
+
+            elif steal_flag:
+                steal_description = event_description
         else:
             raise ValueError('Unexpected event container tag')
 

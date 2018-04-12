@@ -608,8 +608,11 @@ class PlateAppearance(object):
         self.inning_outs = inning_outs
         self.scoring_runners_list = scoring_runners_list
         self.runners_batted_in_list = runners_batted_in_list
+        self.out_runners_list = self.get_out_runners_list(
+            self.plate_appearance_description,
+            self.batting_team
+        )
 
-        self.out_runners_list = self.get_out_runners_list()
         self.hit_location = self.get_hit_location()
         self.error_str = self.get_error_str()
         (self.got_on_base,
@@ -728,8 +731,9 @@ class PlateAppearance(object):
 
         return defense_suffix
 
-    def get_out_runners_list(self):
-        description = strip_suffixes(self.plate_appearance_description)
+    @staticmethod
+    def get_out_runners_list(plate_appearance_description, batting_team):
+        description = strip_suffixes(plate_appearance_description)
         runner_name_list = findall(
             (r'([A-Z][\w\'-]+\s+(?:[A-Z,a-z][\w\'-]+\s+)?'
              r'(?:[A-Z,a-z][\w\'-]+\s+)?[A-Z][\w\'-]+)\s+'
@@ -747,7 +751,7 @@ class PlateAppearance(object):
                 base = INCREMENT_BASE_DICT[base]
 
             runner_tuple_list.append(
-                (self.batting_team[name], base)
+                (batting_team[name], base)
             )
 
         return runner_tuple_list

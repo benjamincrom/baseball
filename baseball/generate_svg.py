@@ -670,9 +670,9 @@ def get_big_svg_header(game):
         text_x_pos = x_pos + (BOX_WIDTH // 2)
 
         big_svg_str += BIG_SVG_COLUMN.format(inning_num=inning_num,
-                                                       x_pos=x_pos,
-                                                       text_x_pos=text_x_pos,
-                                                       width=game_width)
+                                             x_pos=x_pos,
+                                             text_x_pos=text_x_pos,
+                                             width=game_width)
 
     box_score_header_x_pos = (inning_length + 1) * BOX_WIDTH
     box_score_header_text_x_pos = box_score_header_x_pos + 13
