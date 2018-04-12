@@ -22,6 +22,7 @@ MLB_URL_PATTERN = ('http://gd2.mlb.com/components/game/mlb/year_{year}/'
 HTML_WRAPPER = (
     '<html>'
     '<head>'
+    #'<meta http-equiv="refresh" content="45">'
     '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
     '<!-- Global site tag (gtag.js) - Google Analytics -->'
     '<script async '

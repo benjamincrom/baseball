@@ -432,8 +432,8 @@ class Game(object):
             self.start_datetime = None
 
         last_inning_half_appearance_list = (
-            self.inning_list[0].bottom_half_appearance_list or
-            self.inning_list[0].top_half_appearance_list
+            self.inning_list[-1].bottom_half_appearance_list or
+            self.inning_list[-1].top_half_appearance_list
         )
 
         if last_inning_half_appearance_list:
