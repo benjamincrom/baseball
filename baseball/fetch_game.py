@@ -96,7 +96,8 @@ def get_game_generator(filename_list):
 def write_game_svg_html_from_filename_tuple(filename_output_path_tuple):
     filename_tuple, output_path = filename_output_path_tuple
     game_id, game = get_game_from_filename_tuple(filename_tuple)
-    write_game_svg_and_html(game_id, game, output_path)
+    if game:
+        write_game_svg_and_html(game_id, game, output_path)
 
 def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml, inning_raw_xml):
     if boxscore_raw_xml and players_raw_xml and inning_raw_xml:
