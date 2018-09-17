@@ -47,7 +47,7 @@ def process_baserunners(plate_appearance, last_plate_appearance,
     for event in plate_appearance.event_list:
         if isinstance(event, RunnerAdvance):
             if (plate_appearance == last_plate_appearance and
-                    'out' in event.run_description):
+                    ('out' in event.run_description or 'Out' in event.run_description)):
                 break
             else:
                 if event.end_base == '1B':
