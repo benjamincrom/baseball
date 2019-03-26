@@ -105,6 +105,7 @@ PITCH_TYPE_DESCRIPTION = {'Ball': 'B',
                           'Foul Bunt': 'L',
                           'Missed Bunt': 'M',
                           'In play, run(s)': 'X',
+                          'In play, runs(s)': 'X',
                           'In play, out(s)': 'X',
                           'In play, no out': 'X'}
 
@@ -1056,7 +1057,8 @@ def player_got_on_base(plate_appearance):
     got_on_base = False
     for event in plate_appearance.event_list:
         if (isinstance(event, RunnerAdvance) and
-                event.runner == plate_appearance.batter):
+                event.runner == plate_appearance.batter and
+                event.end_base):
             got_on_base = True
 
     return got_on_base

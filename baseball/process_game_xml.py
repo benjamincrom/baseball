@@ -89,7 +89,10 @@ def process_pitch(event):
     pitch_type = event.get('pitch_type')
     pitch_datetime = get_datetime(event.get('tfs_zulu'))
 
-    if not (event.get('x') and event.get('y')):
+    if (not event.get('x') or
+           not event.get('y') or
+           event.get('x') == 'None' or
+           event.get('y') == 'None'):
         (pitch_x, pitch_y) = AUTOMATIC_BALL_POSITION
     else:
         pitch_x = float(event.get('x'))
@@ -263,7 +266,8 @@ def parse_substitution(substitution_datetime, description, event_summary,
         else:
             this_team = game_obj.away_team
     elif (event_summary == 'Offensive Sub' or
-          event_summary == 'Offensive sub'):
+          event_summary == 'Offensive sub' or
+          event_summary == 'Offensive Substitution'):
         if inning_half_str == 'top':
             this_team = game_obj.away_team
         else:
@@ -567,14 +571,7 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
         event_summary = event_container.get('event')
         inning_num = len(game_obj.inning_list) + 1
         next_batter_num = len(plate_appearance_list) + 1
-        if event_container.tag == 'atbat':
-            plate_appearance_obj = process_at_bat(event_container, event_list,
-                                                  game_obj, steal_description)
-
-            plate_appearance_list.append(plate_appearance_obj)
-            event_list = []
-            steal_description = None
-        elif event_container.tag == 'action':
+        if event_container.tag == 'action' or ' replaces ' in event_description:
             (substitution_flag,
              switch_flag,
              steal_flag) = get_sub_switch_steal_flags(event_summary,
@@ -606,6 +603,14 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
 
             elif steal_flag:
                 steal_description = event_description
+        elif event_container.tag == 'atbat':
+            if event_container.get('des'):
+                plate_appearance_obj = process_at_bat(event_container, event_list,
+                                                      game_obj, steal_description)
+
+                plate_appearance_list.append(plate_appearance_obj)
+                event_list = []
+                steal_description = None
         else:
             raise ValueError('Unexpected event container tag')
 
@@ -838,24 +843,28 @@ def get_game_obj(boxscore_xml, team_xml, game_xml):
      away_starting_pitcher_id,
      home_starting_pitcher_id) = initialize_game_object(boxscore_xml)
 
-    process_team_xml(game, team_xml)
+    if not away_starting_pitcher_id or not home_starting_pitcher_id:
+        game = None
+    else:
+        process_team_xml(game, team_xml)
 
-    set_starting_pitchers(game,
-                          away_starting_pitcher_id,
-                          home_starting_pitcher_id)
+        set_starting_pitchers(game,
+                              away_starting_pitcher_id,
+                              home_starting_pitcher_id)
 
-    for inning_xml in game_xml:
-        game.inning_list.append(
-            process_inning_xml(inning_xml, game)
-        )
+        for inning_xml in game_xml:
+            game.inning_list.append(
+                process_inning_xml(inning_xml, game)
+            )
 
-    set_pitcher_wls_codes(game,
-                          away_pitcher_status_dict,
-                          home_pitcher_status_dict)
+        set_pitcher_wls_codes(game,
+                              away_pitcher_status_dict,
+                              home_pitcher_status_dict)
 
-    game.set_batting_box_score_dict()
-    game.set_pitching_box_score_dict()
-    game.set_team_stats()
-    game.set_gametimes()
+        game.set_batting_box_score_dict()
+        game.set_pitching_box_score_dict()
+        game.set_team_stats()
+        game.set_gametimes()
 
     return game
+

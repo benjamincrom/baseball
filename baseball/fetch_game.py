@@ -10,7 +10,7 @@ from requests import get
 from baseball.process_game_xml import MLB_TEAM_CODE_DICT, get_game_obj
 
 
-NUM_PROCESS_SUBLISTS = 16
+NUM_PROCESS_SUBLISTS = 3
 BOXSCORE_SUFFIX = 'boxscore.xml'
 PLAYERS_SUFFIX = 'players.xml'
 INNING_SUFFIX = 'inning/inning_all.xml'
@@ -22,7 +22,7 @@ MLB_URL_PATTERN = ('http://gd2.mlb.com/components/game/mlb/year_{year}/'
 HTML_WRAPPER = (
     '<html>'
     '<head>'
-    #'<meta http-equiv="refresh" content="45">'
+    '<meta http-equiv="refresh" content="45">'
     '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
     '<!-- Global site tag (gtag.js) - Google Analytics -->'
     '<script async '
@@ -97,6 +97,7 @@ def write_game_svg_html_from_filename_tuple(filename_output_path_tuple):
     filename_tuple, output_path = filename_output_path_tuple
     game_id, game = get_game_from_filename_tuple(filename_tuple)
     if game:
+        print(game_id)
         write_game_svg_and_html(game_id, game, output_path)
 
 def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml, inning_raw_xml):
@@ -129,9 +130,8 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir, output_di
                                                 input_dir)
     ]
 
-    process_pool = Pool(NUM_PROCESS_SUBLISTS)
-    process_pool.map(write_game_svg_html_from_filename_tuple,
-                     filename_output_path_tuple_list)
+    for tup in filename_output_path_tuple_list:
+        write_game_svg_html_from_filename_tuple(tup)
 
 def get_filename_list(start_date_str, end_date_str, input_dir):
     filename_list = []
@@ -186,8 +186,10 @@ def get_filename_list(start_date_str, end_date_str, input_dir):
 def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
     filename_list = get_filename_list(start_date_str, end_date_str, input_dir)
     process_pool = Pool(NUM_PROCESS_SUBLISTS)
-    game_tuple_list = process_pool.map(get_game_from_filename_tuple,
-                                       filename_list)
+    # game_tuple_list = process_pool.map(get_game_from_filename_tuple,
+    #                                    filename_list)
+    game_tuple_list = [get_game_from_filename_tuple(filename_tuple)
+                       for filename_tuple in filename_list]
 
     return game_tuple_list
 

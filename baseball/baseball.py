@@ -273,9 +273,12 @@ class Team(object):
             player = self.player_id_dict.get(player_id)
         elif isinstance(player_key, str):
             player_name = player_key
-            if player_name in self.player_name_dict:
-                player = self.player_name_dict[player_name]
-            else:
+            player_name_no_spaces = ''.join(player_name.split())
+            for player_name_key in self.player_name_dict:
+                if player_name_no_spaces in player_name_key:
+                    player = self.player_name_dict[player_name_key]
+
+            if not player:
                 player_name = sub(r' Jr$', '', player_name.strip(' .'))
                 player_name = sub(r' Sr$', '', player_name.strip(' .'))
                 player_name = sub(r' II$', '', player_name.strip())
@@ -311,7 +314,7 @@ class Team(object):
             last_name = last_name.split()[1]
 
         self.player_id_dict[player.mlb_id] = player
-        self.player_name_dict[player.full_name()] = player
+        self.player_name_dict[''.join(player.full_name().split())] = player
         self.player_last_name_dict[player.first_name[0] + last_name] = player
 
     def __contains__(self, player_key):
@@ -424,24 +427,24 @@ class Game(object):
         return get_game_svg_str(self)
 
     def set_gametimes(self):
-        if self.inning_list[0].top_half_appearance_list:
-            self.start_datetime = (
-                self.inning_list[0].top_half_appearance_list[0].start_datetime
-            )
-        else:
-            self.start_datetime = None
+        self.start_datetime = None
+        self.end_datetime = None
 
-        last_inning_half_appearance_list = (
-            self.inning_list[-1].bottom_half_appearance_list or
-            self.inning_list[-1].top_half_appearance_list
-        )
+        if self.inning_list:
+            if self.inning_list[0].top_half_appearance_list:
+                self.start_datetime = (
+                    self.inning_list[0].top_half_appearance_list[0].start_datetime
+                )
 
-        if last_inning_half_appearance_list:
-            self.end_datetime = (
-                last_inning_half_appearance_list[-1].end_datetime
+            last_inning_half_appearance_list = (
+                self.inning_list[-1].bottom_half_appearance_list or
+                self.inning_list[-1].top_half_appearance_list
             )
-        else:
-            self.end_datetime = None
+
+            if last_inning_half_appearance_list:
+                self.end_datetime = (
+                    last_inning_half_appearance_list[-1].end_datetime
+                )
 
         if self.start_datetime:
             self.start_str = self.start_datetime.astimezone(
@@ -564,17 +567,16 @@ class Inning(object):
     def _asdict(self):
         if self.bottom_half_appearance_list:
             bottom_half_appearance_dict_list = [
-                 x._asdict()
-                 for x in self.bottom_half_appearance_list
+                x._asdict()
+                for x in self.bottom_half_appearance_list
             ]
         else:
             bottom_half_appearance_dict_list = []
 
         return (
             {'top_half_appearance_list': [
-                 x._asdict()
-                 for x in self.top_half_appearance_list
-             ],
+                x._asdict() for x in self.top_half_appearance_list
+	     ],
              'bottom_half_appearance_list': bottom_half_appearance_dict_list,
              'top_half_inning_stats': self.top_half_inning_stats,
              'bottom_half_inning_stats': self.bottom_half_inning_stats}
@@ -796,13 +798,16 @@ class PlateAppearance(object):
 
         code = None
         for keyword, this_code in PLAY_CODE_ORDERED_DICT.items():
-            if keyword in description_str:
+            if keyword in description_str.lower():
                 code = this_code
 
-        if self.plate_appearance_summary == 'Fan interference':
+        if 'mound visit' in description_str.lower():
+            code = ''
+        elif self.plate_appearance_summary == 'Fan interference':
             code = 'FI'
-
-        if not code:
+        elif ' out to ' in description_str and code is None:
+            code = 'F'
+        elif not code:
             disqualified_description = ('out at' in description_str or
                                         'singles' in description_str or
                                         'doubles' in description_str or
