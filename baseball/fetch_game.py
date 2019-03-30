@@ -186,10 +186,9 @@ def get_filename_list(start_date_str, end_date_str, input_dir):
 def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
     filename_list = get_filename_list(start_date_str, end_date_str, input_dir)
     process_pool = Pool(NUM_PROCESS_SUBLISTS)
-    # game_tuple_list = process_pool.map(get_game_from_filename_tuple,
-    #                                    filename_list)
-    game_tuple_list = [get_game_from_filename_tuple(filename_tuple)
-                       for filename_tuple in filename_list]
+    #game_tuple_list = process_pool.map(get_game_from_filename_tuple,
+    #                                   filename_list)
+    game_tuple_list = [get_game_from_filename_tuple(filename_tuple) for filename_tuple in filename_list]
 
     return game_tuple_list
 
@@ -244,9 +243,13 @@ def get_game_from_url(date_str, away_code, home_code, game_number):
                                              home_code,
                                              game_number)
 
-    this_game = get_game_from_xml_strings(boxscore_raw_xml,
-                                          players_raw_xml,
-                                          inning_raw_xml)
+    if (isinstance(boxscore_raw_xml, str) and
+            'Internal server error' in boxscore_raw_xml):
+        this_game = None
+    else:
+        this_game = get_game_from_xml_strings(boxscore_raw_xml,
+                                              players_raw_xml,
+                                              inning_raw_xml)
 
     if not this_game:
         print('No data found for {} {} {} {}'.format(date_str,

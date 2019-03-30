@@ -374,7 +374,7 @@ def process_at_bat(plate_appearance, event_list, game_obj, steal_description):
     else:
         raise ValueError('Batter ID not in player_dict')
 
-    start_datetime = get_datetime(plate_appearance.get('start_tfs_zulu'))
+    start_datetime = get_datetime(plate_appearance.get('end_tfs_zulu'))
     end_datetime = get_datetime(plate_appearance.get('end_tfs_zulu'))
     plate_appearance_summary = plate_appearance.get('event').strip()
     plate_appearance_obj = PlateAppearance(start_datetime,
