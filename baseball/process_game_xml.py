@@ -90,9 +90,9 @@ def process_pitch(event):
     pitch_datetime = get_datetime(event.get('tfs_zulu'))
 
     if (not event.get('x') or
-           not event.get('y') or
-           event.get('x') == 'None' or
-           event.get('y') == 'None'):
+            not event.get('y') or
+            event.get('x') == 'None' or
+            event.get('y') == 'None'):
         (pitch_x, pitch_y) = AUTOMATIC_BALL_POSITION
     else:
         pitch_x = float(event.get('x'))
@@ -867,4 +867,3 @@ def get_game_obj(boxscore_xml, team_xml, game_xml):
         game.set_gametimes()
 
     return game
-
