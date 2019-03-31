@@ -438,7 +438,6 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
         pitching_appearance_list.append(player_appearance_obj)
 
     if not processed_flag:
-        import pdb; pdb.set_trace()
         raise ValueError('Invalid substitution.')
 
 def process_switch(switch_obj, inning_num, inning_half_str,
