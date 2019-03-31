@@ -815,7 +815,7 @@ class PlateAppearance(object):
                                         'ejected' in description_str or
                                         'remains in the game' in description_str or
                                         ' replaces ' in description_str or
-                                        'mount visit' in description_str.lower() or
+                                        'mound visit' in description_str.lower() or
                                         'delay' in description_str.lower())
 
             if disqualified_description:
