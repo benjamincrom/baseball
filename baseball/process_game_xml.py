@@ -90,9 +90,9 @@ def process_pitch(event):
     pitch_datetime = get_datetime(event.get('tfs_zulu'))
 
     if (not event.get('x') or
-           not event.get('y') or
-           event.get('x') == 'None' or
-           event.get('y') == 'None'):
+            not event.get('y') or
+            event.get('x') == 'None' or
+            event.get('y') == 'None'):
         (pitch_x, pitch_y) = AUTOMATIC_BALL_POSITION
     else:
         pitch_x = float(event.get('x'))
@@ -427,7 +427,7 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
 
         if duplicate_position_set:
             duplicate_position = [x for x in duplicate_position_set][0]
-            duplicate_appearance_list= []
+            duplicate_appearance_list = []
             for batting_list in batting_list_list:
                 if batting_list[-1].position == duplicate_position:
                     duplicate_appearance_list.append(batting_list)
@@ -903,4 +903,3 @@ def get_game_obj(boxscore_xml, team_xml, game_xml):
         game.set_gametimes()
 
     return game
-

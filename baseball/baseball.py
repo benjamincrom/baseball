@@ -567,17 +567,17 @@ class Inning(object):
     def _asdict(self):
         if self.bottom_half_appearance_list:
             bottom_half_appearance_dict_list = [
-                 x._asdict()
-                 for x in self.bottom_half_appearance_list
+                x._asdict()
+                for x in self.bottom_half_appearance_list
             ]
         else:
             bottom_half_appearance_dict_list = []
 
         return (
             {'top_half_appearance_list': [
-                 x._asdict()
-                 for x in self.top_half_appearance_list
-             ],
+                x._asdict()
+                for x in self.top_half_appearance_list
+            ],
              'bottom_half_appearance_list': bottom_half_appearance_dict_list,
              'top_half_inning_stats': self.top_half_inning_stats,
              'bottom_half_inning_stats': self.bottom_half_inning_stats}

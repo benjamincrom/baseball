@@ -189,7 +189,8 @@ def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
     process_pool = Pool(NUM_PROCESS_SUBLISTS)
     #game_tuple_list = process_pool.map(get_game_from_filename_tuple,
     #                                   filename_list)
-    game_tuple_list = [get_game_from_filename_tuple(filename_tuple) for filename_tuple in filename_list]
+    game_tuple_list = [get_game_from_filename_tuple(filename_tuple)
+                       for filename_tuple in filename_list]
 
     return game_tuple_list
 
@@ -264,7 +265,6 @@ def get_game_from_url(date_str, away_code, home_code, game_number):
                 fh.write(inning_raw_xml)
 
             raise
-                
 
     if not this_game:
         print('No data found for {} {} {} {}'.format(date_str,
