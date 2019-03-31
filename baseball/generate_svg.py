@@ -1116,8 +1116,6 @@ def get_base_svg(plate_appearance, plate_appearance_list):
                 if not event.end_base:
                     batter_is_done = True
 
-                if 'Error' in event.run_description:
-                    import pdb; pdb.set_trace()
                 for out_runner, out_base in this_pa.out_runners_list:
                     if out_runner == batter:
                         if out_base == '1st':
