@@ -869,14 +869,35 @@ def get_runner_end_base_str(plate_appearance, event):
 
 def get_runners_svg(plate_appearance):
     runner_svg_str = ''
-    for event in plate_appearance.event_list:
-        if (isinstance(event, RunnerAdvance) and
-                event.start_base):
-            color = get_runner_color(event)
-            start_base_num = int(event.start_base[0])
-            this_end_base = get_runner_end_base_str(plate_appearance,
-                                                    event)
+    all_runners_list = list(
+        set([event.runner for event in plate_appearance.event_list
+             if isinstance(event, RunnerAdvance)])
+    )
 
+    for runner in all_runners_list:
+        start_base_num = 1000
+        color = None
+        end_base = 0
+        this_end_base = ''
+        for event in plate_appearance.event_list:
+            if (isinstance(event, RunnerAdvance) and
+                    event.start_base and
+                    runner == event.runner):
+                color = get_runner_color(event)
+                if int(event.start_base[0]) < start_base_num:
+                    start_base_num = int(event.start_base[0])
+
+                this_end_base = get_runner_end_base_str(plate_appearance, event)
+                if this_end_base == 'H':
+                    end_base = this_end_base
+
+                if end_base == 'H':
+                    break
+
+                if int(this_end_base) > end_base:
+                    end_base = int(this_end_base)
+
+        if color:
             summary = '{}-{}'.format(start_base_num, this_end_base)
             is_forceout_desc = ('Forceout' in event.run_description or
                                 'Double Play' in event.run_description or
@@ -889,7 +910,7 @@ def get_runners_svg(plate_appearance):
                 summary += 'f'
 
             title_flag_str = get_runner_title_str(event)
-
+ 
             title = '{}: {}{}'.format(
                 str(event.runner),
                 event.run_description,
