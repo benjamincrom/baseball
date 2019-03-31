@@ -802,11 +802,7 @@ class PlateAppearance(object):
             if keyword in description_str.lower():
                 code = this_code
 
-        if 'mound visit' in description_str.lower():
-            code = ''
-        elif 'injury delay' in description_str.lower():
-            code = ''
-        elif self.plate_appearance_summary == 'Fan interference':
+        if self.plate_appearance_summary == 'Fan interference':
             code = 'FI'
         elif ' out to ' in description_str and code is None:
             code = 'F'
@@ -818,7 +814,9 @@ class PlateAppearance(object):
                                         'hits a home run' in description_str or
                                         'ejected' in description_str or
                                         'remains in the game' in description_str or
-                                        ' replaces ' in description_str)
+                                        ' replaces ' in description_str or
+                                        'mount visit' in description_str.lower() or
+                                        'delay' in description_str.lower())
 
             if disqualified_description:
                 code = ''
