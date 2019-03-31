@@ -571,7 +571,7 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
         event_summary = event_container.get('event')
         inning_num = len(game_obj.inning_list) + 1
         next_batter_num = len(plate_appearance_list) + 1
-        if event_container.tag == 'action' or ' replaces ' in event_description:
+        if event_container.tag == 'action':
             (substitution_flag,
              switch_flag,
              steal_flag) = get_sub_switch_steal_flags(event_summary,
