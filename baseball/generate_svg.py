@@ -1154,6 +1154,12 @@ def get_base_svg(plate_appearance, plate_appearance_list):
         if batter_is_done:
             break
 
+    if second_base_pa == third_base_pa:
+        second_base_pa = None
+
+    if third_base_pa == home_plate_pa:
+        third_base_pa = None
+
     base_svg = process_base_appearances(second_base_pa,
                                         third_base_pa,
                                         home_plate_pa,
