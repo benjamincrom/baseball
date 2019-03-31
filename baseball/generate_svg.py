@@ -1116,6 +1116,8 @@ def get_base_svg(plate_appearance, plate_appearance_list):
                 if not event.end_base:
                     batter_is_done = True
 
+                if 'Error' in event.run_description:
+                    import pdb; pdb.set_trace()
                 for out_runner, out_base in this_pa.out_runners_list:
                     if out_runner == batter:
                         if out_base == '1st':
@@ -1133,13 +1135,13 @@ def get_base_svg(plate_appearance, plate_appearance_list):
                             if plate_appearance != this_pa:
                                 home_plate_pa = fix_pa(this_pa, event)
 
-                if event.end_base == '1B':
+                if event.end_base == '1B' and batter_final_base not in ['2B', '3B', 'H']:
                     batter_final_base = '1B'
-                elif event.end_base == '2B':
+                elif event.end_base == '2B' and batter_final_base not in ['3B', 'H']:
                     batter_final_base = '2B'
                     if plate_appearance != this_pa:
                         second_base_pa = fix_pa(this_pa, event)
-                elif event.end_base == '3B':
+                elif event.end_base == '3B' and batter_final_base not in ['H']:
                     batter_final_base = '3B'
                     if plate_appearance != this_pa:
                         third_base_pa = fix_pa(this_pa, event)
