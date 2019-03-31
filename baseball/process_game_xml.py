@@ -417,6 +417,42 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
                     substitution_obj.outgoing_player.mlb_id):
                 player_appearance_list = this_appearance_list
 
+    if not player_appearance_list:
+        position_list = [batting_list[-1].position
+                         for batting_list in batting_list_list]
+
+        duplicate_position_set = set(
+            [x for x in position_list if position_list.count(x) > 1]
+        )
+
+        if duplicate_position_set:
+            duplicate_position = [x for x in duplicate_position_set][0]
+            duplicate_appearance_list= []
+            for batting_list in batting_list_list:
+                if batting_list[-1].position == duplicate_position:
+                    duplicate_appearance_list.append(batting_list)
+
+            first_player_start = int(
+                '{}{}{}'.format(
+                    duplicate_appearance_list[0][-1].start_inning_num,
+                    int(duplicate_appearance_list[0][-1].start_inning_half == 'bottom'),
+                    duplicate_appearance_list[0][-1].start_inning_batter_num,
+                )
+            )
+
+            second_player_start = int(
+                '{}{}{}'.format(
+                    duplicate_appearance_list[1][-1].start_inning_num,
+                    int(duplicate_appearance_list[1][-1].start_inning_half == 'bottom'),
+                    duplicate_appearance_list[1][-1].start_inning_batter_num,
+                )
+            )
+
+            if first_player_start < second_player_start:
+                player_appearance_list = duplicate_appearance_list[0]
+            else:
+                player_appearance_list = duplicate_appearance_list[1]
+
     if player_appearance_list:
         processed_flag = True
         set_player_position_from_list(player_appearance_obj,
