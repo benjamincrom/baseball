@@ -853,6 +853,8 @@ def get_runner_color(event):
 def get_runner_end_base_str(plate_appearance, event):
     if event.end_base:
         this_end_base_str = event.end_base[0]
+        if this_end_base_str == 's':
+            this_end_base_str = 'H'
     elif event.runner_scored:
         this_end_base_str = 'H'
     else:
@@ -860,7 +862,7 @@ def get_runner_end_base_str(plate_appearance, event):
         for out_runner, out_base in plate_appearance.out_runners_list:
             if out_runner == event.runner:
                 this_end_base_str = out_base[0]
-                if this_end_base_str == 'h':
+                if this_end_base_str == 'h' or this_end_base_str == 's':
                     this_end_base_str = 'H'
 
     return this_end_base_str
