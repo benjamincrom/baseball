@@ -815,7 +815,8 @@ class PlateAppearance(object):
                                         'triples' in description_str or
                                         'hits a home run' in description_str or
                                         'ejected' in description_str or
-                                        'remains in the game' in description_str)
+                                        'remains in the game' in description_str or
+                                        ' replaces ' in description_str)
 
             if disqualified_description:
                 code = ''
