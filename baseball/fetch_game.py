@@ -23,6 +23,7 @@ HTML_WRAPPER = (
     '<html>'
     '<head>'
     '<meta http-equiv="refresh" content="45">'
+    '<meta name="viewport" content="width=device-width, initial-scale=0.35">'
     '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
     '<!-- Global site tag (gtag.js) - Google Analytics -->'
     '<script async '
