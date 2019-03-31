@@ -804,6 +804,8 @@ class PlateAppearance(object):
 
         if 'mound visit' in description_str.lower():
             code = ''
+        elif 'injury delay' in description_str.lower():
+            code = ''
         elif self.plate_appearance_summary == 'Fan interference':
             code = 'FI'
         elif ' out to ' in description_str and code is None:
