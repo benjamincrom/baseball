@@ -1124,7 +1124,7 @@ def fix_pa(plate_appearance, event):
 
 def get_base_svg(plate_appearance, plate_appearance_list):
     plate_appearance_index = plate_appearance_list.index(plate_appearance)
-    plate_appearance_list = plate_appearance_list[plate_appearance_index:]
+    plate_appearance_list = plate_appearance_list[plate_appearance_index:plate_appearance_index+8]
 
     second_base_pa, third_base_pa, home_plate_pa = None, None, None
     batter_final_base, batter_out_base, batter_is_done = None, None, None
@@ -1175,10 +1175,10 @@ def get_base_svg(plate_appearance, plate_appearance_list):
         if batter_is_done:
             break
 
-    if second_base_pa == third_base_pa:
+    if third_base_pa and second_base_pa == third_base_pa:
         second_base_pa = None
 
-    if third_base_pa == home_plate_pa:
+    if home_plate_pa and third_base_pa == home_plate_pa:
         third_base_pa = None
 
     base_svg = process_base_appearances(second_base_pa,
