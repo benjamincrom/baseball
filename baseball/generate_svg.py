@@ -1959,14 +1959,16 @@ def assemble_box_content_dict(game):
         bottom_offset = bottom_pa_index % LEN_BATTING_LIST
         this_x_pos = inning_num * BOX_WIDTH
         if inning_half_str == 'bottom':
-            if summary != 'Runner Out':
+            if (summary != 'Runner Out' and
+                    'Caught Stealing' not in summary):
                 bottom_pa_index += 1
 
             this_y_pos = (HEIGHT // 2 +
                           bottom_offset * BOX_HEIGHT +
                           BOX_HEIGHT // 2)
         elif inning_half_str == 'top':
-            if summary != 'Runner Out':
+            if (summary != 'Runner Out' and
+                    'Caught Stealing' not in summary):
                 top_pa_index += 1
 
             this_y_pos = (top_offset * BOX_HEIGHT +

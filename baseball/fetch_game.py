@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from multiprocessing import Pool
 from os import listdir, makedirs
 from os.path import isdir, isfile, exists, abspath, join
@@ -247,14 +247,38 @@ def get_game_from_url(date_str, away_code, home_code, game_number):
             'Internal server error' in boxscore_raw_xml):
         this_game = None
     else:
-        this_game = get_game_from_xml_strings(boxscore_raw_xml,
-                                              players_raw_xml,
-                                              inning_raw_xml)
+        try:
+            this_game = get_game_from_xml_strings(boxscore_raw_xml,
+                                                  players_raw_xml,
+                                                  inning_raw_xml)
+        except:
+            prefix = '/var/log/baseball/xml-{}-'.format(
+                '-'.join(str(datetime.now()).split())
+            )
+            with open(prefix + 'boxscore.xml', 'w') as fh:
+                fh.write(boxscore_raw_xml)
+            with open(prefix + 'players.xml', 'w') as fh:
+                fh.write(players_raw_xml)
+            with open(prefix + 'inning_all.xml', 'w') as fh:
+                fh.write(inning_raw_xml)
+
+            raise
+                
 
     if not this_game:
         print('No data found for {} {} {} {}'.format(date_str,
                                                      away_code,
                                                      home_code,
                                                      game_number))
+
+        prefix = '/var/log/baseball/no-data-{}-'.format(
+            '-'.join(str(datetime.now()).split())
+        )
+        with open(prefix + 'boxscore.xml', 'w') as fh:
+            fh.write(boxscore_raw_xml)
+        with open(prefix + 'players.xml', 'w') as fh:
+            fh.write(players_raw_xml)
+        with open(prefix + 'inning_all.xml', 'w') as fh:
+            fh.write(inning_raw_xml)
 
     return game_id, this_game
