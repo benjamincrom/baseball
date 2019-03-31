@@ -894,7 +894,7 @@ def get_runners_svg(plate_appearance):
                 if end_base == 'H':
                     break
 
-                if int(this_end_base) > end_base:
+                if this_end_base and int(this_end_base) > end_base:
                     end_base = int(this_end_base)
 
         if color:
