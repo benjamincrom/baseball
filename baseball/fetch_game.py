@@ -102,20 +102,17 @@ def write_game_svg_html_from_filename_tuple(filename_output_path_tuple):
         write_game_svg_and_html(game_id, game, output_path)
 
 def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml, inning_raw_xml):
-    if boxscore_raw_xml and players_raw_xml and inning_raw_xml:
+    this_game = None
+    if (boxscore_raw_xml and players_raw_xml and inning_raw_xml and 
+            boxscore_raw_xml != '{"message": "Internal server error"}' and
+            players_raw_xml != '{"message": "Internal server error"}' and
+            inning_raw_xml != '{"message": "Internal server error"}'):
         boxscore_xml_obj = fromstring(boxscore_raw_xml)
         players_xml_obj = fromstring(players_raw_xml)
         inning_xml_obj = fromstring(inning_raw_xml)
-        if (boxscore_xml_obj.tag == 'Error' or
-                players_xml_obj.tag == 'Error' or
-                inning_xml_obj.tag == 'Error'):
-            this_game = None
-        else:
-            this_game = get_game_obj(boxscore_xml_obj,
-                                     players_xml_obj,
-                                     inning_xml_obj)
-    else:
-        this_game = None
+        this_game = get_game_obj(boxscore_xml_obj,
+                                 players_xml_obj,
+                                 inning_xml_obj)
 
     return this_game
 
