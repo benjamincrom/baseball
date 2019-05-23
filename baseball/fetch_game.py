@@ -242,26 +242,21 @@ def get_game_from_url(date_str, away_code, home_code, game_number):
                                              home_code,
                                              game_number)
 
-    if (isinstance(boxscore_raw_xml, str) and
-            'Internal server error' in boxscore_raw_xml):
-        this_game = None
-    else:
-        try:
-            this_game = get_game_from_xml_strings(boxscore_raw_xml,
-                                                  players_raw_xml,
-                                                  inning_raw_xml)
-        except:
-            prefix = '/var/log/baseball/xml-{}-'.format(
-                '-'.join(str(datetime.now()).split())
-            )
-            with open(prefix + 'boxscore.xml', 'w') as fh:
-                fh.write(boxscore_raw_xml)
-            with open(prefix + 'players.xml', 'w') as fh:
-                fh.write(players_raw_xml)
-            with open(prefix + 'inning_all.xml', 'w') as fh:
-                fh.write(inning_raw_xml)
-
-            raise
+    try:
+        this_game = get_game_from_xml_strings(boxscore_raw_xml,
+                                              players_raw_xml,
+                                              inning_raw_xml)
+    except:
+        prefix = '/var/log/baseball/xml-{}-'.format(
+            '-'.join(str(datetime.now()).split())
+        )
+        with open(prefix + 'boxscore.xml', 'w') as fh:
+            fh.write(boxscore_raw_xml)
+        with open(prefix + 'players.xml', 'w') as fh:
+            fh.write(players_raw_xml)
+        with open(prefix + 'inning_all.xml', 'w') as fh:
+            fh.write(inning_raw_xml)
+        raise
 
     if not this_game:
         print('No data found for {} {} {} {}'.format(date_str,

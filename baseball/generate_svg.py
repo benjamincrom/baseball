@@ -1989,7 +1989,8 @@ def assemble_box_content_dict(game):
         this_x_pos = inning_num * BOX_WIDTH
         if inning_half_str == 'bottom':
             if (summary != 'Runner Out' and
-                    'Caught Stealing' not in summary):
+                    'Caught Stealing' not in summary and
+                    'Pickoff' not in summary):
                 bottom_pa_index += 1
 
             this_y_pos = (HEIGHT // 2 +
