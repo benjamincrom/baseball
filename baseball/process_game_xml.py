@@ -455,8 +455,8 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
 
     if not player_appearance_list:
         for this_appearance_list in batting_list_list:
-            if (this_appearance_list[-2].player_obj.mlb_id ==
-                    substitution_obj.outgoing_player.mlb_id):
+            if (len(this_appearance_list) > 1 and
+                    this_appearance_list[-2].player_obj.mlb_id == substitution_obj.outgoing_player.mlb_id):
                 player_appearance_list = this_appearance_list
 
     if player_appearance_list:
