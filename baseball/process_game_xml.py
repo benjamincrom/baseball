@@ -422,7 +422,7 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
                          for batting_list in batting_list_list]
 
         duplicate_position_set = set(
-            [x for x in position_list if position_list.count(x) > 1]
+            [x for x in position_list if ((position_list.count(x) > 1) and (x != 'PH'))]
         )
 
         if duplicate_position_set:
