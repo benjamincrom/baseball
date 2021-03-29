@@ -304,6 +304,8 @@ def get_position_number(position_str):
         position = 'PH'
     elif position_str == 'PR':
         position = 'PR'
+    elif position_str == 'EH':
+        position = 'EH'
     elif not position_str:
         position = None
     else:
