@@ -294,10 +294,9 @@ class Team(object):
 
             if not player:
                 first_name = player_name.split(' ', 1)[0]
-                last_name = player_name.split(' ', 1)[1]
-                player_name_no_spaces_reverse = ''.join([last_name, first_name])
+                last_name = player_name.rsplit(' ', 1)[0]
                 for player_name_key in self.player_name_dict:
-                    if player_name_no_spaces_reverse in player_name_key:
+                    if last_name in player_name_key and first_name in player_name_key:
                         player = self.player_name_dict[player_name_key]
         else:
             raise ValueError(
