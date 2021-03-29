@@ -291,13 +291,6 @@ class Team(object):
 
                 initial_plus_last_name = first_name_initial + last_name
                 player = self.player_last_name_dict.get(initial_plus_last_name)
-
-            if not player:
-                first_name = player_name.split(' ', 1)[0]
-                last_name = player_name.rsplit(' ', 1)[0]
-                for player_name_key in self.player_name_dict:
-                    if last_name in player_name_key and first_name in player_name_key:
-                        player = self.player_name_dict[player_name_key]
         else:
             raise ValueError(
                 'Player key: {player_key} must be either int or str'.format(
