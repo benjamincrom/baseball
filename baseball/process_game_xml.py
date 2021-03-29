@@ -201,9 +201,7 @@ def parse_substitution_description(description):
         ]
     else:
         description = description.strip(' .')
-        if(': ') in description:
-            description = description.split(': ')[1]
-
+        description = description.split(': ')[1]
         description_list = description.split(', ')
 
         player_list = description_list[0].split(' replaces ')
@@ -583,9 +581,7 @@ def parse_switch_description(event_datetime, description, event_summary,
 
 def get_sub_switch_steal_flags(event_summary, event_description):
     substitution_flag = (
-        ('Sub' in event_summary or
-         'sub' in event_summary or
-         ' replaces ' in event_description) and
+        ('Sub' in event_summary or 'sub' in event_summary) and
         'remains in the game' not in event_description and
         'Umpire' not in event_description and
         'umpire' not in event_description and
