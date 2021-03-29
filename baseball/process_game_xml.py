@@ -201,7 +201,9 @@ def parse_substitution_description(description):
         ]
     else:
         description = description.strip(' .')
-        description = description.split(': ')[1]
+        if(': ') in description:
+            description = description.split(': ')[1]
+
         description_list = description.split(', ')
 
         player_list = description_list[0].split(' replaces ')
