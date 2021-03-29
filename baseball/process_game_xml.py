@@ -453,6 +453,12 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
             else:
                 player_appearance_list = duplicate_appearance_list[1]
 
+    if not player_appearance_list:
+        for this_appearance_list in batting_list_list:
+            if (this_appearance_list[-2].player_obj.mlb_id ==
+                    substitution_obj.outgoing_player.mlb_id):
+                player_appearance_list = this_appearance_list
+
     if player_appearance_list:
         processed_flag = True
         set_player_position_from_list(player_appearance_obj,
