@@ -31,17 +31,17 @@ HTML_WRAPPER = (
     'id=UA-108577160-1"></script>'
     '<script>'
     'window.dataLayer = window.dataLayer || [];function gtag()'
-    '{dataLayer.push(arguments);}gtag(\'js\', new Date());gtag'
-    '(\'config\', \'UA-108577160-1\');'
+    "{dataLayer.push(arguments);}gtag('js', new Date());gtag"
+    "('config', 'UA-108577160-1');"
     '</script>'
     '<script>'
     '$(document).ready(function() {'
-    '$.get(\'{filename}\', function (data) {'
+    "$.get('{filename}', function (data) {"
     'document.getElementById("{title}").innerHTML = '
     'new XMLSerializer().serializeToString(data.documentElement);'
     '});'
     'setInterval(function() {'
-    '$.get(\'{filename}\', function (data) {'
+    "$.get('{filename}', function (data) {"
     'document.getElementById("{title}").innerHTML = '
     'new XMLSerializer().serializeToString(data.documentElement);'
     '});'
