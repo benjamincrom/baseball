@@ -82,7 +82,7 @@ STADIUM_TIMEZONE_DICT = {
     'Oriole Park at Camden Yards': 'America/New_York',
     'Nationals Park': 'America/New_York',
     'Champion Stadium': 'America/New_York',
-    'SunTrust Park': 'America/New_York',
+    'Truist Park': 'America/New_York',
     'Tropicana Field': 'America/New_York',
     'Marlins Park': 'America/New_York',
     'Rogers Centre': 'America/New_York',
@@ -95,7 +95,7 @@ STADIUM_TIMEZONE_DICT = {
     'Guaranteed Rate Field': 'America/Chicago',
     'Busch Stadium': 'America/Chicago',
     'Target Field': 'America/Chicago',
-    'Globe Life Park in Arlington': 'America/Chicago',
+    'Globe Life Field': 'America/Chicago',
     'Minute Maid Park': 'America/Chicago',
     'Kauffman Stadium': 'America/Chicago',
     'Coors Field': 'America/Denver',
@@ -448,13 +448,18 @@ class Game(object):
 
         if self.start_datetime:
             self.start_str = self.start_datetime.astimezone(
-                timezone(
-                    STADIUM_TIMEZONE_DICT.get(self.location,
-                                              'America/New_York')
-                )
+                timezone('America/New_York')
             ).strftime(
                 '%a %b %d %Y, %-I:%M %p'
             )
+
+            for ballpark, this_timezone in STADIUM_TIMEZONE_DICT.items():
+                if ballpark in self.location:
+                    self.start_str = self.start_datetime.astimezone(
+                        timezone(this_timezone)
+                    ).strftime(
+                        '%a %b %d %Y, %-I:%M %p'
+                    )
         else:
             self.start_str = ''
 
