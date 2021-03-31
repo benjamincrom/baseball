@@ -111,7 +111,7 @@ PITCH_TYPE_DESCRIPTION = {'Ball': 'B',
 
 BIG_SVG_HEADER = (
     '<?xml version="1.0" standalone="no"?>'
-    '<svg width="1596" height="2256" viewBox="0 0 {width} 4513" '
+    '<svg height="2256" viewBox="0 0 {width} 4513" '
     'version="1.1" xmlns="http://www.w3.org/2000/svg" '
     'xmlns:xlink="http://www.w3.org/1999/xlink">'
     '<rect x="0" y="0" width="{width}" height="4513" fill="#AAAAAA"/> '
