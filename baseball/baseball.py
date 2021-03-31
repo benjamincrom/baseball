@@ -427,24 +427,24 @@ class Game(object):
         return get_game_svg_str(self)
 
     def set_gametimes(self):
-        self.start_datetime = None
-        self.end_datetime = None
+        if not self.start_datetime:
+            if self.inning_list:
+                if self.inning_list[0].top_half_appearance_list:
+                    self.start_datetime = (
+                        self.inning_list[0].top_half_appearance_list[0].start_datetime
+                    )
 
-        if self.inning_list:
-            if self.inning_list[0].top_half_appearance_list:
-                self.start_datetime = (
-                    self.inning_list[0].top_half_appearance_list[0].start_datetime
+        if not self.end_datetime:
+            if self.inning_list:
+                last_inning_half_appearance_list = (
+                    self.inning_list[-1].bottom_half_appearance_list or
+                    self.inning_list[-1].top_half_appearance_list
                 )
 
-            last_inning_half_appearance_list = (
-                self.inning_list[-1].bottom_half_appearance_list or
-                self.inning_list[-1].top_half_appearance_list
-            )
-
-            if last_inning_half_appearance_list:
-                self.end_datetime = (
-                    last_inning_half_appearance_list[-1].end_datetime
-                )
+                if last_inning_half_appearance_list:
+                    self.end_datetime = (
+                        last_inning_half_appearance_list[-1].end_datetime
+                    )
 
         if self.start_datetime:
             self.start_str = self.start_datetime.astimezone(
