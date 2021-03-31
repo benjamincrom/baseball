@@ -67,7 +67,7 @@ def process_baserunners(plate_appearance, last_plate_appearance,
                     elif (event.start_base == '2B' and
                           second_base == event.runner):
                         second_base = None
-                elif event.end_base == '':
+                elif event.end_base == '' or 'score':
                     if (event.start_base == '1B' and
                             first_base == event.runner):
                         first_base = None
