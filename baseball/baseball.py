@@ -465,10 +465,7 @@ class Game(object):
 
         if self.end_datetime:
             self.end_str = self.end_datetime.astimezone(
-                timezone(
-                    STADIUM_TIMEZONE_DICT.get(self.location,
-                                              'America/New_York')
-                )
+                timezone('America/New_York')
             ).strftime(
                 ' - %-I:%M %p %Z'
             )
