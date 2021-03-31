@@ -472,6 +472,14 @@ class Game(object):
             ).strftime(
                 ' - %-I:%M %p %Z'
             )
+
+            for ballpark, this_timezone in STADIUM_TIMEZONE_DICT.items():
+                if ballpark in self.location:
+                    self.end_str = self.end_datetime.astimezone(
+                        timezone(this_timezone)
+                    ).strftime(
+                        ' - %-I:%M %p %Z'
+                    )
         else:
             self.end_str = ''
 
