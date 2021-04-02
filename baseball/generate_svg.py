@@ -879,10 +879,12 @@ def get_runners_svg(plate_appearance):
         color = None
         end_base = 0
         this_end_base = ''
+        runner_event = None
         for event in plate_appearance.event_list:
             if (isinstance(event, RunnerAdvance) and
                     event.start_base and
                     runner == event.runner):
+                runner_event = event
                 color = get_runner_color(event)
                 if int(event.start_base[0]) < start_base_num:
                     start_base_num = int(event.start_base[0])
@@ -899,21 +901,21 @@ def get_runners_svg(plate_appearance):
 
         if color:
             summary = '{}-{}'.format(start_base_num, this_end_base)
-            is_forceout_desc = ('Forceout' in event.run_description or
-                                'Double Play' in event.run_description or
-                                'Triple Play' in event.run_description or
-                                'DP' in event.run_description or
-                                'TP' in event.run_description)
+            is_forceout_desc = ('Forceout' in runner_event.run_description or
+                                'Double Play' in runner_event.run_description or
+                                'Triple Play' in runner_event.run_description or
+                                'DP' in runner_event.run_description or
+                                'TP' in runner_event.run_description)
 
-            if (is_forceout_desc and event.end_base == '' and this_end_base and
-                    not event.runner_scored):
+            if (is_forceout_desc and runner_event.end_base == '' and this_end_base and
+                    not runner_event.runner_scored):
                 summary += 'f'
 
-            title_flag_str = get_runner_title_str(event)
+            title_flag_str = get_runner_title_str(runner_event)
  
             title = '{}: {}{}'.format(
-                str(event.runner),
-                event.run_description,
+                str(runner_event.runner),
+                runner_event.run_description,
                 title_flag_str
             )
 
