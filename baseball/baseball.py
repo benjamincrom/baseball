@@ -831,11 +831,12 @@ class PlateAppearance(object):
             if disqualified_description:
                 code = ''
             else:
-                raise ValueError(
-                    'No keyword found in plate description: {}'.format(
-                        self.plate_appearance_description
-                    )
-                )
+                code = ''
+                #raise ValueError(
+                #    'No keyword found in plate description: {}'.format(
+                #        self.plate_appearance_description
+                #    )
+                #)
 
         return code
 
