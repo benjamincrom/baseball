@@ -748,7 +748,7 @@ class PlateAppearance(object):
     def get_out_runners_list(plate_appearance_description, batting_team):
         description = strip_suffixes(plate_appearance_description)
         runner_name_list = findall(
-            (r'([A-Z][\w\'-\.]+\s+(?:[A-Z,a-z][\w\'-]+\s+)?'
+            (r'([A-Z][\w\'-]+\s+(?:[A-Z,a-z][\w\'-]+\s+)?'
              r'(?:[A-Z,a-z][\w\'-]+\s+)?[A-Z][\w\'-]+)\s+'
              r'(?:out at|(?:was )?picked off and caught stealing|'
              r'(?:was )?caught stealing|(?:was )?picked off|'
