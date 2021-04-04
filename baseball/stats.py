@@ -682,7 +682,7 @@ def get_pitches(appearance_list):
     for plate_appearance in appearance_list:
         for event in plate_appearance.event_list:
             if (isinstance(event, Pitch) and
-                    event.pitch_description != 'Intent Ball'):
+                    event.pitch_description != 'Automatic Ball'):
                 num_pitches += 1
 
     return num_pitches
