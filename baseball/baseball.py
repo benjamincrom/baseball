@@ -79,7 +79,7 @@ STADIUM_TIMEZONE_DICT = {
     'The Ballpark of the Palm Beaches': 'America/New_York',
     'Citizens Bank Park': 'America/New_York',
     'Spectrum Field': 'America/New_York',
-    'Oriole Park at Camden Yards': 'America/New_York',
+    'Oriole Park': 'America/New_York',
     'Nationals Park': 'America/New_York',
     'Champion Stadium': 'America/New_York',
     'Truist Park': 'America/New_York',
@@ -98,15 +98,17 @@ STADIUM_TIMEZONE_DICT = {
     'Globe Life Field': 'America/Chicago',
     'Minute Maid Park': 'America/Chicago',
     'Kauffman Stadium': 'America/Chicago',
+    'American Family Field': 'America/Chicago',
     'Coors Field': 'America/Denver',
     'Chase Field': 'America/Denver',
     'Safeco Field': 'America/Los_Angeles',
     'AT&T Park': 'America/Los_Angeles',
     'Oakland-Alameda County Coliseum': 'America/Los_Angeles',
     'Oakland Coliseum': 'America/Los_Angeles',
-    'Angel Stadium of Anaheim': 'America/Los_Angeles',
+    'Angel Stadium': 'America/Los_Angeles',
     'Dodger Stadium': 'America/Los_Angeles',
-    'Petco Park': 'America/Los_Angeles'
+    'Petco Park': 'America/Los_Angeles',
+    'T-Mobile Park': 'America/Los_Angeles'
 }
 
 
