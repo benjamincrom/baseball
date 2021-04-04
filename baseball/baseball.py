@@ -133,7 +133,7 @@ def strip_suffixes(input_str):
     input_str = sub(r' IV', '', input_str)
     input_str = sub(r' St\. ', ' St ', input_str)
 
-    initials_match = findall(r'([A-Z]\.[A-Z]\.?)', input_str)
+    initials_match = findall(r'([A-Z]\.[A-Z]\.? )', input_str)
     while initials_match:
         new_initials = initials_match[0].replace('.', '')
         input_str = sub(initials_match[0], new_initials, input_str, 1)
