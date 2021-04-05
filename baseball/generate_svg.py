@@ -902,8 +902,10 @@ def get_runners_svg(plate_appearance):
         if color:
             summary = '{}-{}'.format(start_base_num, this_end_base)
             is_forceout_desc = ('Forceout' in runner_event.run_description or
-                                'Double Play' in runner_event.run_description or
-                                'Triple Play' in runner_event.run_description or
+                                ('Double Play' in runner_event.run_description and
+                                 'F' not in plate_appearance.scorecard_summary) or
+                                ('Triple Play' in runner_event.run_description and
+                                 'F' not in plate_appearance.scorecard_summary) or
                                 'DP' in runner_event.run_description or
                                 'TP' in runner_event.run_description)
 
@@ -912,7 +914,7 @@ def get_runners_svg(plate_appearance):
                 summary += 'f'
 
             title_flag_str = get_runner_title_str(runner_event)
- 
+
             title = '{}: {}{}'.format(
                 str(runner_event.runner),
                 runner_event.run_description,
