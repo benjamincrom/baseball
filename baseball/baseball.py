@@ -244,7 +244,13 @@ class Player(object):
         return return_str
 
     def pitching_stats(self):
-        return 'ERA: {}'.format('%.2f' % self.era)
+        if self.era:
+            era_str = 'ERA: {}'.format('%.2f' % self.era)
+        else:
+            era_str = 'ERA: {}'.format(self.era)
+
+        return era_str
+
 
     def __repr__(self):
         return_str = ''
