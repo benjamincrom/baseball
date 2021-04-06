@@ -3,7 +3,7 @@ from collections import namedtuple
 from baseball.baseball_events import Pickoff, RunnerAdvance, Pitch
 
 
-NOT_AT_BAT_CODE_LIST = ['SB', 'SF', 'BB', 'CI', 'FI', 'IBB', 'HBP', 'CS', 'PO']
+NOT_AT_BAT_CODE_LIST = ['SH', 'SF', 'BB', 'CI', 'FI', 'IBB', 'HBP', 'CS', 'PO']
 HIT_CODE_LIST = ['1B', '2B', '3B', 'HR']
 
 InningStatsTuple = namedtuple('InningStatsTuple', 'S P BB K LOB E H R')
