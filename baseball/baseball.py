@@ -52,7 +52,7 @@ PLAY_CODE_ORDERED_DICT = OrderedDict([
     ('sacrifice fly', 'SF'),
     ('hit by pitch', 'HBP'),
     ('bunt', 'B'),
-    ('sacrifice bunt', 'SB'),
+    ('sacrifice bunt', 'SH'),
     ('walks', 'BB'),
     ('intentionally walks', 'IBB'),
     ('called out on strikes', 'ꓘ'),
