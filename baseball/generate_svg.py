@@ -903,11 +903,17 @@ def get_runners_svg(plate_appearance):
             summary = '{}-{}'.format(start_base_num, this_end_base)
             is_forceout_desc = ('Forceout' in runner_event.run_description or
                                 ('Double Play' in runner_event.run_description and
-                                 'F' not in plate_appearance.scorecard_summary) or
+                                 'F' not in plate_appearance.scorecard_summary and
+                                 'L' not in plate_appearance.scorecard_summary) or
                                 ('Triple Play' in runner_event.run_description and
-                                 'F' not in plate_appearance.scorecard_summary) or
-                                'DP' in runner_event.run_description or
-                                'TP' in runner_event.run_description)
+                                 'F' not in plate_appearance.scorecard_summary and
+                                 'L' not in plate_appearance.scorecard_summary) or
+                                ('DP' in runner_event.run_description and
+                                 'F' not in plate_appearance.scorecard_summary and
+                                 'L' not in plate_appearance.scorecard_summary) or
+                                ('TP' in runner_event.run_description and
+                                 'F' not in plate_appearance.scorecard_summary and
+                                 'L' not in plate_appearance.scorecard_summary))
 
             if (is_forceout_desc and runner_event.end_base == '' and this_end_base and
                     not runner_event.runner_scored):
@@ -1010,6 +1016,25 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
      base_4_number,
      base_4_summary,
      base_4_title) = get_all_base_components(base_2_pa, base_3_pa, home_pa)
+
+    if batter_out_base == batter_final_base:
+        if batter_out_base == '1B':
+            batter_out_base = '2B'
+        elif batter_out_base == '2B':
+            batter_out_base = '3B'
+            base_3_summary = base_2_summary
+            base_3_number = base_2_number
+            base_3_title = base_2_title
+            base_2_summary = base_2_number = base_2_title = ''
+        elif batter_out_base == '3B':
+            base_4_summary = base_3_summary
+            base_4_number = base_3_number
+            base_4_title = base_3_title
+            base_3_summary = base_2_summary
+            base_3_number = base_2_number
+            base_3_title = base_2_title
+            base_2_summary = base_2_number = base_2_title = ''
+            batter_out_base = 'H'
 
     if batter_out_base:
         if batter_out_base == '1B':
