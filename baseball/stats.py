@@ -44,6 +44,9 @@ def process_pickoffs(plate_appearance, first_base, second_base, third_base):
 
 def process_baserunners(plate_appearance, last_plate_appearance,
                         first_base, second_base, third_base):
+    first_base_list = [first_base] if first_base else []
+    second_base_list = [second_base] if second_base else []
+    third_base_list = [third_base] if third_base else []
     for event in plate_appearance.event_list:
         if isinstance(event, RunnerAdvance):
             if (plate_appearance == last_plate_appearance and
@@ -51,32 +54,39 @@ def process_baserunners(plate_appearance, last_plate_appearance,
                 break
             else:
                 if event.end_base == '1B':
-                    first_base = event.runner
+                    first_base_list.append(event.runner)
                 elif event.end_base == '2B':
-                    second_base = event.runner
-
-                    if (event.start_base == '1B' and
-                            first_base == event.runner):
-                        first_base = None
+                    second_base_list.append(event.runner)
+                    if event.runner in first_base_list:
+                        first_base_list.remove(event.runner)
                 elif event.end_base == '3B':
-                    third_base = event.runner
-
-                    if (event.start_base == '1B' and
-                            first_base == event.runner):
-                        first_base = None
-                    elif (event.start_base == '2B' and
-                          second_base == event.runner):
-                        second_base = None
+                    third_base_list.append(event.runner)
+                    if event.runner in first_base_list:
+                        first_base_list.remove(event.runner)
+                    if event.runner in second_base_list:
+                        second_base_list.remove(event.runner)
                 elif event.end_base == '' or 'score':
-                    if (event.start_base == '1B' and
-                            first_base == event.runner):
-                        first_base = None
-                    elif (event.start_base == '2B' and
-                          second_base == event.runner):
-                        second_base = None
-                    elif (event.start_base == '3B' and
-                          third_base == event.runner):
-                        third_base = None
+                    if event.runner in first_base_list:
+                        first_base_list.remove(event.runner)
+                    if event.runner in second_base_list:
+                        second_base_list.remove(event.runner)
+                    if event.runner in third_base_list:
+                        third_base_list.remove(event.runner)
+
+    if first_base_list:
+        first_base = first_base_list[0]
+    else:
+        first_base = None
+
+    if second_base_list:
+        second_base = second_base_list[0]
+    else:
+        second_base = None
+
+    if third_base_list:
+        third_base = third_base_list[0]
+    else:
+        third_base = None
 
     return first_base, second_base, third_base
 
