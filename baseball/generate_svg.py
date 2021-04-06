@@ -874,6 +874,7 @@ def get_runners_svg(plate_appearance):
              if isinstance(event, RunnerAdvance)])
     )
 
+    y_val_list = []
     for runner in all_runners_list:
         start_base_num = 1000
         color = None
@@ -933,6 +934,10 @@ def get_runners_svg(plate_appearance):
             elif start_base_num == 3:
                 y_val += (RUNNER_SUMMARY_Y_OFFSET * 2)
 
+            while y_val in y_val_list:
+                y_val -= RUNNER_SUMMARY_Y_OFFSET
+
+            y_val_list.append(y_val)
             runner_svg_str += SVG_RUNNER_TEMPLATE.format(
                 y_val=y_val,
                 color=color,
