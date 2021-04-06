@@ -215,6 +215,8 @@ class Player(object):
         self.number = number
 
         self.era = None
+        self.pitch_hand = None
+        self.bat_side = None
 
     def _asdict(self):
         return (
@@ -224,7 +226,9 @@ class Player(object):
              'obp': self.obp,
              'slg': self.slg,
              'number': self.number,
-             'era': self.era}
+             'era': self.era,
+             'pitch_hand': self.pitch_hand,
+             'bat_side': self.bat_side}
         )
 
     def full_name(self):
