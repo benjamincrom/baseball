@@ -791,19 +791,30 @@ def count_summaries_by_keyword(inning_half_list, keyword):
     return num_keyword_appearances
 
 def count_runner_advance_unique_keywords(inning_half_list, keyword):
-    after_pitch = False
     num_keyword_appearances = 0
 
     for appearance_list in inning_half_list:
         for appearance in appearance_list:
+            runner_list = []
+            previous_run_description = None
+            new_event_next = True
             for event in appearance.event_list:
-                if isinstance(event, Pitch):
-                    after_pitch = True
-                elif isinstance(event, RunnerAdvance):
-                    if after_pitch and keyword in event.run_description:
+                if isinstance(event, RunnerAdvance):
+                    if event.run_description != previous_run_description:
+                        runner_list = [event.runner]
+                        new_event_next = True
+                    elif (event.run_description == previous_run_description and
+                          event.runner in runner_list):
+                        runner_list = [event.runner]
+                        new_event_next = True
+                    else:
+                        runner_list.append(event.runner)
+                        new_event_next = False
+
+                    if new_event_next and keyword in event.run_description:
                         num_keyword_appearances += 1
 
-                    after_pitch = False
+                    previous_run_description = event.run_description
 
     return num_keyword_appearances
 
