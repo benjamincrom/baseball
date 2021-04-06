@@ -31,15 +31,20 @@ PITCH_SPEED_X_OFFSET = 39
 FIRST_PITCH_X_VAL = 3
 FIRST_PITCH_Y_VAL = 15
 PITCHER_LARGE_FONT_SIZE = 20
+PITCHER_MED_FONT_SIZE = 17
 PITCHER_SMALL_FONT_SIZE = 13
 PITCHER_STATS_LARGE_FONT_SIZE = 15
+PITCHER_STATS_MED_FONT_SIZE = 13
 PITCHER_STATS_SMALL_FONT_SIZE = 10
 PITCHER_BOX_SCORE_LARGE_Y = 70
+PITCHER_BOX_SCORE_MED_Y = 64
 PITCHER_BOX_SCORE_SMALL_Y = 56
 PITCHER_BOX_SCORE_X_INCREMENT = 70
 PITCHER_BOX_SCORE_LARGE_Y_INCREMENT = 40
+PITCHER_BOX_SCORE_MED_Y_INCREMENT = 34
 PITCHER_BOX_SCORE_SMALL_Y_INCREMENT = 26
 PITCHER_BOX_STATS_LARGE_Y_OFFSET = 73
+PITCHER_BOX_STATS_MED_Y_OFFSET = 70
 PITCHER_BOX_STATS_SMALL_Y_OFFSET = 67
 SMALL_CHUNK_SIZE = 5
 LARGE_CHUNK_SIZE = 8
@@ -67,15 +72,19 @@ LEFT_FIELDER_X = 105
 CENTER_FIELDER_Y = 35
 RIGHT_FIELDER_X = 225
 BATTER_FONT_SIZE_BIG = 20
+BATTER_FONT_SIZE_MED_PLUS = 18
 BATTER_FONT_SIZE_MED = 15
 BATTER_FONT_SIZE_SMALL = 10
 BATTER_SPACE_BIG = 38
+BATTER_SPACE_MED_PLUS = 32
 BATTER_SPACE_MED = 22
 BATTER_SPACE_SMALL = 15
 BATTER_STATS_OFFSET_BIG = 15
+BATTER_STATS_OFFSET_MED_PLUS = 13
 BATTER_STATS_OFFSET_MED = 10
 BATTER_STATS_OFFSET_SMALL = 6
 BATTER_STATS_SPACES_BIG = 4
+BATTER_STATS_SPACES_MED_PLUS = 5
 BATTER_STATS_SPACES_MED = 6
 BATTER_STATS_SPACES_SMALL = 10
 BATTER_INITIAL_Y_POS = 25
@@ -1367,12 +1376,12 @@ def get_batter_spacing_values(batter_list):
 
     for batter in batter_list:
         if len(str(batter.player_obj)) > 18 and batter_font_size == BATTER_FONT_SIZE_BIG:
-            batter_font_size = BATTER_FONT_SIZE_MED
-            batter_space_increment = BATTER_SPACE_MED
-            stats_y_offset = BATTER_STATS_OFFSET_MED
+            batter_font_size = BATTER_FONT_SIZE_MED_PLUS
+            batter_space_increment = BATTER_SPACE_MED_PLUS
+            stats_y_offset = BATTER_STATS_OFFSET_MED_PLUS
             box_score_line_template = (
-                ('&#160;' * (BATTER_STATS_SPACES_MED // 2)) + '%s' +
-                ('&#160;' * BATTER_STATS_SPACES_MED + '%s') * 6
+                ('&#160;' * (BATTER_STATS_SPACES_MED_PLUS // 2)) + '%s' +
+                ('&#160;' * BATTER_STATS_SPACES_MED_PLUS + '%s') * 6
             )
 
     return (batter_font_size,
@@ -1792,11 +1801,11 @@ def get_pitcher_box_score_lines(pitcher_app_list, chunk_size, box_score_dict):
 
     for pitcher_app in pitcher_app_list:
         if len(str(pitcher_app.player_obj)) > 18 and chunk_size == SMALL_CHUNK_SIZE:
-            initial_y = PITCHER_BOX_SCORE_SMALL_Y
-            text_size_1 = PITCHER_SMALL_FONT_SIZE
-            text_size_2 = PITCHER_STATS_SMALL_FONT_SIZE
-            stats_offset = PITCHER_BOX_STATS_SMALL_Y_OFFSET
-            defined_text_increment = PITCHER_BOX_SCORE_SMALL_Y_INCREMENT
+            initial_y = PITCHER_BOX_SCORE_MED_Y
+            text_size_1 = PITCHER_MED_FONT_SIZE
+            text_size_2 = PITCHER_STATS_MED_FONT_SIZE
+            stats_offset = PITCHER_BOX_STATS_MED_Y_OFFSET
+            defined_text_increment = PITCHER_BOX_SCORE_MED_Y_INCREMENT
 
     for pitcher_app in pitcher_app_list:
         initial_y = PITCHER_BOX_SCORE_SMALL_Y
