@@ -2100,6 +2100,9 @@ def assemble_game_title_svg(game):
     if game.attendance:
         location_str += ' - {:,}'.format(int(game.attendance))
 
+    if game.temp:
+        location_str += ' - {} F'.format(int(game.temp))
+
     tuple_list = [('TOP', 0), ('BOTTOM', HEIGHT // 2)]
     for inning_half_str, y_pos in tuple_list:
         game_title_svg += BIG_SVG_TITLE.format(
