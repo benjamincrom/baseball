@@ -396,6 +396,8 @@ class Game(object):
         self.start_str = ''
         self.end_str = ''
 
+        self.attendance = ''
+
     def json(self):
         return dumps(self._asdict())
 

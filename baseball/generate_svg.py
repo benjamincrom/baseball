@@ -2096,6 +2096,9 @@ def assemble_game_title_svg(game):
         game_datetime = game.game_date_str
 
     game_width = get_game_width(game)
+    location_str = game.location.replace('&', '&amp;')
+    if game.attendance:
+        location_str += ' - {:,}'.format(int(game.attendance))
 
     tuple_list = [('TOP', 0), ('BOTTOM', HEIGHT // 2)]
     for inning_half_str, y_pos in tuple_list:
@@ -2104,7 +2107,7 @@ def assemble_game_title_svg(game):
             y_pos=y_pos,
             inning_half=inning_half_str,
             game_str=game_str,
-            location=game.location.replace('&', '&amp;'),
+            location=location_str,
             datetime=game_datetime
         )
 
