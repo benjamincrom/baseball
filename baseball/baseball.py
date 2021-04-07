@@ -398,6 +398,7 @@ class Game(object):
 
         self.attendance = None
         self.temp = None
+        self.weather = None
 
     def json(self):
         return dumps(self._asdict())

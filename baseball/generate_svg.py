@@ -342,16 +342,19 @@ BIG_SVG_TITLE = (
     'stroke="black" stroke-width="1"/>'
     '<text x="133" y="67" font-family="Arial" text-anchor="middle" '
     'font-size="50">{inning_half}</text>'
-    '<text x="95" y="700" transform="rotate(-90,95,700)" '
+    '<text x="80" y="700" transform="rotate(-90,80,700)" '
     'fill="black" font-size="55" font-family="Arial" text-anchor="middle" '
     '>{game_str}</text>'
-    '<text x="165" y="700" transform="rotate(-90,165,700)" '
+    '<text x="145" y="700" transform="rotate(-90,145,700)" '
     'fill="black" font-size="45" font-family="Arial" text-anchor="middle" '
     '>{location}</text>'
-    '<text x="220" y="700" transform="rotate(-90,220,700)" '
+    '<text x="200" y="700" transform="rotate(-90,200,700)" '
     'fill="black" font-size="30" font-family="Arial" text-anchor="middle" '
     '>{datetime}</text>'
-    '</svg>'
+    '<text x="235" y="700" transform="rotate(-90,235,700)" '
+    'fill="black" font-size="30" font-family="Arial" text-anchor="middle" '
+    '>{detail_str}</text>'
+    '</svg>' 
 )
 
 BOX_SCORE_COLUMN_HEADER = (
@@ -2097,11 +2100,21 @@ def assemble_game_title_svg(game):
 
     game_width = get_game_width(game)
     location_str = game.location.replace('&', '&amp;')
+    detail_str = ''
     if game.attendance:
-        location_str += ' - {:,}'.format(int(game.attendance))
+        detail_str += 'Att. {:,}'.format(int(game.attendance))
+
+    if game.weather:
+        if detail_str != '':
+            detail_str += ' - '
+
+        detail_str += game.weather
 
     if game.temp:
-        location_str += ' - {} F'.format(int(game.temp))
+        if detail_str != '':
+            detail_str += ' - '
+
+        detail_str += '{} F'.format(int(game.temp))
 
     tuple_list = [('TOP', 0), ('BOTTOM', HEIGHT // 2)]
     for inning_half_str, y_pos in tuple_list:
@@ -2111,7 +2124,8 @@ def assemble_game_title_svg(game):
             inning_half=inning_half_str,
             game_str=game_str,
             location=location_str,
-            datetime=game_datetime
+            datetime=game_datetime,
+            detail_str=detail_str
         )
 
     return game_title_svg
