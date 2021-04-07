@@ -617,7 +617,8 @@ def get_pitcher_pitches(pitcher, inning_half_list):
         for plate_appearance in inning_half:
             if pitcher == plate_appearance.pitcher:
                 for event in plate_appearance.event_list:
-                    if isinstance(event, Pitch):
+                    if (isinstance(event, Pitch) and
+                            event.pitch_description != 'Automatic Ball'):
                         num_pitches += 1
 
     return num_pitches
