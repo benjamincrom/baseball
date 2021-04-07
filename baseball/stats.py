@@ -681,6 +681,7 @@ def get_strikes(appearance_list):
         for event in plate_appearance.event_list:
             if (isinstance(event, Pitch) and
                     event.pitch_description != 'Ball' and
+                    event.pitch_description != 'Automatic Ball' and
                     event.pitch_description != 'Ball In Dirt' and
                     event.pitch_description != 'Hit By Pitch'):
                 num_strikes += 1
