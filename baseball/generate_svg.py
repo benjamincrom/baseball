@@ -926,6 +926,9 @@ def get_runner_end_base_str(plate_appearance, event):
 
     return this_end_base_str
 
+def get_player_last_name(player_obj):
+    return player_obj.last_name
+
 def get_runners_svg(plate_appearance):
     runner_svg_str = ''
     all_runners_list = list(
@@ -933,8 +936,10 @@ def get_runners_svg(plate_appearance):
              if isinstance(event, RunnerAdvance)])
     )
 
+    all_runners_list.sort(key=get_player_last_name)
+
     y_val_list = []
-    for runner in sorted(all_runners_list):
+    for runner in all_runners_list:
         start_base_num = 1000
         color = None
         end_base = 0
