@@ -933,7 +933,8 @@ def get_runners_svg(plate_appearance):
     runner_svg_str = ''
     all_runners_list = list(
         set([event.runner for event in plate_appearance.event_list
-             if isinstance(event, RunnerAdvance)])
+             if (isinstance(event, RunnerAdvance) and
+                 event.runner != plate_appearance.batter)])
     )
 
     all_runners_list.sort(key=get_player_last_name)
