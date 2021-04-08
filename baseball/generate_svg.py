@@ -1498,7 +1498,7 @@ def get_team_batter_list(team, offset):
                 batter_str = ''
                 stats_str = ''
             else:
-                batter_str = '{}, {}'.format(
+                batter_str = '{} {}'.format(
                     batter_appearance.player_obj,
                     batter_appearance.player_obj.bat_side
                 )
@@ -1865,8 +1865,8 @@ def get_pitcher_box_score_lines(pitcher_app_list, chunk_size, box_score_dict):
         appears_str = '({}, {})'.format(pitcher_app.start_inning_num,
                                         pitcher_app.position)
 
-        pitcher_str = '{}, {}'.format(pitcher_app.player_obj,
-                                      pitcher_app.player_obj.pitch_hand)
+        pitcher_str = '{} {}'.format(pitcher_app.player_obj,
+                                     pitcher_app.player_obj.pitch_hand)
 
         pitcher_rows_svg += PITCHER_STATS_LINE_TEMPLATE.format(
             pitcher_id=pitcher_app.player_obj.mlb_id,
