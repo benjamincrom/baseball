@@ -12,6 +12,39 @@ FakePlateAppearance = namedtuple(
     'scorecard_summary batter plate_appearance_description'
 )
 
+LOGO_DICT = {
+    'LAA': 'team_logos/angels.gif',
+    'HOU': 'team_logos/astros.gif',
+    'OAK': 'team_logos/athletics.gif',
+    'TOR': 'team_logos/blue-jays.gif',
+    'ATL': 'team_logos/braves.gif',
+    'MIL': 'team_logos/brewers.gif',
+    'STL': 'team_logos/cardinals.gif',
+    'CHC': 'team_logos/cubs.gif',
+    'ARI': 'team_logos/diamondbacks.gif',
+    'LAD': 'team_logos/dodgers.gif',
+    'SF': 'team_logos/giants.gif',
+    'CLE': 'team_logos/indians.gif',
+    'SEA': 'team_logos/mariners.gif',
+    'MIA': 'team_logos/marlins.gif',
+    'NYM': 'team_logos/mets.gif',
+    'WSH': 'team_logos/nationals.gif',
+    'BAL': 'team_logos/orioles.gif',
+    'SD': 'team_logos/padres.gif',
+    'PHI': 'team_logos/phillies.gif',
+    'PIT': 'team_logos/pirates.gif',
+    'TEX': 'team_logos/rangers.gif',
+    'TB': 'team_logos/rays.gif',
+    'CIN': 'team_logos/reds.gif',
+    'BOS': 'team_logos/red-sox.gif',
+    'COL': 'team_logos/rockies.gif',
+    'KC': 'team_logos/royals.gif',
+    'DET': 'team_logos/tigers.gif',
+    'MIN': 'team_logos/twins.gif',
+    'CWS': 'team_logos/white-sox.gif',
+    'NYY': 'team_logos/yankees.gif'
+}
+
 
 HEIGHT = 4513
 WIDTH = 3192
@@ -405,17 +438,25 @@ BATTER_NAME_TEMPLATE = (
     'text-anchor="end">{appears}</text>'
 )
 
-SIGNATURE = (
+HOME_LOGO = (
     '<svg x="{x_pos}" y="{y_pos}" width="266" height="200" version="1.1" '
     'xmlns="http://www.w3.org/2000/svg" '
     'xmlns:xlink="http://www.w3.org/1999/xlink">'
     '<rect x="0" y="0" width="266" height="200" stroke="black" fill="white" '
     'stroke-width="1"/>'
-    '<a target="_parent" xlink:href="http://www.livebaseballscorecards.com">'
-    '<image xlink:href="baseball-fairy-161.png" x="50" y="10" height="161" '
+    '<image xlink:href="{logo}" x="50" y="0" height="200" '
     'width="163" />'
-    '<text x="133" y="190" font-family="Arial" font-size="20" '
-    'text-anchor="middle" fill="blue">livebaseballscorecards.com</text></a>'
+    '</svg>'
+)
+
+AWAY_LOGO = (
+    '<svg x="{x_pos}" y="{y_pos}" width="266" height="200" version="1.1" '
+    'xmlns="http://www.w3.org/2000/svg" '
+    'xmlns:xlink="http://www.w3.org/1999/xlink">'
+    '<rect x="0" y="0" width="266" height="200" stroke="black" fill="white" '
+    'stroke-width="1"/>'
+    '<image xlink:href="{logo}" x="50" y="0" height="200" '
+    'width="163" />'
     '</svg>'
 )
 
@@ -459,6 +500,12 @@ BIG_RECTANGLE = ('<path d="M0 {y_pos} L {width} {y_pos} '
 FOOTER_BOX = (
     '<rect x="0" y="0" width="{width}" height="4513" fill="none" '
     'stroke="black" stroke-width="4"/>'
+    '<a target="_parent" xlink:href="http://www.livebaseballscorecards.com">'
+    '<text x="{text_pos}" y="3545" font-family="Arial" font-size="20" '
+    'text-anchor="right" fill="blue">livebaseballscorecards.com</text></a>'
+    '<a target="_parent" xlink:href="http://www.livebaseballscorecards.com">'
+    '<text x="{text_pos}" y="1290" font-family="Arial" font-size="20" '
+    'text-anchor="right" fill="blue">livebaseballscorecards.com</text></a>'
 )
 
 SVG_PITCH_TEMPLATE = (
@@ -1998,24 +2045,24 @@ def assemble_stats_svg(game):
 
     return stats_svg
 
-def get_signature(game):
+def get_logo(game):
     signature_svg = ''
     game_width = get_game_width(game)
 
-    tuple_list = [
-        (
-            game_width - BOX_WIDTH,
-            8 * BOX_HEIGHT + BOX_HEIGHT // 2
-        ),
-        (
-            game_width - BOX_WIDTH,
-            (8 * BOX_HEIGHT + BOX_HEIGHT // 2 +
-             HEIGHT // 2)
-        )
-    ]
+    signature_svg = ''
+    x_pos = game_width - BOX_WIDTH
+    y_pos = 8 * BOX_HEIGHT + BOX_HEIGHT // 2
+    away_logo_str = LOGO_DICT[game.away_team.abbreviation]
+    signature_svg += AWAY_LOGO.format(x_pos=x_pos,
+                                      y_pos=y_pos,
+                                      logo=away_logo_str)
 
-    for x_pos, y_pos in tuple_list:
-        signature_svg += SIGNATURE.format(x_pos=x_pos, y_pos=y_pos)
+    x_pos = game_width - BOX_WIDTH
+    y_pos = 8 * BOX_HEIGHT + BOX_HEIGHT // 2 + HEIGHT // 2
+    home_logo_str = LOGO_DICT[game.home_team.abbreviation]
+    signature_svg += HOME_LOGO.format(x_pos=x_pos,
+                                      y_pos=y_pos,
+                                      logo=home_logo_str)
 
     return signature_svg
 
@@ -2142,7 +2189,9 @@ def get_big_rectangles(game):
 
 def get_footer_box(game):
     game_width = get_game_width(game)
-    footer_box_svg = '{}'.format(FOOTER_BOX.format(width=game_width))
+    text_pos = game_width - 255
+    footer_box_svg = '{}'.format(FOOTER_BOX.format(width=game_width,
+                                                   text_pos=text_pos))
 
     return footer_box_svg
 
@@ -2159,7 +2208,7 @@ def get_game_svg_str(game):
         add_home_pitcher_sub_division_lines(game),
         add_all_pitcher_box_scores(game),
         assemble_game_title_svg(game),
-        get_signature(game),
+        get_logo(game),
         get_box_score_totals(game),
         get_big_rectangles(game),
         get_footer_box(game),
