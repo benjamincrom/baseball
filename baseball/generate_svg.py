@@ -934,7 +934,7 @@ def get_runners_svg(plate_appearance):
     )
 
     y_val_list = []
-    for runner in all_runners_list:
+    for runner in sorted(all_runners_list):
         start_base_num = 1000
         color = None
         end_base = 0
