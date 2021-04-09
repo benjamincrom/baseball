@@ -5,6 +5,7 @@ from re import search, sub, findall, escape
 from json import dumps
 from pytz import timezone
 
+from baseball.baseball_events import RunnerAdvance
 from baseball.generate_svg import get_game_svg_str
 from baseball.stats import (get_all_pitcher_stats,
                             get_all_batter_stats,
@@ -61,6 +62,10 @@ PLAY_CODE_ORDERED_DICT = OrderedDict([
 ])
 
 NO_HIT_CODE_LIST = ['K', 'ꓘ', 'BB', 'IBB']
+
+BASE_PLUS_ONE_DICT = {'1B': '2nd',
+                      '2B': '3rd',
+                      '3B': 'home'}
 
 INCREMENT_BASE_DICT = {'1st': '2nd',
                        '2nd': '3rd',
@@ -645,7 +650,9 @@ class PlateAppearance(object):
         self.runners_batted_in_list = runners_batted_in_list
         self.out_runners_list = self.get_out_runners_list(
             self.plate_appearance_description,
-            self.batting_team
+            self.batting_team,
+            self.event_list,
+            self.batter
         )
 
         self.hit_location = self.get_hit_location()
@@ -767,7 +774,8 @@ class PlateAppearance(object):
         return defense_suffix
 
     @staticmethod
-    def get_out_runners_list(plate_appearance_description, batting_team):
+    def get_out_runners_list(plate_appearance_description, batting_team,
+                             event_list, batter):
         description = strip_suffixes(plate_appearance_description)
         runner_name_list = findall(
             (r'([A-Z][\w\'-]+\s+(?:[A-Z,a-z][\w\'-]+\s+)?'
@@ -778,6 +786,24 @@ class PlateAppearance(object):
              r' +(\w+)'),
             description
         )
+
+        runner_in_list = False
+        for event in event_list:
+            if (isinstance(event, RunnerAdvance) and event.end_base == ''
+                    and not event.runner_scored and event.runner != batter):
+                for name, _ in runner_name_list:
+                    if event.runner.last_name in name:
+                        runner_in_list = True
+                        break
+
+                if not runner_in_list:
+                    runner_name_list.append(
+                        (
+                            '{} {}'.format(event.runner.first_name,
+                                           event.runner.last_name),
+                            BASE_PLUS_ONE_DICT[event.start_base]
+                        )
+                    )
 
         runner_tuple_list = []
         for name, base in runner_name_list:
