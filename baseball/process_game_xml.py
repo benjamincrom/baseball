@@ -352,20 +352,6 @@ def process_at_bat(plate_appearance, event_list, game_obj, steal_description):
     pitcher_id = int(plate_appearance.get('pitcher'))
     inning_outs = int(plate_appearance.get('o'))
 
-    out_runner_supplemental_list = None
-    pitcher = None
-    for this_team in [game_obj.home_team, game_obj.away_team]:
-        if pitcher_id in this_team:
-            pitcher = this_team[pitcher_id]
-        elif steal_description:
-            out_runner_supplemental_list = (
-                PlateAppearance.get_out_runners_list(steal_description,
-                                                     this_team)
-            )
-
-    if not pitcher:
-        raise ValueError('Batter ID not in player_dict')
-
     batter_id = int(plate_appearance.get('batter'))
     if batter_id in game_obj.home_team:
         batter = game_obj.home_team[batter_id]
@@ -375,6 +361,23 @@ def process_at_bat(plate_appearance, event_list, game_obj, steal_description):
         batting_team = game_obj.away_team
     else:
         raise ValueError('Batter ID not in player_dict')
+
+    out_runner_supplemental_list = None
+    pitcher = None
+    for this_team in [game_obj.home_team, game_obj.away_team]:
+        if pitcher_id in this_team:
+            pitcher = this_team[pitcher_id]
+        elif steal_description:
+            out_runner_supplemental_list = (
+                PlateAppearance.get_out_runners_list(steal_description,
+                                                     this_team,
+                                                     new_event_list,
+                                                     batter)
+            )
+
+    if not pitcher:
+        raise ValueError('Batter ID not in player_dict')
+
 
     start_datetime = get_datetime(plate_appearance.get('end_tfs_zulu'))
     end_datetime = get_datetime(plate_appearance.get('end_tfs_zulu'))
@@ -649,8 +652,9 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
                 steal_description = event_description
         elif event_container.tag == 'atbat':
             if event_container.get('des'):
-                plate_appearance_obj = process_at_bat(event_container, event_list,
-                                                      game_obj, steal_description)
+                plate_appearance_obj = process_at_bat(
+                    event_container, event_list, game_obj, steal_description
+                )
 
                 plate_appearance_list.append(plate_appearance_obj)
                 event_list = []
