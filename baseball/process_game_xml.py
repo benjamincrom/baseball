@@ -679,12 +679,17 @@ def create_player(player_xml):
     else:
         player_num = None
 
-    return Player(player_xml.get('last'),
-                  player_xml.get('first'),
-                  int(player_xml.get('id')),
-                  None,
-                  None,
-                  player_num)
+    new_player = Player(player_xml.get('last'),
+                        player_xml.get('first'),
+                        int(player_xml.get('id')),
+                        None,
+                        None,
+                        player_num)
+
+    new_player.bat_side = player_xml.get('bats')
+    new_player.pitch_hand = player_xml.get('rl')
+
+    return new_player
 
 def init_player_list(player_obj, position):
     return [PlayerAppearance(player_obj, position, 1, 'top', 1)]
@@ -769,7 +774,8 @@ def process_team_xml(game_obj, team_xml):
         for player_xml in this_team_xml:
             if player_xml.tag == 'player':
                 player_id = int(player_xml.get('id'))
-
+                bat_side = player_xml.get('bats')
+                pitch_hand = player_xml.get('rl')
                 if player_id in this_team:
                     this_player = this_team[player_id]
 
@@ -780,6 +786,12 @@ def process_team_xml(game_obj, team_xml):
                         this_player.number = int(player_xml.get('num'))
                     else:
                         this_player.number = ''
+
+                    if bat_side and not this_player.bat_side:
+                        this_player.bat_side = bat_side
+
+                    if pitch_hand and not this_player.pitch_hand:
+                        this_player.pitch_hand = pitch_hand
 
                     if (player_xml.get('era') is not None and
                             '-' not in player_xml.get('era')):
@@ -805,6 +817,9 @@ def initialize_game_object(boxscore_xml):
     away_pitcher_status_dict = {}
     home_starting_pitcher_id = None
     away_starting_pitcher_id = None
+    temp = None
+    weather = None
+    attendance = None
 
     for item in boxscore_xml:
         if item.tag == 'batting':
@@ -841,8 +856,25 @@ def initialize_game_object(boxscore_xml):
                         )
                     else:
                         home_pitcher_status_dict[pitcher_id] = ''
+        elif item.tag == 'game_info':
+            match = search(
+                (r'.+<b>Weather</b>: (\d+) degrees, '
+                 r'([^\.]+)\.<br/><b>.+Att</b>: ([^\.]+)*\..+'),
+                item.text
+            )
+
+            if match:
+                temp = int(match.group(1))
+                weather = match.group(2)
+                attendance = int(match.group(3).replace(',', ''))
 
     game_obj = Game(home_team, away_team, game_venue, boxscore_date)
+    if temp:
+        game_obj.temp = temp
+    if weather:
+        game_obj.weather = weather
+    if attendance:
+        game_obj.attendance = attendance
 
     return (game_obj,
             away_pitcher_status_dict,

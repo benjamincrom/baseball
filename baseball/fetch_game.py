@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 from multiprocessing import Pool
 from os import listdir, makedirs, mkdir
 from os.path import isdir, isfile, exists, abspath, join
-from re import search, sub
+from re import search, sub, findall
 from sys import exc_info
 from traceback import format_exception
 from xml.etree.ElementTree import fromstring
@@ -26,8 +26,8 @@ BOXSCORE_SUFFIX = 'boxscore.xml'
 PLAYERS_SUFFIX = 'players.xml'
 INNING_SUFFIX = 'inning/inning_all.xml'
 
-ALL_GAMES_2020_URL = ('http://gdx.mlb.com/components/game/mlb/year_{year:04d}/'
-                      'month_{month:02d}/day_{day:02d}/miniscoreboard.json')
+ALL_GAMES_URL = ('http://gdx.mlb.com/components/game/mlb/year_{year:04d}/'
+                 'month_{month:02d}/day_{day:02d}/miniscoreboard.json')
 
 GAME_URL_2020_TEMPLATE = ('http://statsapi.mlb.com/api/v1.1/game/{game_pk}'
                           '/feed/live')
@@ -274,34 +274,6 @@ HTML_WRAPPER = (
     '</html>'
 )
 
-HTML_WRAPPER_OLD = (
-    '<html>'
-    '<head>'
-    '<meta http-equiv="refresh" content="45">'
-    '<meta name="viewport" content="width=device-width, initial-scale=0.35">'
-    '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
-    '<!-- Global site tag (gtag.js) - Google Analytics -->'
-    '<script async '
-    'src="https://www.googletagmanager.com/gtag/js?id=UA-108577160-1"></script>'
-    '<script>'
-    'window.dataLayer = window.dataLayer || [];'
-    'function gtag(){{dataLayer.push(arguments);}}'
-    'gtag(\'js\', new Date());'
-    'gtag(\'config\', \'UA-108577160-1\');'
-    '</script>'
-    '<title>{title}</title>'
-    '</head>'
-    '<body style="background-color:black;">'
-    '<div align="center">'
-    '<object width="1160px" data="{filename}" type="image/svg+xml">'
-    '</div>'
-    '</body>'
-    '</html>'
-)
-
-ALL_GAMES_URL = ('http://gdx.mlb.com/components/game/mlb/year_{year:04d}/'
-                 'month_{month:02d}/day_{day:02d}/miniscoreboard.json')
-
 GAME_URL_TEMPLATE = 'http://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live'
 
 OBJECT_ENTRY_TEMPLATE = (
@@ -344,6 +316,157 @@ GET_TODAY_GAMES_USAGE_STR = (
     'Usage:\n'
     '  - ./get_today_games.py [OUTPUT DIRECTORY]\n'
 )
+
+######## XML FUNCTIONS get today game functions ############
+def get_page(this_datetime):
+    page = get(
+        MLB_URL_BASE_PATTERN.format(year=this_datetime.year,
+                                    month=str(this_datetime.month).zfill(2),
+                                    day=str(this_datetime.day).zfill(2))
+    )
+
+    return page
+
+def get_today_date_str(this_datetime):
+    today_date_str = '{}-{}-{}'.format(this_datetime.year,
+                                       str(this_datetime.month).zfill(2),
+                                       str(this_datetime.day).zfill(2))
+
+    return today_date_str
+
+def get_generated_html_id_list(game_id_list, today_date_str, output_dir,
+                               write_game_html):
+    if not exists(output_dir):
+        makedirs(output_dir)
+
+    output_path = abspath(output_dir)
+    game_html_id_list = []
+
+    for game_id in game_id_list:
+        away_mlb_code = game_id.split('_')[-3][:3]
+        home_mlb_code = game_id.split('_')[-2][:3]
+        game_num_str = game_id.split('_')[-1]
+
+        if (away_mlb_code in MLB_TEAM_CODE_DICT.values() and
+                home_mlb_code in MLB_TEAM_CODE_DICT.values()):
+            away_code = [key for key, val in MLB_TEAM_CODE_DICT.items()
+                         if val == away_mlb_code][0]
+            home_code = [key for key, val in MLB_TEAM_CODE_DICT.items()
+                         if val == home_mlb_code][0]
+
+            try:
+                game_id, game = get_game_from_url(today_date_str,
+                                                  away_code,
+                                                  home_code,
+                                                  game_num_str)
+
+                if game:
+                    write_game_svg_and_html(game_id, game, output_path,
+                                            write_game_html)
+
+                    game_html_id_list.append(
+                        '{}-{}-{}-{}'.format(today_date_str,
+                                             away_code,
+                                             home_code,
+                                             game_num_str)
+                    )
+            except:
+                exc_type, exc_value, exc_traceback = exc_info()
+                lines = format_exception(exc_type, exc_value, exc_traceback)
+                exception_str = ' '.join(lines)
+                print('{} {} {}'.format(datetime.utcnow(), game_id, exception_str))
+
+    return game_html_id_list
+
+def generate_game_svgs_for_2019_datetime(this_datetime, output_dir,
+                                         write_game_html=False,
+                                         write_date_html=False,
+                                         write_index_html=False):
+    if not exists(output_dir):
+        mkdir(output_dir)
+
+    today_date_str = get_today_date_str(this_datetime)
+
+    month = int(this_datetime.month)
+    day = int(this_datetime.day)
+    year = int(this_datetime.year)
+    all_games_dict = get(
+        ALL_GAMES_URL.format(month=month, day=day, year=year)
+    ).json()
+
+    game_id_list = [
+        game_dict['id'].replace('-', '_').replace('/', '_')
+        for game_dict in all_games_dict['data']['games'].get('game', [])
+    ]
+
+    game_html_id_list = get_generated_html_id_list(game_id_list,
+                                                   today_date_str,
+                                                   output_dir,
+                                                   write_game_html)
+
+    object_html_str = get_object_html_str(game_html_id_list)
+
+    month = this_datetime.month
+    day = this_datetime.day
+    year = this_datetime.year
+    month_list = []
+
+    for index in range(12):
+        if index == month - 1:
+            month_list.append('selected')
+        else:
+            month_list.append('')
+
+    day_list = []
+    for index in range(32):
+        if index == day - 1:
+            day_list.append('selected')
+        else:
+            day_list.append('')
+
+    year_list = []
+    for index in range(2500):
+        if index == year:
+            year_list.append('selected')
+        else:
+            year_list.append('')
+
+    today_str = '{} {}, {}'.format(this_datetime.strftime("%B"),
+                                   this_datetime.day,
+                                   this_datetime.year)
+
+    yesterday = this_datetime - timedelta(days=1)
+    tomorrow = this_datetime + timedelta(days=1)
+    yesterday_html = '{:04d}-{:02d}-{:02d}.html'.format(int(yesterday.year),
+                                                        int(yesterday.month),
+                                                        int(yesterday.day))
+
+    tomorrow_html = '{:04d}-{:02d}-{:02d}.html'.format(int(tomorrow.year),
+                                                       int(tomorrow.month),
+                                                       int(tomorrow.day))
+
+    output_html = HTML_INDEX_PAGE.format(result_object_list_str=object_html_str,
+                                         month_list=month_list,
+                                         day_list=day_list,
+                                         year_list=year_list,
+                                         yesterday_html=yesterday_html,
+                                         tomorrow_html=tomorrow_html,
+                                         today_str=today_str,
+                                         output_filename=output_dir)
+
+    output_filename = '/{:04d}-{:02d}-{:02d}.html'.format(year, month, day)
+    if object_html_str or not exists(output_dir + output_filename):
+        if write_date_html:
+            write_location = output_dir + output_filename
+            with open(write_location, 'w', encoding='utf-8') as fh:
+                fh.write(output_html)
+
+        if write_index_html:
+            write_location = output_dir + '/index.html'
+            with open(write_location, 'w', encoding='utf-8') as fh:
+                fh.write(output_html)
+
+############################################################
 
 def parse_name(batter_name):
     if search(r'\w\s+[A-Z]\.\s+', batter_name):
@@ -842,8 +965,20 @@ def get_object_html_str(game_html_id_list):
 
     return object_html_str
 
-def write_games_for_date(this_datetime, output_dir, write_game_html,
-                         write_date_html, write_index_html):
+def write_games_for_date(this_datetime, output_dir, write_game_html=False,
+                         write_date_html=False, write_index_html=False):
+    if this_datetime.year >= 2020:
+        generate_game_svgs_for_2020_datetime(this_datetime, output_dir,
+                                             write_game_html, write_date_html,
+                                             write_index_html)
+    else:
+        generate_game_svgs_for_2019_datetime(this_datetime, output_dir,
+                                             write_game_html, write_date_html,
+                                             write_index_html)
+
+def generate_game_svgs_for_2020_datetime(this_datetime, output_dir,
+                                         write_game_html, write_date_html,
+                                         write_index_html):
     if not exists(output_dir):
         mkdir(output_dir)
 
@@ -851,7 +986,7 @@ def write_games_for_date(this_datetime, output_dir, write_game_html,
     day = this_datetime.day
     year = this_datetime.year
     all_games_dict = get(
-        ALL_GAMES_2020_URL.format(month=month, day=day, year=year)
+        ALL_GAMES_URL.format(month=month, day=day, year=year)
     ).json()
 
     game_tuple_list = [(x['id'], x['game_pk'])
@@ -1278,20 +1413,19 @@ def get_game_from_url(date_str, away_code, home_code, game_number):
 def generate_today_game_svgs(output_dir, write_game_html=False,
                              write_date_html=False, write_index_html=False):
     time_shift = timedelta(hours=7)
-    for i in range(0, 1):
-        today_datetime = datetime.utcnow() - time_shift - timedelta(days=i)
-        try:
-            write_games_for_date(
-                today_datetime.astimezone(timezone('America/New_York')),
-                output_dir,
-                write_game_html,
-                write_date_html,
-                write_index_html
-            )
-        except:
-            exc_type, exc_value, exc_traceback = exc_info()
-            lines = format_exception(exc_type, exc_value, exc_traceback)
-            exception_str = ' '.join(lines)
-            print('{} ({}) {}'.format(datetime.utcnow(),
-                                      str(today_datetime),
-                                      exception_str))
+    today_datetime = datetime.utcnow() - time_shift
+    try:
+        write_games_for_date(
+            today_datetime.astimezone(timezone('America/New_York')),
+            output_dir,
+            write_game_html,
+            write_date_html,
+            write_index_html
+        )
+    except:
+        exc_type, exc_value, exc_traceback = exc_info()
+        lines = format_exception(exc_type, exc_value, exc_traceback)
+        exception_str = ' '.join(lines)
+        print('{} ({}) {}'.format(datetime.utcnow(),
+                                  str(today_datetime),
+                                  exception_str))

@@ -42,6 +42,7 @@ LOGO_DICT = {
     'DET': 'team_logos/tigers.gif',
     'MIN': 'team_logos/twins.gif',
     'CWS': 'team_logos/white-sox.gif',
+    'CHW': 'team_logos/white-sox.gif',
     'NYY': 'team_logos/yankees.gif'
 }
 
@@ -1192,6 +1193,12 @@ def fix_pa(plate_appearance, event):
         description = '{} batting: Defensive Indifference'.format(
             plate_appearance.batter
         )
+    elif 'Pickoff Error' in event.run_description:
+        summary = 'E'
+        description = '{} batting: {}'.format(
+            plate_appearance.batter,
+            event.run_description
+        )
 
     if summary and description:
         return_pa = FakePlateAppearance(summary,
@@ -1218,6 +1225,13 @@ def get_base_svg(plate_appearance, plate_appearance_list):
                     batter_is_done = True
 
                 for out_runner, out_base in this_pa.out_runners_list:
+                    if out_base == '1st' and event.start_base == '1B':
+                        out_base = '2nd'
+                    if out_base == '2nd' and event.start_base == '2B':
+                        out_base = '3rd'
+                    if out_base == '3rd' and event.start_base == '3B':
+                        out_base = 'home'
+
                     if out_runner == batter:
                         if out_base == '1st':
                             batter_out_base = '1B'
@@ -1262,18 +1276,6 @@ def get_base_svg(plate_appearance, plate_appearance_list):
 
     if home_plate_pa and third_base_pa == home_plate_pa:
         third_base_pa = None
-
-    if batter_final_base == '1B' and batter_out_base == '1B':
-        batter_out_base = '2B'
-        second_base_pa = first_base_pa
-
-    if batter_final_base == '2B' and batter_out_base == '2B':
-        batterout_base = '3B'
-        third_base_pa = second_base_pa
-
-    if batter_final_base == '3B' and batter_out_base == '3B':
-        batter_out_base = 'H'
-        home_plate_pa = third_base_pa
 
     base_svg = process_base_appearances(second_base_pa,
                                         third_base_pa,
@@ -1504,10 +1506,12 @@ def get_team_batter_list(team, offset):
                 batter_str = ''
                 stats_str = ''
             else:
-                batter_str = '{}, {}'.format(
-                    batter_appearance.player_obj,
-                    batter_appearance.player_obj.bat_side
-                )
+                batter_str = '{}'.format(batter_appearance.player_obj)
+                if batter_appearance.player_obj.bat_side:
+                    batter_str += ', {}'.format(
+                        batter_appearance.player_obj.bat_side
+                    )
+
                 if (batter_appearance.player_obj.obp and
                         batter_appearance.player_obj.slg):
                     stats_str = 'OBP: {:.3f}, SLG: {:.3f}'.format(
@@ -1871,8 +1875,9 @@ def get_pitcher_box_score_lines(pitcher_app_list, chunk_size, box_score_dict):
         appears_str = '({}, {})'.format(pitcher_app.start_inning_num,
                                         pitcher_app.position)
 
-        pitcher_str = '{}, {}'.format(pitcher_app.player_obj,
-                                     pitcher_app.player_obj.pitch_hand)
+        pitcher_str = '{}'.format(pitcher_app.player_obj)
+        if pitcher_app.player_obj.pitch_hand:
+            pitcher_str += ', {}'.format(pitcher_app.player_obj.pitch_hand)
 
         pitcher_rows_svg += PITCHER_STATS_LINE_TEMPLATE.format(
             pitcher_id=pitcher_app.player_obj.mlb_id,
