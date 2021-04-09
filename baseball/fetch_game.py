@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 from multiprocessing import Pool
 from os import listdir, makedirs, mkdir
 from os.path import isdir, isfile, exists, abspath, join
-from re import search, sub, findall
+from re import search, sub
 from sys import exc_info
 from traceback import format_exception
 from xml.etree.ElementTree import fromstring
@@ -29,9 +29,7 @@ INNING_SUFFIX = 'inning/inning_all.xml'
 ALL_GAMES_URL = ('http://gdx.mlb.com/components/game/mlb/year_{year:04d}/'
                  'month_{month:02d}/day_{day:02d}/miniscoreboard.json')
 
-GAME_URL_2020_TEMPLATE = ('http://statsapi.mlb.com/api/v1.1/game/{game_pk}'
-                          '/feed/live')
-
+GAME_URL_TEMPLATE = 'http://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live'
 
 MLB_URL_PATTERN = ('http://gd2.mlb.com/components/game/mlb/year_{year}/'
                    'month_{month}/day_{day}/gid_{year}_{month}_{day}_'
@@ -273,8 +271,6 @@ HTML_WRAPPER = (
     '</body>'
     '</html>'
 )
-
-GAME_URL_TEMPLATE = 'http://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live'
 
 OBJECT_ENTRY_TEMPLATE = (
     '<script>'
@@ -992,7 +988,7 @@ def generate_game_svgs_for_2020_datetime(this_datetime, output_dir,
     game_tuple_list = [(x['id'], x['game_pk'])
                        for x in all_games_dict['data']['games'].get('game', [])]
 
-    game_dict_list = [get(GAME_URL_2020_TEMPLATE.format(game_pk=game_pk)).json()
+    game_dict_list = [get(GAME_URL_TEMPLATE.format(game_pk=game_pk)).json()
                       for _, game_pk in game_tuple_list]
 
     game_html_id_list = []
