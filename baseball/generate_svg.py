@@ -968,22 +968,21 @@ def get_runners_svg(plate_appearance):
 
         if color:
             summary = '{}-{}'.format(start_base_num, this_end_base)
-            is_forceout_desc = ('Forceout' in runner_event.run_description or
-                                ('Double Play' in runner_event.run_description and
-                                 'F' not in plate_appearance.scorecard_summary and
-                                 'L' not in plate_appearance.scorecard_summary) or
-                                ('Triple Play' in runner_event.run_description and
-                                 'F' not in plate_appearance.scorecard_summary and
-                                 'L' not in plate_appearance.scorecard_summary) or
-                                ('DP' in runner_event.run_description and
-                                 'F' not in plate_appearance.scorecard_summary and
-                                 'L' not in plate_appearance.scorecard_summary) or
-                                ('TP' in runner_event.run_description and
-                                 'F' not in plate_appearance.scorecard_summary and
-                                 'L' not in plate_appearance.scorecard_summary))
+            is_forceout_desc = (
+                'Forceout' in runner_event.run_description or
+                (
+                    ('Double Play' in runner_event.run_description or
+                     'Triple Play' in runner_event.run_description or
+                     'DP' in runner_event.run_description or
+                     'TP' in runner_event.run_description)
+                    and
+                    ('F' not in plate_appearance.scorecard_summary and
+                     'L' not in plate_appearance.scorecard_summary)
+                )
+            )
 
-            if (is_forceout_desc and runner_event.end_base == '' and this_end_base and
-                    not runner_event.runner_scored):
+            if (is_forceout_desc and runner_event.end_base == ''
+                    and this_end_base and not runner_event.runner_scored):
                 summary += 'f'
 
             title_flag_str = get_runner_title_str(runner_event)
@@ -1211,10 +1210,12 @@ def fix_pa(plate_appearance, event):
 
 def get_base_svg(plate_appearance, plate_appearance_list):
     plate_appearance_index = plate_appearance_list.index(plate_appearance)
-    plate_appearance_list = plate_appearance_list[plate_appearance_index:plate_appearance_index+8]
+    plate_appearance_list = (
+        plate_appearance_list[plate_appearance_index:plate_appearance_index+8]
+    )
 
-    first_base_pa, second_base_pa, third_base_pa, home_plate_pa = None, None, None, None
-    batter_final_base, batter_out_base, batter_is_done = None, None, None
+    second_base_pa = third_base_pa = home_plate_pa = None
+    batter_final_base = batter_out_base = batter_is_done = None
 
     batter = plate_appearance.batter
     for this_pa in plate_appearance_list:
@@ -1235,8 +1236,6 @@ def get_base_svg(plate_appearance, plate_appearance_list):
                     if out_runner == batter:
                         if out_base == '1st':
                             batter_out_base = '1B'
-                            if plate_appearance != this_pa:
-                                first_base_pa = fix_pa(this_pa, event)
                         elif out_base == '2nd':
                             batter_out_base = '2B'
                             if plate_appearance != this_pa:
@@ -1250,9 +1249,11 @@ def get_base_svg(plate_appearance, plate_appearance_list):
                             if plate_appearance != this_pa:
                                 home_plate_pa = fix_pa(this_pa, event)
 
-                if event.end_base == '1B' and batter_final_base not in ['2B', '3B', 'H']:
+                if (event.end_base == '1B' and
+                        batter_final_base not in ['2B', '3B', 'H']):
                     batter_final_base = '1B'
-                elif event.end_base == '2B' and batter_final_base not in ['3B', 'H']:
+                elif (event.end_base == '2B' and
+                      batter_final_base not in ['3B', 'H']):
                     batter_final_base = '2B'
                     if plate_appearance != this_pa:
                         second_base_pa = fix_pa(this_pa, event)
@@ -1860,7 +1861,8 @@ def get_pitcher_box_score_lines(pitcher_app_list, chunk_size, box_score_dict):
         defined_text_increment = PITCHER_BOX_SCORE_SMALL_Y_INCREMENT
 
     for pitcher_app in pitcher_app_list:
-        if len(str(pitcher_app.player_obj)) > 18 and chunk_size == SMALL_CHUNK_SIZE:
+        if (len(str(pitcher_app.player_obj)) > 18 and
+                chunk_size == SMALL_CHUNK_SIZE):
             initial_y = PITCHER_BOX_SCORE_MED_Y
             text_size_1 = PITCHER_MED_FONT_SIZE
             text_size_2 = PITCHER_STATS_MED_FONT_SIZE

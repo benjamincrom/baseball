@@ -149,7 +149,7 @@ def strip_suffixes(input_str):
     return input_str
 
 
-class PlayerAppearance(object):
+class PlayerAppearance:
     def __init__(self, player_obj, position, start_inning_num,
                  start_inning_half, start_inning_batter_num):
         self.player_obj = player_obj
@@ -210,7 +210,7 @@ class PlayerAppearance(object):
         return return_str
 
 
-class Player(object):
+class Player:
     def __init__(self, last_name, first_name, mlb_id, obp, slg, number):
         self.last_name = last_name
         self.first_name = first_name
@@ -269,7 +269,7 @@ class Player(object):
         return return_str
 
 
-class Team(object):
+class Team:
     def __init__(self, name, abbreviation):
         self.name = name
         self.abbreviation = abbreviation
@@ -380,7 +380,7 @@ class Team(object):
         return return_str
 
 
-class Game(object):
+class Game:
     def __init__(self, home_team, away_team, location, game_date_str,
                  start_datetime=None, end_datetime=None,
                  inning_list=None):
@@ -591,7 +591,7 @@ class Game(object):
         return return_str
 
 
-class Inning(object):
+class Inning:
     def __init__(self, top_half_appearance_list, bottom_half_appearance_list):
         self.top_half_appearance_list = top_half_appearance_list
         self.bottom_half_appearance_list = bottom_half_appearance_list
@@ -632,7 +632,7 @@ class Inning(object):
         )
 
 
-class PlateAppearance(object):
+class PlateAppearance:
     def __init__(self, start_datetime, end_datetime, batting_team,
                  plate_appearance_description, plate_appearance_summary,
                  pitcher, batter, inning_outs, scoring_runners_list,

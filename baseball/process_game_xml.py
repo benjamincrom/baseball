@@ -258,16 +258,14 @@ def parse_substitution(substitution_datetime, description, event_summary,
 
     position_num = get_position_number(position_str)
 
-    if (event_summary == 'Pitching Substitution' or
-            event_summary == 'Defensive Sub' or
-            event_summary == 'Defensive sub'):
+    if (event_summary  in ['Pitching Substitution', 'Defensive Sub',
+                           'Defensive sub']):
         if inning_half_str == 'top':
             this_team = game_obj.home_team
         else:
             this_team = game_obj.away_team
-    elif (event_summary == 'Offensive Sub' or
-          event_summary == 'Offensive sub' or
-          event_summary == 'Offensive Substitution'):
+    elif (event_summary in ['Offensive Sub', 'Offensive sub',
+                            'Offensive Substitution']):
         if inning_half_str == 'top':
             this_team = game_obj.away_team
         else:
@@ -608,7 +606,7 @@ def get_sub_switch_steal_flags(event_summary, event_description):
     return substitution_flag, switch_flag, steal_flag
 
 def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
-    if inning_half_str != 'top' and inning_half_str != 'bottom':
+    if inning_half_str not in ['top', 'bottom']:
         raise ValueError('Invalid inning half str.')
 
     plate_appearance_list = []

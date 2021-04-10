@@ -1,7 +1,7 @@
 AUTOMATIC_BALL_POSITION = (1.0, 1.0)
 
 
-class Substitution(object):
+class Substitution:
     def __init__(self, substitution_datetime, incoming_player, outgoing_player,
                  batting_order, position):
         self.substitution_datetime = substitution_datetime
@@ -51,7 +51,7 @@ class Substitution(object):
         return return_str
 
 
-class Switch(object):
+class Switch:
     def __init__(self, switch_datetime, player, old_position_num,
                  new_position_num, new_batting_order):
         self.switch_datetime = switch_datetime
@@ -92,7 +92,7 @@ class Switch(object):
         return return_str
 
 
-class Pitch(object):
+class Pitch:
     def __init__(self, pitch_datetime, pitch_description, pitch_type,
                  pitch_speed, pitch_position):
         self.pitch_datetime = pitch_datetime
@@ -130,7 +130,7 @@ class Pitch(object):
         return return_str
 
 
-class Pickoff(object):
+class Pickoff:
     def __init__(self, pickoff_description, pickoff_base,
                  pickoff_was_successful):
         self.pickoff_description = pickoff_description
@@ -156,7 +156,7 @@ class Pickoff(object):
         return return_str
 
 
-class RunnerAdvance(object):
+class RunnerAdvance:
     def __init__(self, run_description, runner, start_base, end_base,
                  runner_scored, run_earned, is_rbi):
         self.run_description = run_description

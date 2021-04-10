@@ -5,6 +5,8 @@ from baseball.baseball_events import Pickoff, RunnerAdvance, Pitch
 
 NOT_AT_BAT_CODE_LIST = ['SH', 'SF', 'BB', 'CI', 'FI', 'IBB', 'HBP', 'CS', 'PO']
 HIT_CODE_LIST = ['1B', '2B', '3B', 'HR']
+NON_STRIKE_LIST = ['Ball', 'Intent Ball', 'Automatic Ball', 'Ball In Dirt',
+                   'Hit By Pitch']
 
 InningStatsTuple = namedtuple('InningStatsTuple', 'S P BB K LOB E H R')
 
@@ -50,7 +52,8 @@ def process_baserunners(plate_appearance, last_plate_appearance,
     for event in plate_appearance.event_list:
         if isinstance(event, RunnerAdvance):
             if (plate_appearance == last_plate_appearance and
-                    ('out' in event.run_description or 'Out' in event.run_description)):
+                    ('out' in event.run_description or
+                     'Out' in event.run_description)):
                 break
             else:
                 if event.end_base == '1B':
@@ -105,7 +108,8 @@ def get_inning_half_list(game, inning_half_str):
 
     return inning_half_list
 
-def get_half_inning_stats(top_half_appearance_list, bottom_half_appearance_list):
+def get_half_inning_stats(top_half_appearance_list,
+                          bottom_half_appearance_list):
     if top_half_appearance_list:
         top_half_inning_stats = InningStatsTuple(
             get_strikes(top_half_appearance_list),
@@ -603,11 +607,7 @@ def get_pitcher_strikes(pitcher, inning_half_list):
             if pitcher == plate_appearance.pitcher:
                 for event in plate_appearance.event_list:
                     if (isinstance(event, Pitch) and
-                            event.pitch_description != 'Ball' and
-                            event.pitch_description != 'Intent Ball' and
-                            event.pitch_description != 'Automatic Ball' and
-                            event.pitch_description != 'Ball In Dirt' and
-                            event.pitch_description != 'Hit By Pitch'):
+                            event.pitch_description not in NON_STRIKE_LIST):
                         num_strikes += 1
 
     return num_strikes
@@ -682,11 +682,7 @@ def get_strikes(appearance_list):
     for plate_appearance in appearance_list:
         for event in plate_appearance.event_list:
             if (isinstance(event, Pitch) and
-                    event.pitch_description != 'Ball' and
-                    event.pitch_description != 'Intent Ball' and
-                    event.pitch_description != 'Automatic Ball' and
-                    event.pitch_description != 'Ball In Dirt' and
-                    event.pitch_description != 'Hit By Pitch'):
+                    event.pitch_description not in NON_STRIKE_LIST):
                 num_strikes += 1
 
     return num_strikes
