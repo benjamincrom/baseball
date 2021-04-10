@@ -427,7 +427,8 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
                          for batting_list in batting_list_list]
 
         duplicate_position_set = set(
-            [x for x in position_list if ((position_list.count(x) > 1) and (x not in ['PH', 'PR']))]
+            [x for x in position_list
+             if ((position_list.count(x) > 1) and (x not in ['PH', 'PR']))]
         )
 
         if duplicate_position_set:
@@ -460,8 +461,9 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
 
     if not player_appearance_list:
         for this_appearance_list in batting_list_list:
+            outgoing_id = substitution_obj.outgoing_player.mlb_id
             if (len(this_appearance_list) > 1 and
-                    this_appearance_list[-2].player_obj.mlb_id == substitution_obj.outgoing_player.mlb_id):
+                    this_appearance_list[-2].player_obj.mlb_id == outgoing_id):
                 player_appearance_list = this_appearance_list
 
     if player_appearance_list:
