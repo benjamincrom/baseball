@@ -114,13 +114,13 @@ def process_plate_appearance(plate_appearance, inning_half_str, inning_num,
         else:
             raise Exception('Invalid event type')
 
-        (event_list,
-         scoring_runners_list,
-         runners_batted_in_list) = process_runner_list(plate_appearance,
-                                                       game_obj,
-                                                       event_list,
-                                                       scoring_runners_list,
-                                                       runners_batted_in_list)
+    (event_list,
+     scoring_runners_list,
+     runners_batted_in_list) = process_runner_list(plate_appearance,
+                                                   game_obj,
+                                                   event_list,
+                                                   scoring_runners_list,
+                                                   runners_batted_in_list)
 
     return event_list, scoring_runners_list, runners_batted_in_list
 

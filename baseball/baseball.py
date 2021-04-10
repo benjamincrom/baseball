@@ -1,8 +1,8 @@
 from collections import OrderedDict
+from json import dumps
 from textwrap import TextWrapper
 from re import search, sub, findall, escape
 
-from json import dumps
 from pytz import timezone
 
 from baseball.baseball_events import RunnerAdvance
