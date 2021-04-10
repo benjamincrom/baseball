@@ -6,7 +6,6 @@ from baseball.baseball_events import (AUTOMATIC_BALL_POSITION,
                                       Pickoff,
                                       RunnerAdvance)
 
-
 FakePlateAppearance = namedtuple(
     'FakePlateAppearance',
     'scorecard_summary batter plate_appearance_description'
@@ -806,10 +805,7 @@ def process_pitch_position(event):
         )
 
         y_scale_factor = event.pitch_position[1] / PITCH_MAX_COORD
-        y_coord = int(
-            PITCH_Y_MIN + (PITCH_BOX_HEIGHT *
-                                     y_scale_factor)
-        )
+        y_coord = int(PITCH_Y_MIN + (PITCH_BOX_HEIGHT * y_scale_factor))
 
     return x_coord, y_coord
 
@@ -922,7 +918,7 @@ def get_runner_end_base_str(plate_appearance, event):
         for out_runner, out_base in plate_appearance.out_runners_list:
             if out_runner == event.runner:
                 this_end_base_str = out_base[0]
-                if this_end_base_str == 'h' or this_end_base_str == 's':
+                if this_end_base_str in ['h', 's']:
                     this_end_base_str = 'H'
 
     return this_end_base_str

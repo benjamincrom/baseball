@@ -2,16 +2,13 @@ from collections import namedtuple
 
 from baseball.baseball_events import Pickoff, RunnerAdvance, Pitch
 
-
 NOT_AT_BAT_CODE_LIST = ['SH', 'SF', 'BB', 'CI', 'FI', 'IBB', 'HBP', 'CS', 'PO']
 HIT_CODE_LIST = ['1B', '2B', '3B', 'HR']
 NON_STRIKE_LIST = ['Ball', 'Intent Ball', 'Automatic Ball', 'Ball In Dirt',
                    'Hit By Pitch']
 
 InningStatsTuple = namedtuple('InningStatsTuple', 'S P BB K LOB E H R')
-
 BatterBoxScore = namedtuple('BatterBoxScore', 'AB R H RBI BB SO LOB')
-
 PitcherBoxScore = namedtuple(
     'PitcherBoxScore',
     'IP WLS BF H R ER SO BB IBB HBP BLK WP HR S P ERA WHIP'
@@ -21,7 +18,6 @@ TeamBoxScore = namedtuple(
     'TeamBoxScore',
     'B1 B2 B3 HR SF SAC DP HBP WP PB SB CS PA'
 )
-
 
 def process_pickoffs(plate_appearance, first_base, second_base, third_base):
     for event in plate_appearance.event_list:

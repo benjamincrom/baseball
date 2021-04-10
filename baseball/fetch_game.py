@@ -347,6 +347,33 @@ def get_generated_html_id_list(game_id_list, today_date_str, output_dir,
 
     return game_html_id_list
 
+def get_date_lists(this_datetime):
+    year = this_datetime.year
+    year_list = []
+    for index in range(2500):
+        if index == year:
+            year_list.append('selected')
+        else:
+            year_list.append('')
+
+    month = this_datetime.month
+    month_list = []
+    for index in range(12):
+        if index == month - 1:
+            month_list.append('selected')
+        else:
+            month_list.append('')
+
+    day = this_datetime.day
+    day_list = []
+    for index in range(32):
+        if index == day - 1:
+            day_list.append('selected')
+        else:
+            day_list.append('')
+
+    return year_list, month_list, day_list
+
 def generate_game_svgs_for_2019_datetime(this_datetime, output_dir,
                                          write_game_html=False,
                                          write_date_html=False,
@@ -355,7 +382,6 @@ def generate_game_svgs_for_2019_datetime(this_datetime, output_dir,
         mkdir(output_dir)
 
     today_date_str = get_today_date_str(this_datetime)
-
     month = int(this_datetime.month)
     day = int(this_datetime.day)
     year = int(this_datetime.year)
@@ -373,67 +399,12 @@ def generate_game_svgs_for_2019_datetime(this_datetime, output_dir,
                                                    output_dir,
                                                    write_game_html)
 
+
+
     object_html_str = get_object_html_str(game_html_id_list)
 
-    month = this_datetime.month
-    day = this_datetime.day
-    year = this_datetime.year
-    month_list = []
-
-    for index in range(12):
-        if index == month - 1:
-            month_list.append('selected')
-        else:
-            month_list.append('')
-
-    day_list = []
-    for index in range(32):
-        if index == day - 1:
-            day_list.append('selected')
-        else:
-            day_list.append('')
-
-    year_list = []
-    for index in range(2500):
-        if index == year:
-            year_list.append('selected')
-        else:
-            year_list.append('')
-
-    today_str = '{} {}, {}'.format(this_datetime.strftime("%B"),
-                                   this_datetime.day,
-                                   this_datetime.year)
-
-    yesterday = this_datetime - timedelta(days=1)
-    tomorrow = this_datetime + timedelta(days=1)
-    yesterday_html = '{:04d}-{:02d}-{:02d}.html'.format(int(yesterday.year),
-                                                        int(yesterday.month),
-                                                        int(yesterday.day))
-
-    tomorrow_html = '{:04d}-{:02d}-{:02d}.html'.format(int(tomorrow.year),
-                                                       int(tomorrow.month),
-                                                       int(tomorrow.day))
-
-    output_html = HTML_INDEX_PAGE.format(result_object_list_str=object_html_str,
-                                         month_list=month_list,
-                                         day_list=day_list,
-                                         year_list=year_list,
-                                         yesterday_html=yesterday_html,
-                                         tomorrow_html=tomorrow_html,
-                                         today_str=today_str,
-                                         output_filename=output_dir)
-
-    output_filename = '/{:04d}-{:02d}-{:02d}.html'.format(year, month, day)
-    if object_html_str or not exists(output_dir + output_filename):
-        if write_date_html:
-            write_location = output_dir + output_filename
-            with open(write_location, 'w', encoding='utf-8') as fh:
-                fh.write(output_html)
-
-        if write_index_html:
-            write_location = output_dir + '/index.html'
-            with open(write_location, 'w', encoding='utf-8') as fh:
-                fh.write(output_html)
+    write_game_index(object_html_str, this_datetime, output_dir,
+                     write_date_html, write_index_html)
 
 def get_object_html_str(game_html_id_list):
     object_html_str = ''
@@ -516,27 +487,13 @@ def generate_game_svgs_for_2020_datetime(this_datetime, output_dir,
                                     exception_str))
 
     object_html_str = get_object_html_str(game_html_id_list)
-    month_list = []
-    for index in range(12):
-        if index == month - 1:
-            month_list.append('selected')
-        else:
-            month_list.append('')
 
-    day_list = []
-    for index in range(32):
-        if index == day - 1:
-            day_list.append('selected')
-        else:
-            day_list.append('')
+    write_game_index(object_html_str, this_datetime, output_dir,
+                     write_date_html, write_index_html)
 
-    year_list = []
-    for index in range(2500):
-        if index == year:
-            year_list.append('selected')
-        else:
-            year_list.append('')
-
+def write_game_index(object_html_str, this_datetime, output_dir,
+                     write_date_html, write_index_html):
+    year_list, month_list, day_list = get_date_lists(this_datetime)
     today_str = '{} {}, {}'.format(this_datetime.strftime("%B"),
                                    this_datetime.day,
                                    this_datetime.year)
@@ -552,19 +509,19 @@ def generate_game_svgs_for_2020_datetime(this_datetime, output_dir,
                                                        int(tomorrow.day))
 
     output_filename = '/{:04d}-{:02d}-{:02d}.html'.format(
-        int(year), int(month), int(day)
+        int(this_datetime.year),
+        int(this_datetime.month),
+        int(this_datetime.day)
     )
 
-    output_html = HTML_INDEX_PAGE.format(
-        result_object_list_str=object_html_str,
-        month_list=month_list,
-        day_list=day_list,
-        year_list=year_list,
-        yesterday_html=yesterday_html,
-        tomorrow_html=tomorrow_html,
-        today_str=today_str,
-        output_filename=output_filename
-    )
+    output_html = HTML_INDEX_PAGE.format(result_object_list_str=object_html_str,
+                                         month_list=month_list,
+                                         day_list=day_list,
+                                         year_list=year_list,
+                                         yesterday_html=yesterday_html,
+                                         tomorrow_html=tomorrow_html,
+                                         today_str=today_str,
+                                         output_filename=output_filename)
 
     if object_html_str or not exists(output_dir + output_filename):
         if write_date_html:

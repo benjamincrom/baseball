@@ -18,7 +18,6 @@ from baseball.baseball_events import (AUTOMATIC_BALL_POSITION,
                                       Substitution,
                                       Switch)
 
-
 MLB_TEAM_CODE_DICT = {'LAA': 'ana',
                       'SEA': 'sea',
                       'BAL': 'bal',
@@ -59,8 +58,10 @@ POSITION_ABBREV_DICT = {'P': 1,
                         'LF': 7,
                         'CF': 8,
                         'RF': 9,
-                        'DH': 10}
-
+                        'DH': 'DH',
+                        'PH': 'PH',
+                        'PR': 'PR',
+                        'EH': 'EH'}
 
 def get_team_abbreviation(mlb_code):
     for abbreviation, this_mlb_code in MLB_TEAM_CODE_DICT.items():
@@ -298,12 +299,6 @@ def get_position_number(position_str):
         position = POSITION_CODE_DICT[position_str]
     elif position_str in POSITION_ABBREV_DICT:
         position = POSITION_ABBREV_DICT[position_str]
-    elif position_str == 'PH':
-        position = 'PH'
-    elif position_str == 'PR':
-        position = 'PR'
-    elif position_str == 'EH':
-        position = 'EH'
     elif not position_str:
         position = None
     else:

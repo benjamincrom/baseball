@@ -13,7 +13,6 @@ from baseball.stats import (get_all_pitcher_stats,
                             get_team_stats,
                             get_half_inning_stats)
 
-
 POSITION_CODE_DICT = {'pitcher': 1,
                       'catcher': 2,
                       'first': 3,
@@ -115,7 +114,6 @@ STADIUM_TIMEZONE_DICT = {
     'Petco Park': 'America/Los_Angeles',
     'T-Mobile Park': 'America/Los_Angeles'
 }
-
 
 def strip_this_suffix(pattern, suffix, input_str):
     match = search(pattern, input_str)
@@ -880,11 +878,6 @@ class PlateAppearance:
                 code = ''
             else:
                 code = ''
-                #raise ValueError(
-                #    'No keyword found in plate description: {}'.format(
-                #        self.plate_appearance_description
-                #    )
-                #)
 
         return code
 
