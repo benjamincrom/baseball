@@ -110,6 +110,7 @@ STADIUM_TIMEZONE_DICT = {
     'Oakland-Alameda County Coliseum': 'America/Los_Angeles',
     'Oakland Coliseum': 'America/Los_Angeles',
     'Angel Stadium': 'America/Los_Angeles',
+    'Oracle Park': 'America/Los_Angeles',
     'Dodger Stadium': 'America/Los_Angeles',
     'Petco Park': 'America/Los_Angeles',
     'T-Mobile Park': 'America/Los_Angeles'
