@@ -396,14 +396,11 @@ class Game:
         self.home_pitcher_box_score_dict = None
         self.away_team_stats = None
         self.home_team_stats = None
-        self.start_str = ''
-        self.end_str = ''
 
         self.attendance = None
         self.temp = None
         self.weather = None
         self.expected_start_datetime = None
-        self.expected_start_datetime_str = ''
         self.timezone_str = 'America/New_York'
 
     def json(self):
@@ -447,8 +444,8 @@ class Game:
              ),
              'away_team_stats': self.away_team_stats._asdict(),
              'home_team_stats': self.home_team_stats._asdict(),
-             'start_str': self.start_str,
-             'end_str': self.end_str}
+             'expected_start_datetime': str(self.expected_start_datetime),
+             'timezone_str': self.timezone_str}
         )
 
     def get_svg_str(self):
@@ -477,29 +474,6 @@ class Game:
                     self.end_datetime = (
                         last_inning_half_appearance_list[-1].end_datetime
                     )
-
-        if self.start_datetime:
-            self.start_str = self.start_datetime.astimezone(
-                timezone(self.timezone_str)
-            ).strftime(
-                '%a %b %d %Y, %-I:%M %p'
-            )
-
-        if self.end_datetime:
-            self.end_str = self.end_datetime.astimezone(
-                timezone(self.timezone_str)
-            ).strftime(
-                ' - %-I:%M %p %Z'
-            )
-
-        if self.expected_start_datetime:
-            self.expected_start_datetime_str = (
-                self.expected_start_datetime.astimezone(
-                    timezone(self.timezone_str)
-                ).strftime(
-                    '%-I:%M %p %Z'
-                )
-            )
 
     def set_pitching_box_score_dict(self):
         self.away_pitcher_box_score_dict = OrderedDict([])
@@ -543,8 +517,16 @@ class Game:
 
     def __repr__(self):
         return_str = '{}\n'.format(self.location)
-        if self.start_str and self.end_str:
-            return_str += '{}{}\n\n'.format(self.start_str, self.end_str)
+        if self.start_datetime and self.end_datetime:
+            start_str = self.start_datetime.astimezone(
+                timezone(self.timezone_str)
+            ).strftime('%a %b %d %Y, %-I:%M %p')
+
+            end_str = self.end_datetime.astimezone(
+                timezone(self.timezone_str)
+            ).strftime(' - %-I:%M %p %Z')
+
+            return_str += '{}{}\n\n'.format(start_str, end_str)
         else:
             return_str += '{}\n\n'.format(self.game_date_str)
 

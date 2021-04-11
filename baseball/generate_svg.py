@@ -2152,8 +2152,16 @@ def get_game_title_str(game):
 def assemble_game_title_svg(game):
     game_title_svg = ''
     game_str = '{} @ {}'.format(game.away_team.name, game.home_team.name)
-    if game.start_str and game.end_str:
-        game_datetime = '{}{}'.format(game.start_str, game.end_str)
+    if game.start_datetime and game.end_datetime:
+        start_str = game.start_datetime.astimezone(
+            timezone(game.timezone_str)
+        ).strftime('%a %b %d %Y, %-I:%M %p')
+
+        end_str = game.end_datetime.astimezone(
+            timezone(game.timezone_str)
+        ).strftime(' - %-I:%M %p %Z')
+
+        game_datetime = '{}{}'.format(start_str, end_str)
     else:
         game_datetime = game.expected_start_datetime.astimezone(
             timezone(game.timezone_str)
