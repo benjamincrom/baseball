@@ -2165,7 +2165,7 @@ def assemble_game_title_svg(game):
     else:
         game_datetime = game.expected_start_datetime.astimezone(
             timezone(game.timezone_str)
-        ).strftime('%a %b %d %Y, %-I:%M %p')
+        ).strftime('%a %b %d %Y, %-I:%M %p %Z')
 
     game_width = get_game_width(game)
     location_str = game.location.replace('&', '&amp;')
