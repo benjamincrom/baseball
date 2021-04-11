@@ -58,7 +58,7 @@ POSITION_ABBREV_DICT = {'P': 1,
                         'LF': 7,
                         'CF': 8,
                         'RF': 9,
-                        'DH': 'DH',
+                        'DH': 10,
                         'PH': 'PH',
                         'PR': 'PR',
                         'EH': 'EH'}
