@@ -463,7 +463,7 @@ class Game:
             if self.inning_list:
                 if self.inning_list[0].top_half_appearance_list:
                     self.start_datetime = (
-                        self.inning_list[0].top_half_appearance_list[0].start_datetime
+                        self.inning_list[0].top_half_appearance_list[0].end_datetime
                     )
 
         if not self.end_datetime:
