@@ -868,6 +868,7 @@ def initialize_game_object(boxscore_xml):
                 attendance = int(match.group(3).replace(',', ''))
 
     game_obj = Game(home_team, away_team, game_venue, boxscore_date)
+
     if temp:
         game_obj.temp = temp
     if weather:

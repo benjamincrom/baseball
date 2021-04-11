@@ -116,6 +116,8 @@ STADIUM_TIMEZONE_DICT = {
     'T-Mobile Park': 'America/Los_Angeles'
 }
 
+EASTERN_TIMEZONE_STR = 'America/New_York'
+
 def strip_this_suffix(pattern, suffix, input_str):
     match = search(pattern, input_str)
     while match:
@@ -380,29 +382,26 @@ class Team:
 
 
 class Game:
-    def __init__(self, home_team, away_team, location, game_date_str,
-                 start_datetime=None, end_datetime=None,
-                 inning_list=None):
+    def __init__(self, home_team, away_team, location, game_date_str):
         self.home_team = home_team
         self.away_team = away_team
         self.location = location or ''
         self.game_date_str = game_date_str
-        self.start_datetime = start_datetime
-        self.end_datetime = end_datetime
-        self.inning_list = inning_list or []
 
+        self.start_datetime = None
+        self.end_datetime = None
+        self.inning_list = []
         self.away_batter_box_score_dict = None
         self.home_batter_box_score_dict = None
         self.away_pitcher_box_score_dict = None
         self.home_pitcher_box_score_dict = None
         self.away_team_stats = None
         self.home_team_stats = None
-
         self.attendance = None
         self.temp = None
         self.weather = None
         self.expected_start_datetime = None
-        self.timezone_str = 'America/New_York'
+        self.timezone_str = EASTERN_TIMEZONE_STR
 
     def json(self):
         return dumps(self._asdict())
@@ -445,6 +444,9 @@ class Game:
              ),
              'away_team_stats': self.away_team_stats._asdict(),
              'home_team_stats': self.home_team_stats._asdict(),
+             'attendance': self.attendance,
+             'temp': self.temp,
+             'weather': self.weather,
              'expected_start_datetime': str(self.expected_start_datetime),
              'timezone_str': self.timezone_str}
         )

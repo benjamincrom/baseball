@@ -463,8 +463,9 @@ def initialize_game(this_game, attendance_str, temperature_str, weather_str,
             this_game['gameData']['game']['id'][-2:]
         )
 
-    game_obj = Game(home_team, away_team, location, game_str, start_date,
-                    end_date, None)
+    game_obj = Game(home_team, away_team, location, game_str)
+    game_obj.start_date = start_date
+    game_obj.end_date = end_date
 
     if attendance_str:
         game_obj.attendance = int(attendance_str)
