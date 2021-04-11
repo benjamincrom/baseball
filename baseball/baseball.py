@@ -402,6 +402,9 @@ class Game:
         self.attendance = None
         self.temp = None
         self.weather = None
+        self.expected_start_datetime = None
+        self.expected_start_datetime_str = ''
+        self.timezone_str = 'America/New_York'
 
     def json(self):
         return dumps(self._asdict())
@@ -452,6 +455,10 @@ class Game:
         return get_game_svg_str(self)
 
     def set_gametimes(self):
+        for ballpark, this_timezone in STADIUM_TIMEZONE_DICT.items():
+            if ballpark in self.location:
+                self.timezone_str = this_timezone
+
         if not self.start_datetime:
             if self.inning_list:
                 if self.inning_list[0].top_half_appearance_list:
@@ -473,37 +480,26 @@ class Game:
 
         if self.start_datetime:
             self.start_str = self.start_datetime.astimezone(
-                timezone('America/New_York')
+                timezone(self.timezone_str)
             ).strftime(
                 '%a %b %d %Y, %-I:%M %p'
             )
 
-            for ballpark, this_timezone in STADIUM_TIMEZONE_DICT.items():
-                if ballpark in self.location:
-                    self.start_str = self.start_datetime.astimezone(
-                        timezone(this_timezone)
-                    ).strftime(
-                        '%a %b %d %Y, %-I:%M %p'
-                    )
-        else:
-            self.start_str = ''
-
         if self.end_datetime:
             self.end_str = self.end_datetime.astimezone(
-                timezone('America/New_York')
+                timezone(self.timezone_str)
             ).strftime(
                 ' - %-I:%M %p %Z'
             )
 
-            for ballpark, this_timezone in STADIUM_TIMEZONE_DICT.items():
-                if ballpark in self.location:
-                    self.end_str = self.end_datetime.astimezone(
-                        timezone(this_timezone)
-                    ).strftime(
-                        ' - %-I:%M %p %Z'
-                    )
-        else:
-            self.end_str = ''
+        if self.expected_start_datetime:
+            self.expected_start_datetime_str = (
+                self.expected_start_datetime.astimezone(
+                    timezone(self.timezone_str)
+                ).strftime(
+                    '%-I:%M %p %Z'
+                )
+            )
 
     def set_pitching_box_score_dict(self):
         self.away_pitcher_box_score_dict = OrderedDict([])

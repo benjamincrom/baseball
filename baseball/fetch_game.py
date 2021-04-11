@@ -315,7 +315,7 @@ def get_generated_html_id_list(game_id_list, today_date_str, output_dir,
         makedirs(output_dir)
 
     output_path = abspath(output_dir)
-    game_html_id_list = []
+    game_html_id_tuple_list = []
 
     for game_id in game_id_list:
         away_mlb_code = game_id.split('_')[-3][:3]
@@ -338,14 +338,15 @@ def get_generated_html_id_list(game_id_list, today_date_str, output_dir,
                 write_game_svg_and_html(game_id, game, output_path,
                                         write_game_html)
 
-                game_html_id_list.append(
-                    '{}-{}-{}-{}'.format(today_date_str,
-                                         away_code,
-                                         home_code,
-                                         game_num_str)
+                game_html_id_tuple_list.append(
+                    ('{}-{}-{}-{}'.format(today_date_str,
+                                          away_code,
+                                          home_code,
+                                          game_num_str),
+                     game)
                 )
 
-    return game_html_id_list
+    return game_html_id_tuple_list
 
 def get_date_lists(this_datetime):
     year = this_datetime.year
@@ -394,30 +395,28 @@ def generate_game_svgs_for_2019_datetime(this_datetime, output_dir,
         for game_dict in all_games_dict['data']['games'].get('game', [])
     ]
 
-    game_html_id_list = get_generated_html_id_list(game_id_list,
-                                                   today_date_str,
-                                                   output_dir,
-                                                   write_game_html)
+    game_html_id_tuple_list = get_generated_html_id_list(game_id_list,
+                                                         today_date_str,
+                                                         output_dir,
+                                                         write_game_html)
 
-
-
-    object_html_str = get_object_html_str(game_html_id_list)
+    object_html_str = get_object_html_str(game_html_id_tuple_list)
 
     write_game_index(object_html_str, this_datetime, output_dir,
                      write_date_html, write_index_html)
 
-def get_object_html_str(game_html_id_list):
+def get_object_html_str(game_html_id_tuple_list):
     object_html_str = ''
-    for i, game_html_id in enumerate(game_html_id_list):
+    for i, (game_html_id, game) in enumerate(game_html_id_tuple_list):
         game_id_element_list = game_html_id.split('-')
-        title_str = '{} @ {} ({:04d}-{:02d}-{:02d}, {})'.format(
-            game_id_element_list[3],
-            game_id_element_list[4],
-            int(game_id_element_list[0]),
-            int(game_id_element_list[1]),
-            int(game_id_element_list[2]),
-            game_id_element_list[5]
+        title_str = '{} @ {} <br />{}'.format(
+            game.away_team.name,
+            game.home_team.name,
+            game.expected_start_datetime_str
         )
+
+        if game_id_element_list[5] != '1':
+            title_str += ' (Game {})'.format(game_id_element_list[5])
 
         if i % 2 == 0:
             object_html_str += '<tr>'
@@ -462,19 +461,19 @@ def generate_game_svgs_for_2020_datetime(this_datetime, output_dir,
     game_dict_list = [get(GAME_URL_TEMPLATE.format(game_pk=game_pk)).json()
                       for _, game_pk in game_tuple_list]
 
-    game_html_id_list = []
+    game_html_id_tuple_list = []
     for game_dict in game_dict_list:
         try:
             game = baseball.process_game_json.get_game_obj(game_dict)
             if len(game.game_date_str.split('-')) == 6:
-                game_html_id_list.append(game.game_date_str)
+                game_html_id_tuple_list.append((game.game_date_str, game))
             else:
                 game.game_date_str = '{:04d}-{:02d}-{:02d}-{}'.format(
                     year, month, day, game.game_date_str
                 )
 
                 if len(game.game_date_str.split('-')) == 6:
-                    game_html_id_list.append(game.game_date_str)
+                    game_html_id_tuple_list.append((game.game_date_str, game))
 
             write_game_svg_and_html(game.game_date_str, game, output_dir,
                                     write_game_html)
@@ -486,7 +485,7 @@ def generate_game_svgs_for_2020_datetime(this_datetime, output_dir,
                                     game_dict['gameData']['game']['id'],
                                     exception_str))
 
-    object_html_str = get_object_html_str(game_html_id_list)
+    object_html_str = get_object_html_str(game_html_id_tuple_list)
 
     write_game_index(object_html_str, this_datetime, output_dir,
                      write_date_html, write_index_html)

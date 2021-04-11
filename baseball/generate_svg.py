@@ -1,5 +1,7 @@
 from collections import namedtuple
 
+from pytz import timezone
+
 from baseball.baseball_events import (AUTOMATIC_BALL_POSITION,
                                       Substitution,
                                       Pitch,
@@ -11,6 +13,7 @@ FakePlateAppearance = namedtuple(
     'scorecard_summary batter plate_appearance_description'
 )
 
+DEFAULT_LOGO = 'baseball-fairy-161.png'
 LOGO_DICT = {
     'LAA': 'team_logos/angels.gif',
     'HOU': 'team_logos/astros.gif',
@@ -2068,7 +2071,7 @@ def get_logo(game):
 
     x_pos = game_width - BOX_WIDTH
     y_pos = 8 * BOX_HEIGHT + BOX_HEIGHT // 2 + HEIGHT // 2
-    home_logo_str = LOGO_DICT[game.home_team.abbreviation]
+    home_logo_str = LOGO_DICT.get(game.home_team.abbreviation, DEFAULT_LOGO)
     signature_svg += HOME_LOGO.format(x_pos=x_pos,
                                       y_pos=y_pos,
                                       logo=home_logo_str)
@@ -2152,7 +2155,9 @@ def assemble_game_title_svg(game):
     if game.start_str and game.end_str:
         game_datetime = '{}{}'.format(game.start_str, game.end_str)
     else:
-        game_datetime = game.game_date_str
+        game_datetime = game.expected_start_datetime.astimezone(
+            timezone(game.timezone_str)
+        ).strftime('%a %b %d %Y, %-I:%M %p')
 
     game_width = get_game_width(game)
     location_str = game.location.replace('&', '&amp;')

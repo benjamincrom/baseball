@@ -412,7 +412,8 @@ def set_game_inning_list(inning_dict_list, game_obj):
     for _, inning_dict in enumerate(inning_dict_list):
         game_obj.inning_list.append(process_inning(inning_dict, game_obj))
 
-def initialize_game(this_game, attendance_str, temperature_str, weather_str):
+def initialize_game(this_game, attendance_str, temperature_str, weather_str,
+                    start_datetime_str):
     away_team = initialize_team(
         this_game['gameData']['teams']['away'],
         this_game['liveData']['boxscore']['teams']['away'],
@@ -474,6 +475,9 @@ def initialize_game(this_game, attendance_str, temperature_str, weather_str):
     if weather_str:
         game_obj.weather = weather_str
 
+    if start_datetime_str:
+        game_obj.expected_start_datetime = get_datetime(start_datetime_str)
+
     return game_obj
 
 def get_game_obj(game_dict):
@@ -484,7 +488,9 @@ def get_game_obj(game_dict):
         game_dict.get('gameData', {}).get('weather', {}).get(
             'temp', ''),
         game_dict.get('gameData', {}).get('weather', {}).get(
-            'condition', '')
+            'condition', ''),
+        game_dict.get('gameData', {}).get('datetime', {}).get(
+            'dateTime', '')
     )
 
     inning_dict_list = get_inning_dict_list(game_dict)
