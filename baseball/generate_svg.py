@@ -1188,7 +1188,7 @@ def fix_pa(plate_appearance, event):
         description = '{} batting: Defensive Indifference'.format(
             plate_appearance.batter
         )
-    elif 'Pickoff Error' in event.run_description:
+    elif 'Error' in event.run_description:
         summary = 'E'
         description = '{} batting: {}'.format(
             plate_appearance.batter,
