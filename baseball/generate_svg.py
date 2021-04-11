@@ -689,7 +689,7 @@ SVG_COUNT_TEMPLATE = (
 )
 
 SVG_RUNNER_TEMPLATE = ('<text x="70" y="{y_val}" font-family="Arial" '
-                       'stroke="{color}" font-size="16" '
+                       'stroke="{color}" fill="{color}" font-size="16" '
                        'text-anchor="start">{summary}'
                        '<title id="title">{title}</title></text>')
 
