@@ -8,6 +8,7 @@
     - [Get Game generator given target directory and date range](#get-game-generator-given-target-directory-and-date-range)
     - [Get raw XML files for an individual MLB game](#get-raw-xml-files-for-an-individual-mlb-game)
     - [Convert XML documents into Game object](#convert-xml-documents-into-game-object)
+    - [Write scorecard SVGs for all MLB games on a given date](#write-scorecard-svgs-for-all-mlb-games-on-a-given-date)
     - [Game Class Structure](#game-class-structure)
         - [Game](#game)
         - [Team](#team)
@@ -87,6 +88,11 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 
   Returns [Game](#game) object if enough information to create one is provided.  Otherwise returns None.
 
+## Write scorecard SVGs for all MLB games on a given date
+* __write_games_for_date(__*this_datetime, output_dir*__)__
+
+  Writes SVG files for all games played on the given date
+
 ## Game Class Structure
 #### Game
 - away_batter_box_score_dict
@@ -94,7 +100,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - away_team ([Team](#team))
 - away_team_stats
 - start_datetime
-- start_str
+- expected_start_datetime
 - game_date_str
 - home_batter_box_score_dict
 - home_pitcher_box_score_dict
@@ -102,8 +108,11 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - home_team_stats
 - inning_list ([Inning](#inning) list)
 - end_datetime
-- end_str
 - location
+- attendance
+- weather
+- temp
+- timezone_str
 - get_svg_str()
 - json()
 - \_asdict()
