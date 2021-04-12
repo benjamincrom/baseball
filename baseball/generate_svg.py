@@ -96,6 +96,8 @@ RUNNER_SUMMARY_Y_OFFSET = 20
 PITCHER_Y = 150
 PITCHER_X = 166
 CATCHER_Y = 180
+BASE_SVG_FONT_SMALL = 14
+BASE_SVG_FONT_BIG = 22
 FIRST_BASE_Y = 115
 FIRST_BASE_X = 220
 SECOND_BASE_Y = 80
@@ -552,7 +554,7 @@ SVG_BASE_2_TEMPLATE = (
     '<text x="199" y="93" font-family="Arial" text-anchor="start" '
     'font-size="22">{base_2_number}</text>'
     '<text x="199" y="114" font-family="Arial" text-anchor="start" '
-    'font-size="22">{base_2_summary}'
+    'font-size="{base_2_size}">{base_2_summary}'
     '<title id="title">{base_2_title}</title>'
     '</text>'
 )
@@ -565,7 +567,7 @@ SVG_BASE_2_OUT_TEMPLATE = (
     '<text x="199" y="93" font-family="Arial" text-anchor="start" '
     'font-size="22">{base_2_number}</text>'
     '<text x="199" y="114" font-family="Arial" text-anchor="start" '
-    'font-size="22">{base_2_summary}'
+    'font-size="{base_2_size}">{base_2_summary}'
     '<title id="title">{base_2_title}</title>'
     '</text>'
 )
@@ -576,13 +578,13 @@ SVG_BASE_3_TEMPLATE = (
     '<text x="199" y="93" font-family="Arial" text-anchor="start" '
     'font-size="22">{base_2_number}</text>'
     '<text x="199" y="114" font-family="Arial" text-anchor="start" '
-    'font-size="22">{base_2_summary}'
+    'font-size="{base_2_size}">{base_2_summary}'
     '<title id="title">{base_2_title}</title>'
     '</text>'
     '<text x="132" y="93" font-family="Arial" text-anchor="end" '
     'font-size="22">{base_3_number}</text>'
     '<text x="132" y="114" font-family="Arial" text-anchor="end" '
-    'font-size="22">{base_3_summary}'
+    'font-size="{base_3_size}">{base_3_summary}'
     '<title id="title">{base_3_title}</title>'
     '</text>'
 )
@@ -595,13 +597,13 @@ SVG_BASE_3_OUT_TEMPLATE = (
     '<text x="199" y="93" font-family="Arial" text-anchor="start" '
     'font-size="22">{base_2_number}</text>'
     '<text x="199" y="114" font-family="Arial" text-anchor="start" '
-    'font-size="22">{base_2_summary}'
+    'font-size="{base_2_size}">{base_2_summary}'
     '<title id="title">{base_2_title}</title>'
     '</text>'
     '<text x="132" y="93" font-family="Arial" text-anchor="end" '
     'font-size="22">{base_3_number}</text>'
     '<text x="132" y="114" font-family="Arial" text-anchor="end" '
-    'font-size="22">{base_3_summary}'
+    'font-size="{base_3_size}">{base_3_summary}'
     '<title id="title">{base_3_title}</title>'
     '</text>'
 )
@@ -616,19 +618,19 @@ SVG_BASE_4_TEMPLATE = (
     '<text x="199" y="93" font-family="Arial" text-anchor="start" '
     'font-size="22">{base_2_number}</text>'
     '<text x="199" y="114" font-family="Arial" text-anchor="start" '
-    'font-size="22">{base_2_summary}'
+    'font-size="{base_2_size}">{base_2_summary}'
     '<title id="title">{base_2_title}</title>'
     '</text>'
     '<text x="132" y="93" font-family="Arial" text-anchor="end" '
     'font-size="22">{base_3_number}</text>'
     '<text x="132" y="114" font-family="Arial" text-anchor="end" '
-    'font-size="22">{base_3_summary}'
+    'font-size="{base_3_size}">{base_3_summary}'
     '<title id="title">{base_3_title}</title>'
     '</text>'
     '<text x="164" y="133" font-family="Arial" text-anchor="middle" '
     'font-size="22" fill="white">{base_4_number}</text>'
     '<text x="164" y="158" font-family="Arial" text-anchor="middle" '
-    'font-size="22" fill="white">{base_4_summary}'
+    'font-size="{base_4_size}" fill="white">{base_4_summary}'
     '<title id="title">{base_4_title}</title>'
     '</text>'
 )
@@ -641,19 +643,19 @@ SVG_BASE_4_OUT_TEMPLATE = (
     '<text x="199" y="93" font-family="Arial" text-anchor="start" '
     'font-size="22">{base_2_number}</text>'
     '<text x="199" y="114" font-family="Arial" text-anchor="start" '
-    'font-size="22">{base_2_summary}'
+    'font-size="{base_2_size}">{base_2_summary}'
     '<title id="title">{base_2_title}</title>'
     '</text>'
     '<text x="132" y="93" font-family="Arial" text-anchor="end" '
     'font-size="22">{base_3_number}</text>'
     '<text x="132" y="114" font-family="Arial" text-anchor="end" '
-    'font-size="22">{base_3_summary}'
+    'font-size="{base_3_size}">{base_3_summary}'
     '<title id="title">{base_3_title}</title>'
     '</text>'
     '<text x="164" y="133" font-family="Arial" text-anchor="middle" '
     'font-size="22">{base_4_number}</text>'
     '<text x="164" y="158" font-family="Arial" text-anchor="middle" '
-    'font-size="22">{base_4_summary}'
+    'font-size="{base_4_size}">{base_4_summary}'
     '<title id="title">{base_4_title}</title>'
     '</text>'
 )
@@ -1074,6 +1076,24 @@ def get_all_base_components(base_2_pa, base_3_pa, home_pa):
             base_4_summary,
             base_4_title)
 
+def get_base_font_size(base_2_summary, base_3_summary, base_4_summary):
+    if base_2_summary and len(base_2_summary) > 6:
+        base_2_size = BASE_SVG_FONT_SMALL
+    else:
+        base_2_size = BASE_SVG_FONT_BIG
+
+    if base_3_summary and len(base_3_summary) > 6:
+        base_3_size = BASE_SVG_FONT_SMALL
+    else:
+        base_3_size = BASE_SVG_FONT_BIG
+
+    if base_4_summary and len(base_4_summary) > 6:
+        base_4_size = BASE_SVG_FONT_SMALL
+    else:
+        base_4_size = BASE_SVG_FONT_BIG
+
+    return base_2_size, base_3_size, base_4_size
+
 def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                              batter_out_base):
     (base_2_number,
@@ -1086,14 +1106,20 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
      base_4_summary,
      base_4_title) = get_all_base_components(base_2_pa, base_3_pa, home_pa)
 
+    base_2_size, base_3_size, base_4_size = get_base_font_size(base_2_summary,
+                                                               base_3_summary,
+                                                               base_4_summary)
+
     if batter_out_base:
         if batter_out_base == '1B':
             base_svg = ''
         elif batter_out_base == '2B':
+
             base_svg = SVG_BASE_2_OUT_TEMPLATE.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
-                base_2_title=base_2_title
+                base_2_title=base_2_title,
+                base_2_size=base_2_size
             )
         elif batter_out_base == '3B':
             base_svg = SVG_BASE_3_OUT_TEMPLATE.format(
@@ -1102,7 +1128,9 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                 base_2_title=base_2_title,
                 base_3_number=base_3_number,
                 base_3_summary=base_3_summary,
-                base_3_title=base_3_title
+                base_3_title=base_3_title,
+                base_2_size=base_2_size,
+                base_3_size=base_3_size
             )
         elif batter_out_base == 'H':
             base_svg = SVG_BASE_4_OUT_TEMPLATE.format(
@@ -1114,7 +1142,10 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                 base_3_title=base_3_title,
                 base_4_number=base_4_number,
                 base_4_summary=base_4_summary,
-                base_4_title=base_4_title
+                base_4_title=base_4_title,
+                base_2_size=base_2_size,
+                base_3_size=base_3_size,
+                base_4_size=base_4_size
             )
         else:
             raise ValueError('Invalid Base')
@@ -1125,7 +1156,8 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
             base_svg = SVG_BASE_2_TEMPLATE.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
-                base_2_title=base_2_title
+                base_2_title=base_2_title,
+                base_2_size=base_2_size
             )
         elif batter_final_base == '3B':
             base_svg = SVG_BASE_3_TEMPLATE.format(
@@ -1134,7 +1166,9 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                 base_2_title=base_2_title,
                 base_3_number=base_3_number,
                 base_3_summary=base_3_summary,
-                base_3_title=base_3_title
+                base_3_title=base_3_title,
+                base_2_size=base_2_size,
+                base_3_size=base_3_size
             )
         elif batter_final_base == 'H':
             base_svg = SVG_BASE_4_TEMPLATE.format(
@@ -1146,7 +1180,10 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                 base_3_title=base_3_title,
                 base_4_number=base_4_number,
                 base_4_summary=base_4_summary,
-                base_4_title=base_4_title
+                base_4_title=base_4_title,
+                base_2_size=base_2_size,
+                base_3_size=base_3_size,
+                base_4_size=base_4_size
             )
         else:
             raise ValueError('Invalid Base')
