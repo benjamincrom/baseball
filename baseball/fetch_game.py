@@ -1,4 +1,5 @@
 from datetime import timedelta, datetime
+from json import loads
 from multiprocessing import Pool
 from os import listdir, makedirs, mkdir
 from os.path import isdir, isfile, exists, abspath, join
@@ -375,10 +376,10 @@ def get_date_lists(this_datetime):
 
     return year_list, month_list, day_list
 
-def generate_game_svgs_for_2019_datetime(this_datetime, output_dir,
-                                         write_game_html=False,
-                                         write_date_html=False,
-                                         write_index_html=False):
+def generate_game_svgs_for_old_datetime(this_datetime, output_dir,
+                                        write_game_html=False,
+                                        write_date_html=False,
+                                        write_index_html=False):
     if not exists(output_dir):
         mkdir(output_dir)
 
@@ -440,18 +441,18 @@ def get_object_html_str(game_html_id_tuple_list):
 
 def write_games_for_date(this_datetime, output_dir, write_game_html=False,
                          write_date_html=False, write_index_html=False):
-    if this_datetime.year >= 2020:
-        generate_game_svgs_for_2020_datetime(this_datetime, output_dir,
-                                             write_game_html, write_date_html,
-                                             write_index_html)
+    if this_datetime.year >= 2019:
+        generate_game_svgs_for_new_datetime(this_datetime, output_dir,
+                                            write_game_html, write_date_html,
+                                            write_index_html)
     else:
-        generate_game_svgs_for_2019_datetime(this_datetime, output_dir,
-                                             write_game_html, write_date_html,
-                                             write_index_html)
+        generate_game_svgs_for_old_datetime(this_datetime, output_dir,
+                                            write_game_html, write_date_html,
+                                            write_index_html)
 
-def generate_game_svgs_for_2020_datetime(this_datetime, output_dir,
-                                         write_game_html, write_date_html,
-                                         write_index_html):
+def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
+                                        write_game_html, write_date_html,
+                                        write_index_html):
     if not exists(output_dir):
         mkdir(output_dir)
 
@@ -605,7 +606,25 @@ def write_game_svg_and_html(game_id, game, output_path, write_html=False):
         with open(output_html_path, 'w') as filehandle:
             filehandle.write(html_text)
 
-def get_game_from_files(boxscore_file, player_file, inning_file):
+def get_game_from_files_new(live_json_file):
+    this_game = None
+
+    try:
+        if isfile(live_json_file):
+            live_raw = open(live_json_file, 'r', encoding='utf-8').read()
+            game_dict = loads(live_raw)
+            this_game = baseball.process_game_json.get_game_obj(game_dict)
+    except:
+        exc_type, exc_value, exc_traceback = exc_info()
+        lines = format_exception(exc_type, exc_value, exc_traceback)
+        exception_str = ' '.join(lines)
+        print('{} ({}) {}'.format(datetime.utcnow(),
+                                  live_json_file,
+                                  exception_str))
+
+    return this_game
+
+def get_game_from_files_old(boxscore_file, player_file, inning_file):
     this_game = None
 
     try:
@@ -633,8 +652,12 @@ def get_game_from_files(boxscore_file, player_file, inning_file):
     return this_game
 
 def get_game_from_filename_tuple(filename_tuple):
-    game_id, boxscore_file, player_file, inning_file = filename_tuple
-    game = get_game_from_files(boxscore_file, player_file, inning_file)
+    game_id, boxscore_file, player_file, inning_file, live_file = filename_tuple
+    year = int(game_id.split('-', 1)[0])
+    if year < 2019:
+        game = get_game_from_files_old(boxscore_file, player_file, inning_file)
+    else:
+        game = get_game_from_files_new(live_file)
 
     return game_id, game
 
@@ -724,10 +747,13 @@ def get_filename_list(start_date_str, end_date_str, input_dir):
                                 inning_filename = (subfolder_name +
                                                    'inning/inning_all.xml')
 
+                                live_filename = (subfolder_name + 'live')
+
                                 filename_list.append((output_name,
                                                       boxscore_filename,
                                                       player_filename,
-                                                      inning_filename))
+                                                      inning_filename,
+                                                      live_filename))
 
         this_date += day_delta
 
@@ -834,8 +860,8 @@ def get_game_xml_from_url(date_str, away_code, home_code, game_number):
 
     return game_id, boxscore_raw_xml, players_raw_xml, inning_raw_xml
 
-def get_game_from_url_2020(date_str, this_date, away_code, home_code,
-                           game_number):
+def get_game_from_url_new(date_str, this_date, away_code, home_code,
+                          game_number):
     this_game = get_game_from_date(this_date, away_code, home_code,
                                    game_number)
 
@@ -852,7 +878,7 @@ def get_game_from_url_2020(date_str, this_date, away_code, home_code,
 
     return game_id, this_game
 
-def get_game_from_url_2019(date_str, away_code, home_code, game_number):
+def get_game_from_url_old(date_str, away_code, home_code, game_number):
     (game_id,
      boxscore_raw_xml,
      players_raw_xml,
@@ -888,12 +914,12 @@ def get_game_from_url(date_str, away_code, home_code, game_number):
     game_id = None
     try:
         this_date = parse(date_str)
-        if int(this_date.year) >= 2020:
-            game_id, this_game = get_game_from_url_2020(
+        if int(this_date.year) >= 2019:
+            game_id, this_game = get_game_from_url_new(
                 date_str, this_date, away_code, home_code, game_number
             )
         else:
-            game_id, this_game = get_game_from_url_2019(
+            game_id, this_game = get_game_from_url_old(
                 date_str, away_code, home_code, game_number
             )
     except:
