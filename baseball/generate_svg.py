@@ -2191,7 +2191,7 @@ def assemble_game_title_svg(game):
     game_title_svg = ''
     game_str = '{} @ {}'.format(game.away_team.name, game.home_team.name)
 
-    if game.game_date_str[-1] == '0':
+    if game.game_date_str[-1] == '0' and not game.end_datetime:
         start_datetime = (game.start_datetime if game.start_datetime
                           else game.expected_start_datetime)
 
