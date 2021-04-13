@@ -1470,7 +1470,8 @@ def get_batter_spacing_values(batter_list):
         )
 
     for batter in batter_list:
-        if len(str(batter.player_obj)) > 18 and batter_font_size == BATTER_FONT_SIZE_BIG:
+        if (len(str(batter.player_obj)) > 18 and
+                batter_font_size == BATTER_FONT_SIZE_BIG):
             batter_font_size = BATTER_FONT_SIZE_MED_PLUS
             batter_space_increment = BATTER_SPACE_MED_PLUS
             stats_y_offset = BATTER_STATS_OFFSET_MED_PLUS
