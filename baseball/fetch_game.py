@@ -391,6 +391,11 @@ def generate_game_svgs_for_old_datetime(this_datetime, output_dir,
         ALL_GAMES_URL.format(month=month, day=day, year=year)
     ).json()
 
+    if isinstance(all_games_dict['data']['games'].get('game', []), dict):
+        all_games_dict['data']['games']['game'] = [
+            all_games_dict['data']['games']['game']
+        ]
+
     game_id_list = [
         game_dict['id'].replace('-', '_').replace('/', '_')
         for game_dict in all_games_dict['data']['games'].get('game', [])
@@ -462,6 +467,11 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
     all_games_dict = get(
         ALL_GAMES_URL.format(month=month, day=day, year=year)
     ).json()
+
+    if isinstance(all_games_dict['data']['games'].get('game', []), dict):
+        all_games_dict['data']['games']['game'] = [
+            all_games_dict['data']['games']['game']
+        ]
 
     game_tuple_list = [(x['id'], x['game_pk'])
                        for x in all_games_dict['data']['games'].get('game', [])]
