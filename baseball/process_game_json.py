@@ -509,4 +509,8 @@ def get_game_obj(game_dict):
     game.set_team_stats()
     game.set_gametimes()
 
+    if 'Postponed' in game_dict.get(
+            'gameData', {}).get('status', {}).get('detailedState', {}):
+        game.game_date_str = game.game_date_str[:-1] + '0'
+
     return game

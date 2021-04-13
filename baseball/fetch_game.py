@@ -417,19 +417,26 @@ def get_object_html_str(game_html_id_tuple_list):
         start_datetime = (game.start_datetime if game.start_datetime
                           else game.expected_start_datetime)
 
-        start_datetime_str = start_datetime.astimezone(
-            timezone(game.timezone_str)
-        ).strftime('%-I:%M %p %Z')
 
         game_id_element_list = game_html_id.split('-')
-        title_str = '{} @ {} <br />{}'.format(
-            game.away_team.name,
-            game.home_team.name,
-            start_datetime_str
-        )
+        title_str = '{} @ {}<br />'.format(game.away_team.name,
+                                           game.home_team.name)
 
-        if game_id_element_list[5] != '1':
-            title_str += ' (Game {})'.format(game_id_element_list[5])
+        if game_id_element_list[5] == '0':
+            title_str += 'Postponed'
+        elif game_id_element_list[5] != '1':
+            title_str += '{} (Game {})'.format(
+                start_datetime.astimezone(
+                    timezone(game.timezone_str)
+                ).strftime('%-I:%M %p %Z'),
+                game_id_element_list[5]
+            )
+        else:
+            title_str += '{}'.format(
+                start_datetime.astimezone(
+                    timezone(game.timezone_str)
+                ).strftime('%-I:%M %p %Z')
+            )
 
         if i % 2 == 0:
             object_html_str += '<tr>'
