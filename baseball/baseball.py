@@ -839,21 +839,27 @@ class PlateAppearance:
             if keyword in description_str.lower():
                 code = this_code
 
+        for keyword, this_code in [('Sac Fly', 'SF'), ('Sac Bunt', 'SH')]:
+            if keyword in self.plate_appearance_summary:
+                code = this_code
+
         if self.plate_appearance_summary == 'Fan interference':
             code = 'FI'
         elif ' out to ' in description_str and code is None:
             code = 'F'
         elif not code:
-            disqualified_description = ('out at' in description_str or
-                                        'singles' in description_str or
-                                        'doubles' in description_str or
-                                        'triples' in description_str or
-                                        'hits a home run' in description_str or
-                                        'ejected' in description_str or
-                                        'remains in the game' in description_str or
-                                        ' replaces ' in description_str or
-                                        'mound visit' in description_str.lower() or
-                                        'delay' in description_str.lower())
+            disqualified_description = (
+                'out at' in description_str or
+                'singles' in description_str or
+                'doubles' in description_str or
+                'triples' in description_str or
+                'hits a home run' in description_str or
+                'ejected' in description_str or
+                'remains in the game' in description_str or
+                ' replaces ' in description_str or
+                'mound visit' in description_str.lower() or
+                'delay' in description_str.lower()
+            )
 
             if disqualified_description:
                 code = ''
