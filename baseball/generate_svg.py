@@ -2190,7 +2190,17 @@ def get_game_title_str(game):
 def assemble_game_title_svg(game):
     game_title_svg = ''
     game_str = '{} @ {}'.format(game.away_team.name, game.home_team.name)
-    if game.start_datetime and game.end_datetime:
+
+    if game.game_date_str[-1] == '0':
+        start_datetime = (game.start_datetime if game.start_datetime
+                          else game.expected_start_datetime)
+
+        game_datetime = '{}, Postponed'.format(
+            start_datetime.astimezone(
+                timezone(game.timezone_str)
+            ).strftime('%a %b %d %Y')
+        )
+    elif game.start_datetime and game.end_datetime:
         start_str = game.start_datetime.astimezone(
             timezone(game.timezone_str)
         ).strftime('%a %b %d %Y, %-I:%M %p')
