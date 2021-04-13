@@ -13,6 +13,7 @@ FakePlateAppearance = namedtuple(
     'scorecard_summary batter plate_appearance_description'
 )
 
+EASTERN_TIMEZONE_STR = 'America/New_York'
 DEFAULT_LOGO = 'baseball-fairy-161.png'
 LOGO_DICT = {
     'LAA': 'team_logos/angels.gif',
@@ -2190,16 +2191,14 @@ def get_game_title_str(game):
 def assemble_game_title_svg(game):
     game_title_svg = ''
     game_str = '{} @ {}'.format(game.away_team.name, game.home_team.name)
+    this_start_datetime = (
+        game.start_datetime if game.start_datetime
+        else game.expected_start_datetime
+    ).astimezone(timezone(game.timezone_str))
 
-    if game.game_date_str[-1] == '0' and not game.end_datetime:
-        start_datetime = (game.start_datetime if game.start_datetime
-                          else game.expected_start_datetime)
-
-        game_datetime = '{}, Postponed'.format(
-            start_datetime.astimezone(
-                timezone(game.timezone_str)
-            ).strftime('%a %b %d %Y')
-        )
+    est_time = this_start_datetime.astimezone(timezone(EASTERN_TIMEZONE_STR))
+    if est_time.hour == 23 and est_time.minute == 33:
+        game_datetime = '{}'.format(this_start_datetime.strftime('%a %b %d %Y'))
     elif game.start_datetime and game.end_datetime:
         start_str = game.start_datetime.astimezone(
             timezone(game.timezone_str)
@@ -2214,6 +2213,11 @@ def assemble_game_title_svg(game):
         game_datetime = game.expected_start_datetime.astimezone(
             timezone(game.timezone_str)
         ).strftime('%a %b %d %Y, %-I:%M %p %Z')
+
+    if not game.is_postponed and game.game_date_str[-1] != '1':
+        game_datetime += ', Game {}'.format(game.game_date_str[-1])
+    elif game.is_postponed:
+        game_datetime += ', Postponed'
 
     game_width = get_game_width(game)
     location_str = game.location.replace('&', '&amp;')

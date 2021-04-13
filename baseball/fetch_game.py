@@ -14,6 +14,7 @@ from requests import get
 import baseball.process_game_json
 from baseball.process_game_xml import MLB_TEAM_CODE_DICT
 
+EASTERN_TIMEZONE_STR = 'America/New_York'
 NUM_PROCESS_SUBLISTS = 3
 BOXSCORE_SUFFIX = 'boxscore.xml'
 PLAYERS_SUFFIX = 'players.xml'
@@ -419,21 +420,28 @@ def get_object_html_str(game_html_id_tuple_list):
             else game.expected_start_datetime
         ).astimezone(timezone(game.timezone_str))
 
+        est_time = start_datetime.astimezone(timezone(EASTERN_TIMEZONE_STR))
+
         title_str = '{} @ {}<br />'.format(game.away_team.name,
                                            game.home_team.name)
 
-        if game.is_postponed:
-            title_str += 'Postponed'
-        elif game_html_id[-1] != '1':
-            if start_datetime.hour == 23 and start_datetime.minute == 33:
-                title_str += '(Game {})'.format(game_html_id[-1])
-            else:
-                title_str += '{} (Game {})'.format(
-                    start_datetime.strftime('%-I:%M %p %Z'),
-                    game_html_id[-1]
-                )
-        else:
+        subtitle_flag = False
+        if not (est_time.hour == 23 and est_time.minute == 33):
             title_str += '{}'.format(start_datetime.strftime('%-I:%M %p %Z'))
+            subtitle_flag = True
+
+        if not game.is_postponed and game.game_date_str[-1] != '1':
+            if subtitle_flag:
+                title_str += ' - '
+
+            title_str += 'Game {}'.format(game.game_date_str[-1])
+            subtitle_flag = True
+        elif game.is_postponed:
+            if subtitle_flag:
+                title_str += ' - '
+
+            title_str += 'Postponed'
+            subtitle_flag = True
 
         if i % 2 == 0:
             object_html_str += '<tr>'

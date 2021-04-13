@@ -509,8 +509,14 @@ def get_game_obj(game_dict):
     game.set_team_stats()
     game.set_gametimes()
 
-    if 'Postponed' in game_dict.get(
-            'gameData', {}).get('status', {}).get('detailedState', {}):
+    est_time = (game.start_datetime if game.start_datetime
+                else game.expected_start_datetime).astimezone(
+                    timezone('America/New_York')
+                )
+
+    if ('Postponed' in game_dict.get('gameData', {}).get('status', {}).get(
+            'detailedState', {}) or
+            (est_time.hour == 23 and est_time.minute == 33)):
         game.is_postponed = True
     else:
         game.is_postponed = False
