@@ -402,6 +402,7 @@ class Game:
         self.weather = None
         self.expected_start_datetime = None
         self.timezone_str = EASTERN_TIMEZONE_STR
+        self.is_postponed = False
 
     def json(self):
         return dumps(self._asdict())

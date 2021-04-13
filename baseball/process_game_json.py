@@ -511,6 +511,8 @@ def get_game_obj(game_dict):
 
     if 'Postponed' in game_dict.get(
             'gameData', {}).get('status', {}).get('detailedState', {}):
-        game.game_date_str = game.game_date_str[:-1] + '0'
+        game.is_postponed = True
+    else:
+        game.is_postponed = False
 
     return game

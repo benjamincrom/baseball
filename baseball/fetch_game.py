@@ -414,29 +414,26 @@ def generate_game_svgs_for_old_datetime(this_datetime, output_dir,
 def get_object_html_str(game_html_id_tuple_list):
     object_html_str = ''
     for i, (game_html_id, game) in enumerate(game_html_id_tuple_list):
-        start_datetime = (game.start_datetime if game.start_datetime
-                          else game.expected_start_datetime)
+        start_datetime = (
+            game.start_datetime if game.start_datetime
+            else game.expected_start_datetime
+        ).astimezone(timezone(game.timezone_str))
 
-
-        game_id_element_list = game_html_id.split('-')
         title_str = '{} @ {}<br />'.format(game.away_team.name,
                                            game.home_team.name)
 
-        if game_id_element_list[5] == '0':
+        if game.is_postponed:
             title_str += 'Postponed'
-        elif game_id_element_list[5] != '1':
-            title_str += '{} (Game {})'.format(
-                start_datetime.astimezone(
-                    timezone(game.timezone_str)
-                ).strftime('%-I:%M %p %Z'),
-                game_id_element_list[5]
-            )
+        elif game_html_id[-1] != '1':
+            if start_datetime.hour == 23 and start_datetime.minute == 33:
+                title_str += '(Game {})'.format(game_html_id[-1])
+            else:
+                title_str += '{} (Game {})'.format(
+                    start_datetime.strftime('%-I:%M %p %Z'),
+                    game_html_id[-1]
+                )
         else:
-            title_str += '{}'.format(
-                start_datetime.astimezone(
-                    timezone(game.timezone_str)
-                ).strftime('%-I:%M %p %Z')
-            )
+            title_str += '{}'.format(start_datetime.strftime('%-I:%M %p %Z'))
 
         if i % 2 == 0:
             object_html_str += '<tr>'
