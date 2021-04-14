@@ -810,7 +810,9 @@ def initialize_game_object(boxscore_xml):
     home_name = boxscore_xml.get('home_fname')
     away_code = get_team_abbreviation(boxscore_xml.get('away_team_code'))
     away_name = boxscore_xml.get('away_fname')
-    boxscore_date = boxscore_xml.get('date')
+    game_id = boxscore_xml.get('game_id')
+    game_number = int(game_id[-1])
+    date_str = game_id.rsplit('/', 1)[0].replace('/', '-')
 
     home_pitcher_status_dict = {}
     away_pitcher_status_dict = {}
@@ -867,7 +869,11 @@ def initialize_game_object(boxscore_xml):
                 weather = match.group(2)
                 attendance = int(match.group(3).replace(',', ''))
 
-    game_obj = Game(home_team, away_team, game_venue, boxscore_date)
+
+    game_date_str = '{}-{}-{}-{}'.format(date_str, away_team.abbreviation,
+                                         home_team.abbreviation, game_number)
+
+    game_obj = Game(home_team, away_team, game_venue, game_date_str)
 
     if temp:
         game_obj.temp = temp

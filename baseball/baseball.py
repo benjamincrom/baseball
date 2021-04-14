@@ -892,9 +892,11 @@ class PlateAppearance:
             )
         else:
             on_base = False
-            scorecard_summary = (
-                self.get_play_str() + throws_str + suffix_str
-            )
+            if self.get_play_str() == 'CI':
+                scorecard_summary = self.get_play_str() + suffix_str
+            else:
+                scorecard_summary = (self.get_play_str() + throws_str +
+                                     suffix_str)
 
         return on_base, scorecard_summary
 

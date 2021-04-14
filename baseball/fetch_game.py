@@ -689,12 +689,12 @@ def get_game_generator(filename_list):
         if this_game:
             yield game_id, this_game
 
-def write_game_svg_html_from_filename_tuple(filename_output_path_tuple):
+def write_game_svg_html_from_filename_tuple(filename_output_path_tuple,
+                                            write_game_html=False):
     filename_tuple, output_path = filename_output_path_tuple
     game_id, game = get_game_from_filename_tuple(filename_tuple)
     if game:
-        print(game_id)
-        write_game_svg_and_html(game_id, game, output_path, True)
+        write_game_svg_and_html(game_id, game, output_path, write_game_html)
 
 def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml,
                               inning_raw_xml):
@@ -713,7 +713,8 @@ def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml,
     return this_game
 
 def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
-                              output_dir):
+                              output_dir, write_game_html=False,
+                              write_date_html=False):
     if not exists(output_dir):
         makedirs(output_dir)
 
@@ -725,8 +726,31 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
                                                 input_dir)
     ]
 
+    game_html_id_tuple_list = []
+    this_year = this_month = this_day = None
     for tup in filename_output_path_tuple_list:
-        write_game_svg_html_from_filename_tuple(tup)
+        filename_tuple, _ = tup
+        game_id = filename_tuple[0]
+        year_str, month_str, day_str, _, _, _  = game_id.split('-')
+        if not (year_str == this_year and month_str == this_month and
+                day_str == this_day):
+            this_datetime = parse(
+                '{}-{}-{}'.format(this_year, this_month, this_day)
+            )
+
+            object_html_str = get_object_html_str(game_html_id_tuple_list)
+            write_game_index(object_html_str, this_datetime, output_dir,
+                             write_date_html, False)
+
+            year_str = this_year
+            month_str = this_month
+            day_str = this_day
+            game_html_id_tuple_list = []
+
+        write_game_svg_html_from_filename_tuple(tup, write_game_html)
+        game_html_id_tuple_list.append(
+            get_game_from_filename_tuple(filename_tuple)
+        )
 
 def get_filename_list(start_date_str, end_date_str, input_dir):
     filename_list = []
@@ -781,7 +805,8 @@ def get_filename_list(start_date_str, end_date_str, input_dir):
 
     return filename_list
 
-def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
+def get_game_list_from_file_range(start_date_str, end_date_str, input_dir,
+                                    ):
     filename_list = get_filename_list(start_date_str, end_date_str, input_dir)
     process_pool = Pool(NUM_PROCESS_SUBLISTS)
     #game_tuple_list = process_pool.map(get_game_from_filename_tuple,
