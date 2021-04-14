@@ -2075,6 +2075,22 @@ def is_bat_around(this_inning_tuple_list, inning_pa_num):
                            LEN_BATTING_LIST))
     )
 
+def is_bat_around_two_plus(this_inning_tuple_list, inning_pa_num):
+    return (
+        len(this_inning_tuple_list) > (LEN_BATTING_LIST * 2) and
+        (inning_pa_num > LEN_BATTING_LIST or
+         inning_pa_num <= (len(this_inning_tuple_list) %
+                           LEN_BATTING_LIST))
+    )
+
+def is_bat_around_three_plus(this_inning_tuple_list, inning_pa_num):
+    return (
+        len(this_inning_tuple_list) > (LEN_BATTING_LIST * 3) and
+        (inning_pa_num > LEN_BATTING_LIST or
+         inning_pa_num <= (len(this_inning_tuple_list) %
+                           LEN_BATTING_LIST))
+    )
+
 def assemble_stats_svg(game):
     stats_svg = ''
     inning_half_stats_list = get_inning_half_stats_tuple_list(game)
@@ -2120,11 +2136,22 @@ def get_logo(game):
 def write_individual_pa_svg(svg_content, inning_pa_num, this_inning_tuple_list,
                             this_x_pos, this_y_pos):
     this_svg = ''
-    bat_around_flag = is_bat_around(this_inning_tuple_list, inning_pa_num)
-    if bat_around_flag:
+    if is_bat_around(this_inning_tuple_list, inning_pa_num):
         this_svg += HALF_SCALE_HEADER
         this_x_pos *= 2
         this_y_pos *= 2
+        if inning_pa_num > 9:
+            this_x_pos += BOX_WIDTH
+            this_y_pos += BOX_HEIGHT
+    elif is_bat_around_two_plus(this_inning_tuple_list, inning_pa_num):
+        this_svg += HALF_SCALE_HEADER
+        this_y_pos *= 2
+        if inning_pa_num > 9:
+            this_x_pos += BOX_WIDTH
+            this_y_pos += BOX_HEIGHT
+    elif is_bat_around_three_plus(this_inning_tuple_list, inning_pa_num):
+        this_svg += HALF_SCALE_HEADER
+        this_x_pos *= 2
         if inning_pa_num > 9:
             this_x_pos += BOX_WIDTH
             this_y_pos += BOX_HEIGHT
@@ -2135,7 +2162,7 @@ def write_individual_pa_svg(svg_content, inning_pa_num, this_inning_tuple_list,
         SVG_FOOTER
     )
 
-    if bat_around_flag:
+    if is_bat_around(this_inning_tuple_list, inning_pa_num):
         this_svg += HALF_SCALE_FOOTER
 
     return this_svg
