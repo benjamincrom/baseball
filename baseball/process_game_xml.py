@@ -1,6 +1,7 @@
 from datetime import datetime
 from re import search, sub
 
+from dateutil.parser import parse
 from pytz import UTC
 
 from baseball.baseball import (POSITION_CODE_DICT,
@@ -31,6 +32,7 @@ MLB_TEAM_CODE_DICT = {'LAA': 'ana',
                       'HOU': 'hou',
                       'OAK': 'oak',
                       'MIA': 'mia',
+                      'FLO': 'flo',
                       'ATL': 'atl',
                       'MIL': 'mil',
                       'CHC': 'chn',
@@ -881,6 +883,8 @@ def initialize_game_object(boxscore_xml):
         game_obj.weather = weather
     if attendance:
         game_obj.attendance = attendance
+    if boxscore_xml.get('date'):
+        game_obj.expected_start_datetime = parse(boxscore_xml.get('date'))
 
     return (game_obj,
             away_pitcher_status_dict,

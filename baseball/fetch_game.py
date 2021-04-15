@@ -418,30 +418,39 @@ def get_object_html_str(game_html_id_tuple_list):
         start_datetime = (
             game.start_datetime if game.start_datetime
             else game.expected_start_datetime
-        ).astimezone(timezone(game.timezone_str))
-
-        est_time = start_datetime.astimezone(timezone(EASTERN_TIMEZONE_STR))
+        )
 
         title_str = '{} @ {}<br />'.format(game.away_team.name,
                                            game.home_team.name)
 
-        subtitle_flag = False
-        if not (est_time.hour == 23 and est_time.minute == 33):
-            title_str += '{}'.format(start_datetime.strftime('%-I:%M %p %Z'))
-            subtitle_flag = True
+        if start_datetime:
+            start_datetime = start_datetime.astimezone(
+                timezone(game.timezone_str)
+            )
 
-        if not game.is_postponed and game.game_date_str[-1] != '1':
-            if subtitle_flag:
-                title_str += ' - '
+            est_time = start_datetime.astimezone(timezone(EASTERN_TIMEZONE_STR))
 
-            title_str += 'Game {}'.format(game.game_date_str[-1])
-            subtitle_flag = True
-        elif game.is_postponed:
-            if subtitle_flag:
-                title_str += ' - '
+            subtitle_flag = False
+            if ((not (est_time.hour == 23 and est_time.minute == 33)) and
+                    (not (est_time.hour == 0 and est_time.minute == 0))):
+                title_str += '{}'.format(
+                    start_datetime.strftime('%-I:%M %p %Z')
+                )
 
-            title_str += 'Postponed'
-            subtitle_flag = True
+                subtitle_flag = True
+
+            if not game.is_postponed and game.game_date_str[-1] != '1':
+                if subtitle_flag:
+                    title_str += ' - '
+
+                title_str += 'Game {}'.format(game.game_date_str[-1])
+                subtitle_flag = True
+            elif game.is_postponed:
+                if subtitle_flag:
+                    title_str += ' - '
+
+                title_str += 'Postponed'
+                subtitle_flag = True
 
         if i % 2 == 0:
             object_html_str += '<tr>'

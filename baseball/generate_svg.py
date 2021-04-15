@@ -30,6 +30,7 @@ LOGO_DICT = {
     'CLE': 'team_logos/indians.gif',
     'SEA': 'team_logos/mariners.gif',
     'MIA': 'team_logos/marlins.gif',
+    'FLO': 'team_logos/marlins.gif',
     'NYM': 'team_logos/mets.gif',
     'WSH': 'team_logos/nationals.gif',
     'BAL': 'team_logos/orioles.gif',
@@ -2075,22 +2076,6 @@ def is_bat_around(this_inning_tuple_list, inning_pa_num):
                            LEN_BATTING_LIST))
     )
 
-def is_bat_around_two_plus(this_inning_tuple_list, inning_pa_num):
-    return (
-        len(this_inning_tuple_list) > (LEN_BATTING_LIST * 2) and
-        (inning_pa_num > LEN_BATTING_LIST or
-         inning_pa_num <= (len(this_inning_tuple_list) %
-                           LEN_BATTING_LIST))
-    )
-
-def is_bat_around_three_plus(this_inning_tuple_list, inning_pa_num):
-    return (
-        len(this_inning_tuple_list) > (LEN_BATTING_LIST * 3) and
-        (inning_pa_num > LEN_BATTING_LIST or
-         inning_pa_num <= (len(this_inning_tuple_list) %
-                           LEN_BATTING_LIST))
-    )
-
 def assemble_stats_svg(game):
     stats_svg = ''
     inning_half_stats_list = get_inning_half_stats_tuple_list(game)
@@ -2136,23 +2121,26 @@ def get_logo(game):
 def write_individual_pa_svg(svg_content, inning_pa_num, this_inning_tuple_list,
                             this_x_pos, this_y_pos):
     this_svg = ''
-    if is_bat_around(this_inning_tuple_list, inning_pa_num):
+    bat_around_flag = False
+    if len(this_inning_tuple_list) <= (LEN_BATTING_LIST * 2):
+        if is_bat_around(this_inning_tuple_list, inning_pa_num):
+            bat_around_flag = True
+            this_svg += HALF_SCALE_HEADER
+            this_x_pos *= 2
+            this_y_pos *= 2
+            if inning_pa_num > LEN_BATTING_LIST:
+                this_y_pos += BOX_HEIGHT
+                this_x_pos += BOX_WIDTH
+    else:
+        bat_around_flag = True
         this_svg += HALF_SCALE_HEADER
         this_x_pos *= 2
         this_y_pos *= 2
-        if inning_pa_num > 9:
+        if LEN_BATTING_LIST < inning_pa_num <= (LEN_BATTING_LIST * 2):
             this_x_pos += BOX_WIDTH
+        elif (LEN_BATTING_LIST * 2) < inning_pa_num <= (LEN_BATTING_LIST * 3):
             this_y_pos += BOX_HEIGHT
-    elif is_bat_around_two_plus(this_inning_tuple_list, inning_pa_num):
-        this_svg += HALF_SCALE_HEADER
-        this_y_pos *= 2
-        if inning_pa_num > 9:
-            this_x_pos += BOX_WIDTH
-            this_y_pos += BOX_HEIGHT
-    elif is_bat_around_three_plus(this_inning_tuple_list, inning_pa_num):
-        this_svg += HALF_SCALE_HEADER
-        this_x_pos *= 2
-        if inning_pa_num > 9:
+        elif (LEN_BATTING_LIST * 3) < inning_pa_num:
             this_x_pos += BOX_WIDTH
             this_y_pos += BOX_HEIGHT
 
@@ -2162,7 +2150,7 @@ def write_individual_pa_svg(svg_content, inning_pa_num, this_inning_tuple_list,
         SVG_FOOTER
     )
 
-    if is_bat_around(this_inning_tuple_list, inning_pa_num):
+    if bat_around_flag:
         this_svg += HALF_SCALE_FOOTER
 
     return this_svg
@@ -2218,33 +2206,44 @@ def get_game_title_str(game):
 def assemble_game_title_svg(game):
     game_title_svg = ''
     game_str = '{} @ {}'.format(game.away_team.name, game.home_team.name)
-    this_start_datetime = (
-        game.start_datetime if game.start_datetime
-        else game.expected_start_datetime
-    ).astimezone(timezone(game.timezone_str))
+    this_start_datetime = (game.start_datetime if game.start_datetime
+                           else game.expected_start_datetime)
 
-    est_time = this_start_datetime.astimezone(timezone(EASTERN_TIMEZONE_STR))
-    if est_time.hour == 23 and est_time.minute == 33:
-        game_datetime = '{}'.format(this_start_datetime.strftime('%a %b %d %Y'))
-    elif game.start_datetime and game.end_datetime:
-        start_str = game.start_datetime.astimezone(
+    if this_start_datetime:
+        this_start_datetime = this_start_datetime.astimezone(
             timezone(game.timezone_str)
-        ).strftime('%a %b %d %Y, %-I:%M %p')
+        )
 
-        end_str = game.end_datetime.astimezone(
-            timezone(game.timezone_str)
-        ).strftime(' - %-I:%M %p %Z')
+        est_time = this_start_datetime.astimezone(
+            timezone(EASTERN_TIMEZONE_STR)
+        )
 
-        game_datetime = '{}{}'.format(start_str, end_str)
+        if ((est_time.hour == 23 and est_time.minute == 33) or
+                (est_time.hour == 0 and est_time.minute == 0)):
+            game_datetime = '{}'.format(
+                this_start_datetime.strftime('%a %b %d %Y')
+            )
+        elif game.start_datetime and game.end_datetime:
+            start_str = game.start_datetime.astimezone(
+                timezone(game.timezone_str)
+            ).strftime('%a %b %d %Y, %-I:%M %p')
+
+            end_str = game.end_datetime.astimezone(
+                timezone(game.timezone_str)
+            ).strftime(' - %-I:%M %p %Z')
+
+            game_datetime = '{}{}'.format(start_str, end_str)
+        else:
+            game_datetime = game.expected_start_datetime.astimezone(
+                timezone(game.timezone_str)
+            ).strftime('%a %b %d %Y, %-I:%M %p %Z')
+
+        if not game.is_postponed and game.game_date_str[-1] != '1':
+            game_datetime += ', Game {}'.format(game.game_date_str[-1])
+        elif game.is_postponed:
+            game_datetime += ', Postponed'
     else:
-        game_datetime = game.expected_start_datetime.astimezone(
-            timezone(game.timezone_str)
-        ).strftime('%a %b %d %Y, %-I:%M %p %Z')
-
-    if not game.is_postponed and game.game_date_str[-1] != '1':
-        game_datetime += ', Game {}'.format(game.game_date_str[-1])
-    elif game.is_postponed:
-        game_datetime += ', Postponed'
+        game_datetime = ''
 
     game_width = get_game_width(game)
     location_str = game.location.replace('&', '&amp;')
