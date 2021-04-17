@@ -514,6 +514,10 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
                 if len(game.game_date_str.split('-')) == 6:
                     game_html_id_tuple_list.append((game.game_date_str, game))
 
+            if game.expected_start_datetime.astimezone(
+                    timezone(game.timezone_str)).day != day:
+                game.is_postponed = True
+
             write_game_svg_and_html(game.game_date_str, game, output_dir,
                                     write_game_html)
         except:
