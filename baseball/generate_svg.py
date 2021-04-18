@@ -128,6 +128,8 @@ BATTER_STATS_SPACES_MED_PLUS = 5
 BATTER_STATS_SPACES_MED = 6
 BATTER_STATS_SPACES_SMALL = 10
 BATTER_INITIAL_Y_POS = 25
+BIG_TITLE_SIZE = 55
+SMALL_TITLE_SIZE = 50
 RED_COLOR = '#c10000'
 BLUE_COLOR = 'blue'
 DARK_GREEN_COLOR = 'darkgreen'
@@ -383,7 +385,7 @@ BIG_SVG_TITLE = (
     '<text x="133" y="67" font-family="Arial" text-anchor="middle" '
     'font-size="50">{inning_half}</text>'
     '<text x="80" y="700" transform="rotate(-90,80,700)" '
-    'fill="black" font-size="55" font-family="Arial" text-anchor="middle" '
+    'fill="black" font-size="{title_size}" font-family="Arial" text-anchor="middle" '
     '>{game_str}</text>'
     '<text x="145" y="700" transform="rotate(-90,145,700)" '
     'fill="black" font-size="45" font-family="Arial" text-anchor="middle" '
@@ -2265,6 +2267,7 @@ def assemble_game_title_svg(game):
 
     tuple_list = [('TOP', 0), ('BOTTOM', HEIGHT // 2)]
     for inning_half_str, y_pos in tuple_list:
+        title_size = BIG_TITLE_SIZE if len(game_str) < 42 else SMALL_TITLE_SIZE
         game_title_svg += BIG_SVG_TITLE.format(
             x_pos=game_width - BOX_WIDTH,
             y_pos=y_pos,
@@ -2272,7 +2275,8 @@ def assemble_game_title_svg(game):
             game_str=game_str,
             location=location_str,
             datetime=game_datetime,
-            detail_str=detail_str
+            detail_str=detail_str,
+            title_size=title_size
         )
 
     return game_title_svg
