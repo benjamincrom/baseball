@@ -415,6 +415,15 @@ def generate_game_svgs_for_old_datetime(this_datetime, output_dir,
 def get_object_html_str(game_html_id_tuple_list):
     object_html_str = ''
     for i, (game_html_id, game) in enumerate(game_html_id_tuple_list):
+        if i < (len(game_html_id_tuple_list) - 1):
+            look_ahead_id, _ = game_html_id_tuple_list[i+1]
+            if look_ahead_id[:-1] == game_html_id[:-1]:
+                game.is_doubleheader = True
+
+        look_behind_id, _ = game_html_id_tuple_list[i-1]
+        if look_behind_id[:-1] == game_html_id[:-1]:
+            game.is_doubleheader = True
+
         start_datetime = (
             game.start_datetime if game.start_datetime
             else game.expected_start_datetime
@@ -439,7 +448,7 @@ def get_object_html_str(game_html_id_tuple_list):
 
                 subtitle_flag = True
 
-            if not game.is_postponed and game.game_date_str[-1] != '1':
+            if game.is_doubleheader:
                 if subtitle_flag:
                     title_str += ' - '
 
@@ -594,7 +603,7 @@ def get_game_from_date(this_datetime, this_away_code, this_home_code,
                       for _, game_pk in game_tuple_list]
 
     game = None
-    for game_dict in game_dict_list:
+    for i, game_dict in enumerate(game_dict_list):
         away_code = (
             game_dict.get('gameData', {}).get('teams', {}).get(
                 'away', {}).get('abbreviation', {})
@@ -613,6 +622,15 @@ def get_game_from_date(this_datetime, this_away_code, this_home_code,
         if ((away_code and home_code) and (away_code == this_away_code) and
                 (home_code == this_home_code) and game_number_is_match):
             game = baseball.process_game_json.get_game_obj(game_dict)
+
+            if i < (len(game_dict_list) - 1):
+                look_ahead_id = game_dict_list[i+1]['gameData']['game']['id']
+                if look_ahead_id[:-2] == game_dict['gameData']['game']['id'][:-2]:
+                    game.is_doubleheader = True
+
+            look_behind_id = game_dict_list[i-1]['gameData']['game']['id']
+            if look_behind_id[:-2] == game_dict['gameData']['game']['id'][:-2]:
+                game.is_doubleheader = True
 
     return game
 

@@ -403,6 +403,7 @@ class Game:
         self.expected_start_datetime = None
         self.timezone_str = EASTERN_TIMEZONE_STR
         self.is_postponed = False
+        self.is_doubleheader = False
 
     def json(self):
         return dumps(self._asdict())
