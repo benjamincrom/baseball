@@ -64,7 +64,7 @@ HTML_INDEX_PAGE = (
     '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/'
     'jquery.min.js"></script>'
     '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
-    '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+    '<meta name="viewport" content="width=device-width, initial-scale=0.35">'
     '<meta http-equiv="cache-control" content="no-cache">'
     '<!-- Global site tag (gtag.js) - Google Analytics -->'
     '<script async src="https://www.googletagmanager.com/gtag/js'
@@ -212,7 +212,7 @@ HTML_INDEX_PAGE = (
 HTML_WRAPPER = (
     '<html>'
     '<head>'
-    '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
+    '<meta name="viewport" content="width=device-width, initial-scale=0.35">'
     '<title>{title}</title>'
     '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
     '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/'
