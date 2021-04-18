@@ -2257,7 +2257,7 @@ def assemble_game_title_svg(game):
                 timezone(game.timezone_str)
             ).strftime('%a %b %d %Y, %-I:%M %p %Z')
 
-        if not game.is_postponed and game.game_date_str[-1] != '1':
+        if game.is_doubleheader:
             game_datetime += ', Game {}'.format(game.game_date_str[-1])
         elif game.is_postponed:
             game_datetime += ', Postponed'
