@@ -1771,26 +1771,43 @@ def add_away_pitcher_sub_division_lines(game):
                 if not inning.bottom_half_appearance_list:
                     continue
 
+                num_appearances = len(inning.bottom_half_appearance_list)
+                mod_num = num_appearances % LEN_BATTING_LIST
                 for appearance in inning.bottom_half_appearance_list:
                     if (inning_num == pitcher_app.end_inning_num and
                             (inning_pa_num == pitcher_app.end_inning_batter_num
                              or pitcher_app.end_inning_half == 'top')):
 
-                        x_pos = (BOX_WIDTH *
-                                 pitcher_app.end_inning_num)
-
+                        x_pos = BOX_WIDTH * pitcher_app.end_inning_num
+                        x_pos_2 = x_pos + BOX_WIDTH
                         y_pos = (
-                            (BOX_HEIGHT *
-                             (total_pa_num % LEN_BATTING_LIST)) +
+                            (BOX_HEIGHT * (total_pa_num % LEN_BATTING_LIST)) +
                             (HEIGHT // 2 + BOX_HEIGHT // 2)
                         )
 
+                        if ((LEN_BATTING_LIST * 2) >= num_appearances >
+                                LEN_BATTING_LIST):
+                            if inning_pa_num <= mod_num:
+                                x_pos_2 -= (BOX_WIDTH // 2)
+                            elif inning_pa_num > LEN_BATTING_LIST:
+                                x_pos += (BOX_WIDTH // 2)
+                                y_pos += (BOX_HEIGHT // 2)
+                        elif num_appearances > (LEN_BATTING_LIST * 2):
+                            if inning_pa_num <= mod_num:
+                                x_pos_2 -= (BOX_WIDTH // 2)
+                            elif inning_pa_num > LEN_BATTING_LIST:
+                                x_pos += (BOX_WIDTH // 2)
+                            elif inning_pa_num > (LEN_BATTING_LIST * 2):
+                                x_pos_2 -= (BOX_WIDTH // 2)
+                                y_pos += (BOX_HEIGHT // 2)
+                            elif inning_pa_num > (LEN_BATTING_LIST * 3):
+                                x_pos += (BOX_WIDTH // 2)
+                                y_pos += (BOX_HEIGHT // 2)
+
                         sub_divisions_svg += (
-                            PITCHER_SUB_DIVISION_LINE.format(
-                                x_pos_1=x_pos,
-                                x_pos_2=x_pos + BOX_WIDTH,
-                                y_pos=y_pos
-                            )
+                            PITCHER_SUB_DIVISION_LINE.format(x_pos_1=x_pos,
+                                                             x_pos_2=x_pos_2,
+                                                             y_pos=y_pos)
                         )
 
                     if appearance.plate_appearance_summary != 'Runner Out':
