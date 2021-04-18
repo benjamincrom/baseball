@@ -510,7 +510,7 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
                       for _, game_pk in game_tuple_list]
 
     game_html_id_tuple_list = []
-    for game_dict in game_dict_list:
+    for i, game_dict in enumerate(game_dict_list):
         try:
             game = baseball.process_game_json.get_game_obj(game_dict)
             if len(game.game_date_str.split('-')) == 6:
@@ -527,6 +527,7 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
                     timezone(game.timezone_str)).day != day:
                 game.is_postponed = True
 
+            game_set_doubleheader(i, game_dict, game_dict_list, game)
             write_game_svg_and_html(game.game_date_str, game, output_dir,
                                     write_game_html)
         except:
@@ -541,6 +542,16 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
 
     write_game_index(object_html_str, this_datetime, output_dir,
                      write_date_html, write_index_html)
+
+def game_set_doubleheader(i, game_dict, game_dict_list, game):
+    if i < (len(game_dict_list) - 1):
+        look_ahead_id = game_dict_list[i+1]['gameData']['game']['id']
+        if look_ahead_id[:-2] == game_dict['gameData']['game']['id'][:-2]:
+            game.is_doubleheader = True
+
+    look_behind_id = game_dict_list[i-1]['gameData']['game']['id']
+    if look_behind_id[:-2] == game_dict['gameData']['game']['id'][:-2]:
+        game.is_doubleheader = True
 
 def write_game_index(object_html_str, this_datetime, output_dir,
                      write_date_html, write_index_html):
@@ -622,15 +633,7 @@ def get_game_from_date(this_datetime, this_away_code, this_home_code,
         if ((away_code and home_code) and (away_code == this_away_code) and
                 (home_code == this_home_code) and game_number_is_match):
             game = baseball.process_game_json.get_game_obj(game_dict)
-
-            if i < (len(game_dict_list) - 1):
-                look_ahead_id = game_dict_list[i+1]['gameData']['game']['id']
-                if look_ahead_id[:-2] == game_dict['gameData']['game']['id'][:-2]:
-                    game.is_doubleheader = True
-
-            look_behind_id = game_dict_list[i-1]['gameData']['game']['id']
-            if look_behind_id[:-2] == game_dict['gameData']['game']['id'][:-2]:
-                game.is_doubleheader = True
+            game_set_doubleheader(i, game_dict, game_dict_list, game)
 
     return game
 
