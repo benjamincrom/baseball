@@ -261,7 +261,7 @@ HTML_WRAPPER = (
     '</head>'
     '<body style="background-color:black;">'
     '<div align="center">'
-    '<object width="1160px" id="{title}"></object>'
+    '<object id="{title}"></object>'
     '</div>'
     '</body>'
     '</html>'
