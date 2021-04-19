@@ -29,7 +29,6 @@ MLB_TEAM_CODE_DICT = {'LAA': 'ana',
                       'LAD': 'lan',
                       'DET': 'det',
                       'TOR': 'tor',
-                      'MON': 'mon',
                       'HOU': 'hou',
                       'OAK': 'oak',
                       'MIA': 'mia',
@@ -46,7 +45,6 @@ MLB_TEAM_CODE_DICT = {'LAA': 'ana',
                       'PHI': 'phi',
                       'WSH': 'was',
                       'PIT': 'pit',
-                      'AAS': 'aas',
                       'STL': 'sln',
                       'SD': 'sdn',
                       'ARI': 'ari',
@@ -59,7 +57,6 @@ MLB_REVERSE_TEAM_CODE_DICT = {'ana': 'LAA',
                               'sea': 'SEA',
                               'bal': 'BAL',
                               'cle': 'CLE',
-                              'aas': 'AAS',
                               'cin': 'CIN',
                               'nyn': 'NYM',
                               'col': 'COL',
@@ -69,7 +66,6 @@ MLB_REVERSE_TEAM_CODE_DICT = {'ana': 'LAA',
                               'hou': 'HOU',
                               'oak': 'OAK',
                               'mia': 'MIA',
-                              'mon': 'MON',
                               'flo': 'FLO',
                               'cal': 'CAL',
                               'atl': 'ATL',
@@ -104,13 +100,6 @@ POSITION_ABBREV_DICT = {'P': 1,
                         'PH': 'PH',
                         'PR': 'PR',
                         'EH': 'EH'}
-
-def get_team_abbreviation(mlb_code):
-    for this_mlb_code, abbreviation in MLB_REVERSE_TEAM_CODE_DICT.items():
-        if mlb_code == this_mlb_code:
-            return abbreviation
-
-    raise ValueError('Invalid mlb code')
 
 def get_datetime(tfs_zulu_str):
     if tfs_zulu_str:
@@ -852,9 +841,17 @@ def process_team_xml(game_obj, team_xml):
 
 def initialize_game_object(boxscore_xml):
     game_venue = boxscore_xml.get('venue_name')
-    home_code = get_team_abbreviation(boxscore_xml.get('home_team_code'))
+    home_code = MLB_REVERSE_TEAM_CODE_DICT.get(
+        boxscore_xml.get('home_team_code'),
+        boxscore_xml.get('home_team_code').upper()
+    )
+
     home_name = boxscore_xml.get('home_fname')
-    away_code = get_team_abbreviation(boxscore_xml.get('away_team_code'))
+    away_code = MLB_REVERSE_TEAM_CODE_DICT.get(
+        boxscore_xml.get('away_team_code'),
+        boxscore_xml.get('away_team_code').upper()
+    )
+
     away_name = boxscore_xml.get('away_fname')
     game_id = boxscore_xml.get('game_id')
     game_number = int(game_id[-1])

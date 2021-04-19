@@ -361,26 +361,28 @@ def get_generated_html_id_list(game_id_list, today_date_str, output_dir,
         home_mlb_code = game_id.split('_')[-2][:3]
         game_num_str = game_id.split('_')[-1]
 
-        if (away_mlb_code in MLB_REVERSE_TEAM_CODE_DICT and
-                home_mlb_code in MLB_REVERSE_TEAM_CODE_DICT):
-            away_code = MLB_REVERSE_TEAM_CODE_DICT[away_mlb_code]
-            home_code = MLB_REVERSE_TEAM_CODE_DICT[home_mlb_code]
-            game_id, game = get_game_from_url(today_date_str,
-                                              away_code,
-                                              home_code,
-                                              game_num_str)
+        away_code = MLB_REVERSE_TEAM_CODE_DICT.get(away_mlb_code,
+                                                   away_mlb_code.upper())
 
-            if game:
-                write_game_svg_and_html(game_id, game, output_path,
-                                        write_game_html)
+        home_code = MLB_REVERSE_TEAM_CODE_DICT.get(home_mlb_code,
+                                                   home_mlb_code.upper())
 
-                game_html_id_tuple_list.append(
-                    ('{}-{}-{}-{}'.format(today_date_str,
+        game_id, game = get_game_from_url(today_date_str,
                                           away_code,
                                           home_code,
-                                          game_num_str),
-                     game)
-                )
+                                          game_num_str)
+
+        if game:
+            write_game_svg_and_html(game_id, game, output_path,
+                                    write_game_html)
+
+            game_html_id_tuple_list.append(
+                ('{}-{}-{}-{}'.format(today_date_str,
+                                      away_code,
+                                      home_code,
+                                      game_num_str),
+                 game)
+            )
         else:
             raise ValueError(
                 '{} or {} not in MLB team code dict'.format(away_mlb_code,
@@ -849,8 +851,12 @@ def get_filename_list(start_date_str, end_date_str, input_dir):
                         away_code = away_code[:-3]
                         home_code = home_code[:-3]
                         away_team, home_team = None, None
-                        away_team = MLB_REVERSE_TEAM_CODE_DICT[away_code]
-                        home_team = MLB_REVERSE_TEAM_CODE_DICT[home_code]
+                        away_team = MLB_REVERSE_TEAM_CODE_DICT.get(
+                            away_code, away_code.upper()
+                        )
+                        home_team = MLB_REVERSE_TEAM_CODE_DICT.get(
+                            home_code, home_code.upper()
+                        )
                         if away_team and home_team:
                             output_name = '-'.join([year, month, day, away_team,
                                                     home_team, game_num])
@@ -963,8 +969,8 @@ def get_game_xml_from_url(date_str, away_code, home_code, game_number):
         year=date.year,
         month=str(date.month).zfill(2),
         day=str(date.day).zfill(2),
-        away_mlb_code=MLB_TEAM_CODE_DICT[away_code],
-        home_mlb_code=MLB_TEAM_CODE_DICT[home_code],
+        away_mlb_code=MLB_TEAM_CODE_DICT.get(away_code, away_code.lower()),
+        home_mlb_code=MLB_TEAM_CODE_DICT.get(home_code, home_code.lower()),
         game_number=game_number
     )
 

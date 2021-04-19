@@ -130,7 +130,7 @@ BATTER_STATS_SPACES_MED = 6
 BATTER_STATS_SPACES_SMALL = 10
 BATTER_INITIAL_Y_POS = 25
 BIG_TITLE_SIZE = 55
-SMALL_TITLE_SIZE = 50
+SMALL_TITLE_SIZE = 45
 SUMMARY_SIZE_LARGE = 43
 SUMMARY_SIZE_SMALL = 30
 RED_COLOR = '#c10000'
@@ -2139,7 +2139,7 @@ def get_logo(game):
     signature_svg = ''
     x_pos = game_width - BOX_WIDTH
     y_pos = 8 * BOX_HEIGHT + BOX_HEIGHT // 2
-    away_logo_str = LOGO_DICT[game.away_team.abbreviation]
+    away_logo_str = LOGO_DICT.get(game.away_team.abbreviation, DEFAULT_LOGO)
     signature_svg += AWAY_LOGO.format(x_pos=x_pos,
                                       y_pos=y_pos,
                                       logo=away_logo_str)
