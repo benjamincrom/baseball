@@ -712,6 +712,9 @@ class PlateAppearance:
             defense_predicate_list = description_str.split(' to ')
         elif  ' to ' in description_str:
             defense_predicate_list = description_str.split(' to ')[1:]
+        elif ', ' in description_str and ' to ' not in description_str:
+            description_str = description_str.split(', ')[1]
+            defense_predicate_list = [description_str]
         else:
             defense_predicate_list = []
 
