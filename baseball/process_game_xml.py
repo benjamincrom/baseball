@@ -675,6 +675,7 @@ def create_player(player_xml):
     if (player_xml.get('num') and
             player_xml.get('num') != '--' and
             player_xml.get('num') != '-' and
+            player_xml.get('num') != ' ' and
             player_xml.get('num') != '?' and
             player_xml.get('num') != 'null'):
         player_num = int(player_xml.get('num'))
@@ -783,7 +784,9 @@ def process_team_xml(game_obj, team_xml):
 
                     if (player_xml.get('num') and
                             player_xml.get('num') != '--' and
+                            player_xml.get('num') != '-' and
                             player_xml.get('num') != 'null' and
+                            player_xml.get('num') != '?' and
                             player_xml.get('num') != ' '):
                         this_player.number = int(player_xml.get('num'))
                     else:
