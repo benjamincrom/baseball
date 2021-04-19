@@ -342,6 +342,16 @@ class Team:
         self.player_name_dict[''.join(player.full_name().split())] = player
         self.player_last_name_dict[player.first_name[0] + last_name] = player
 
+        if '-' in last_name:
+            last_half_name = last_name.split('-')[1]
+            self.player_name_dict[
+                '{}{}'.format(player.first_name, last_half_name)
+            ] = player
+
+            self.player_last_name_dict[
+                player.first_name[0] + last_half_name
+            ] = player
+
     def __contains__(self, player_key):
         return bool(self.find_player(player_key))
 
