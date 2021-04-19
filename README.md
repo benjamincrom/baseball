@@ -26,7 +26,7 @@
     - [Analyze a lineup of pitchers: Atlanta Braves - 2017 Regular Season](#analyze-a-lineup-of-pitchers-atlanta-braves---2017-regular-season)
 
 # Baseball
-This package fetches and parses event data for Major League Baseball games.  [Game](#game) objects generated via the **\_from\_url** methods pull data from MLB endpoints where events are published within about 30 seconds of occurring.  This [XML source data zip file](https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_files_2008-2017.zip) contains event data from MLB games 2008-2017.
+This package fetches and parses event data for Major League Baseball games.  [Game](#game) objects generated via the **\_from\_url** methods pull data from MLB endpoints where events are published within about 30 seconds of occurring.  This [XML/JSON source data zip file](https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_1974_2021.zip) contains event data from MLB games 1974 - 2020.
 
 ## Installing from pypi
 ```
