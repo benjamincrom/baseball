@@ -415,6 +415,9 @@ def generate_game_svgs_for_old_datetime(this_datetime, output_dir,
 def get_object_html_str(game_html_id_tuple_list):
     object_html_str = ''
     for i, (game_html_id, game) in enumerate(game_html_id_tuple_list):
+        if not game:
+            continue
+
         if i < (len(game_html_id_tuple_list) - 1):
             look_ahead_id, _ = game_html_id_tuple_list[i+1]
             if look_ahead_id[:-1] == game_html_id[:-1]:
@@ -765,7 +768,13 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
     for tup in filename_output_path_tuple_list:
         filename_tuple, _ = tup
         game_id = filename_tuple[0]
-        year_str, month_str, day_str, _, _, _  = game_id.split('-')
+        year_str, month_str, day_str, _, _, _ = game_id.split('-')
+
+        if not (this_year and this_month and this_day):
+            this_year = year_str
+            this_month = month_str
+            this_day = day_str
+
         if not (year_str == this_year and month_str == this_month and
                 day_str == this_day):
             this_datetime = parse(
@@ -776,9 +785,9 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
             write_game_index(object_html_str, this_datetime, output_dir,
                              write_date_html, False)
 
-            year_str = this_year
-            month_str = this_month
-            day_str = this_day
+            this_year = year_str
+            this_month = month_str
+            this_day = day_str
             game_html_id_tuple_list = []
 
         write_game_svg_html_from_filename_tuple(tup, write_game_html)
