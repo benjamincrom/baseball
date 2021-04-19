@@ -22,7 +22,16 @@ POSITION_CODE_DICT = {'pitcher': 1,
                       'left': 7,
                       'center': 8,
                       'right': 9,
-                      'designated': 10}
+                      'designated': 10,
+                      '1B': 3,
+                      '2B': 4,
+                      '3B': 5,
+                      'SS': 6,
+                      'P': 1,
+                      'C': 2,
+                      'LF': 7,
+                      'CF': 8,
+                      'RF': 9}
 
 ON_BASE_SUMMARY_DICT = {'Single': '1B',
                         'Double': '2B',
