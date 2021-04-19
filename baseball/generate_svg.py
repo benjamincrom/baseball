@@ -98,7 +98,7 @@ RUNNER_SUMMARY_Y_OFFSET = 20
 PITCHER_Y = 150
 PITCHER_X = 166
 CATCHER_Y = 180
-BASE_SVG_FONT_SMALL = 14
+BASE_SVG_FONT_SMALL = 11
 BASE_SVG_FONT_BIG = 22
 FIRST_BASE_Y = 115
 FIRST_BASE_X = 220
@@ -130,6 +130,8 @@ BATTER_STATS_SPACES_SMALL = 10
 BATTER_INITIAL_Y_POS = 25
 BIG_TITLE_SIZE = 55
 SMALL_TITLE_SIZE = 50
+SUMMARY_SIZE_LARGE = 43
+SUMMARY_SIZE_SMALL = 30
 RED_COLOR = '#c10000'
 BLUE_COLOR = 'blue'
 DARK_GREEN_COLOR = 'darkgreen'
@@ -672,7 +674,7 @@ SVG_OUT_TEMPLATE = (
 )
 
 SVG_FIELDING_TEMPLATE = (
-    '<text x="165" y="68" font-family="Arial" font-size="43" '
+    '<text x="165" y="68" font-family="Arial" font-size="{size}" '
     'text-anchor="middle">{summary}'
     '<title id="title">{title}</title>'
     '</text>'
@@ -780,15 +782,27 @@ def get_summary_svg(plate_appearance):
                 title=plate_appearance.plate_appearance_description
             )
         else:
+            if len(plate_appearance.scorecard_summary) < 9:
+                size = SUMMARY_SIZE_LARGE
+            else:
+                size = SUMMARY_SIZE_SMALL
+
             return_str = SVG_FIELDING_TEMPLATE.format(
                 summary=plate_appearance.scorecard_summary.replace('ꓘ', 'K'),
-                title=plate_appearance.plate_appearance_description
+                title=plate_appearance.plate_appearance_description,
+                size=size
             )
 
     if plate_appearance.got_on_base and plate_appearance.error_str:
+        if len(plate_appearance.scorecard_summary) < 9:
+            size = SUMMARY_SIZE_LARGE
+        else:
+            size = SUMMARY_SIZE_SMALL
+
         return_str += SVG_FIELDING_TEMPLATE.format(
             summary=plate_appearance.error_str,
-            title=plate_appearance.plate_appearance_description
+            title=plate_appearance.plate_appearance_description,
+            size=size
         )
 
     return return_str
