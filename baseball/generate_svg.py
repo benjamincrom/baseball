@@ -1207,7 +1207,7 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
         else:
             raise ValueError('Invalid Base')
     else:
-        raise ValueError('No Final Base')
+        base_svg = ''
 
     return base_svg
 
