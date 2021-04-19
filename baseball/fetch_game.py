@@ -12,7 +12,8 @@ from pytz import timezone
 from requests import get
 
 import baseball.process_game_json
-from baseball.process_game_xml import MLB_TEAM_CODE_DICT
+from baseball.process_game_xml import (MLB_TEAM_CODE_DICT,
+                                       MLB_REVERSE_TEAM_CODE_DICT)
 
 EASTERN_TIMEZONE_STR = 'America/New_York'
 NUM_PROCESS_SUBLISTS = 3
@@ -360,13 +361,10 @@ def get_generated_html_id_list(game_id_list, today_date_str, output_dir,
         home_mlb_code = game_id.split('_')[-2][:3]
         game_num_str = game_id.split('_')[-1]
 
-        if (away_mlb_code in MLB_TEAM_CODE_DICT.values() and
-                home_mlb_code in MLB_TEAM_CODE_DICT.values()):
-            away_code = [key for key, val in MLB_TEAM_CODE_DICT.items()
-                         if val == away_mlb_code][0]
-            home_code = [key for key, val in MLB_TEAM_CODE_DICT.items()
-                         if val == home_mlb_code][0]
-
+        if (away_mlb_code in MLB_REVERSE_TEAM_CODE_DICT and
+                home_mlb_code in MLB_REVERSE_TEAM_CODE_DICT):
+            away_code = MLB_REVERSE_TEAM_CODE_DICT[away_mlb_code]
+            home_code = MLB_REVERSE_TEAM_CODE_DICT[home_mlb_code]
             game_id, game = get_game_from_url(today_date_str,
                                               away_code,
                                               home_code,
@@ -383,6 +381,11 @@ def get_generated_html_id_list(game_id_list, today_date_str, output_dir,
                                           game_num_str),
                      game)
                 )
+        else:
+            raise ValueError(
+                '{} or {} not in MLB team code dict'.format(away_mlb_code,
+                                                            home_mlb_code)
+            )
 
     return game_html_id_tuple_list
 
@@ -846,13 +849,8 @@ def get_filename_list(start_date_str, end_date_str, input_dir):
                         away_code = away_code[:-3]
                         home_code = home_code[:-3]
                         away_team, home_team = None, None
-                        for key, value in MLB_TEAM_CODE_DICT.items():
-                            if value == away_code:
-                                away_team = key
-
-                            if value == home_code:
-                                home_team = key
-
+                        away_team = MLB_REVERSE_TEAM_CODE_DICT[away_code]
+                        home_team = MLB_REVERSE_TEAM_CODE_DICT[home_code]
                         if away_team and home_team:
                             output_name = '-'.join([year, month, day, away_team,
                                                     home_team, game_num])
@@ -1016,16 +1014,6 @@ def get_game_from_url_old(date_str, away_code, home_code, game_number):
                                                      away_code,
                                                      home_code,
                                                      game_number))
-
-        prefix = '/var/log/baseball/no-data-{}-'.format(
-            '-'.join(str(datetime.now()).split())
-        )
-        with open(prefix + 'boxscore.xml', 'w') as fh:
-            fh.write(boxscore_raw_xml)
-        with open(prefix + 'players.xml', 'w') as fh:
-            fh.write(players_raw_xml)
-        with open(prefix + 'inning_all.xml', 'w') as fh:
-            fh.write(inning_raw_xml)
 
     return game_id, this_game
 

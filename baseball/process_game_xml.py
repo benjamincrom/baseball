@@ -33,8 +33,10 @@ MLB_TEAM_CODE_DICT = {'LAA': 'ana',
                       'OAK': 'oak',
                       'MIA': 'mia',
                       'FLO': 'flo',
+                      'CAL': 'cal',
                       'ATL': 'atl',
                       'MIL': 'mil',
+                      'ML4': 'ml4',
                       'CHC': 'chn',
                       'MIN': 'min',
                       'KC': 'kca',
@@ -51,6 +53,40 @@ MLB_TEAM_CODE_DICT = {'LAA': 'ana',
                       'TB': 'tba',
                       'BOS': 'bos'}
 
+MLB_REVERSE_TEAM_CODE_DICT = {'ana': 'LAA',
+                              'sea': 'SEA',
+                              'bal': 'BAL',
+                              'cle': 'CLE',
+                              'cin': 'CIN',
+                              'nyn': 'NYM',
+                              'col': 'COL',
+                              'lan': 'LAD',
+                              'det': 'DET',
+                              'tor': 'TOR',
+                              'hou': 'HOU',
+                              'oak': 'OAK',
+                              'mia': 'MIA',
+                              'flo': 'FLO',
+                              'cal': 'CAL',
+                              'atl': 'ATL',
+                              'mil': 'MIL',
+                              'ml4': 'ML4',
+                              'chn': 'CHC',
+                              'min': 'MIN',
+                              'kca': 'KC',
+                              'nya': 'NYY',
+                              'tex': 'TEX',
+                              'phi': 'PHI',
+                              'was': 'WSH',
+                              'pit': 'PIT',
+                              'sln': 'STL',
+                              'sdn': 'SD',
+                              'ari': 'ARI',
+                              'sfn': 'SF',
+                              'cha': 'CHW',
+                              'tba': 'TB',
+                              'bos': 'BOS'}
+
 POSITION_ABBREV_DICT = {'P': 1,
                         'C': 2,
                         '1B': 3,
@@ -66,7 +102,7 @@ POSITION_ABBREV_DICT = {'P': 1,
                         'EH': 'EH'}
 
 def get_team_abbreviation(mlb_code):
-    for abbreviation, this_mlb_code in MLB_TEAM_CODE_DICT.items():
+    for this_mlb_code, abbreviation in MLB_REVERSE_TEAM_CODE_DICT.items():
         if mlb_code == this_mlb_code:
             return abbreviation
 

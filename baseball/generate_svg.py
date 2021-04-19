@@ -22,6 +22,7 @@ LOGO_DICT = {
     'TOR': 'team_logos/blue-jays.gif',
     'ATL': 'team_logos/braves.gif',
     'MIL': 'team_logos/brewers.gif',
+    'ML4': 'team_logos/brewers.gif',
     'STL': 'team_logos/cardinals.gif',
     'CHC': 'team_logos/cubs.gif',
     'ARI': 'team_logos/diamondbacks.gif',
