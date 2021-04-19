@@ -429,11 +429,15 @@ def initialize_game(this_game, attendance_str, temperature_str, weather_str,
         this_game['gameData']
     )
 
-    location = '{}, {}, {}'.format(
+    location = '{}, {}'.format(
         this_game['gameData']['venue']['name'],
-        this_game['gameData']['venue']['location']['city'],
-        this_game['gameData']['venue']['location']['stateAbbrev']
+        this_game['gameData']['venue']['location']['city']
     )
+
+    if this_game['gameData']['venue']['location'].get('stateAbbrev'):
+        location += ', {}'.format(
+            this_game['gameData']['venue']['location'].get('stateAbbrev')
+        )
 
     start_date = None
     end_date = None
