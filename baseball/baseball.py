@@ -62,7 +62,8 @@ PLAY_CODE_ORDERED_DICT = OrderedDict([
 
 NO_HIT_CODE_LIST = ['K', 'ꓘ', 'BB', 'IBB']
 
-BASE_PLUS_ONE_DICT = {'1B': '2nd',
+BASE_PLUS_ONE_DICT = {'': '1st',
+                      '1B': '2nd',
                       '2B': '3rd',
                       '3B': 'home'}
 
@@ -672,11 +673,6 @@ class PlateAppearance:
                 defense_code_order.append(
                     str(POSITION_CODE_DICT[defense_position])
                 )
-            else:
-                if defense_position.strip(' .') not in ['1st', '2nd', '3rd']:
-                    raise ValueError(
-                        '{} not in position code dict'.format(defense_position)
-                    )
 
         return defense_code_order
 

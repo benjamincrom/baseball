@@ -675,6 +675,7 @@ def create_player(player_xml):
     if (player_xml.get('num') and
             player_xml.get('num') != '--' and
             player_xml.get('num') != '-' and
+            player_xml.get('num') != '?' and
             player_xml.get('num') != 'null'):
         player_num = int(player_xml.get('num'))
     else:
