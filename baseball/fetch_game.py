@@ -763,37 +763,31 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
                                                 input_dir)
     ]
 
-    game_html_id_tuple_list = []
-    this_year = this_month = this_day = None
-    for tup in filename_output_path_tuple_list:
-        filename_tuple, _ = tup
-        game_id = filename_tuple[0]
-        year_str, month_str, day_str, _, _, _ = game_id.split('-')
+    start_datetime = parse(start_date_str)
+    end_datetime = parse(end_date_str)
+    day_interval = timedelta(days=1)
+    this_datetime = start_datetime
+    while this_datetime <= end_datetime:
+        game_html_id_tuple_list = []
+        for tup in filename_output_path_tuple_list:
+            filename_tuple, _ = tup
+            game_id = filename_tuple[0]
+            year_str, month_str, day_str, _, _, _ = game_id.split('-')
 
-        if not (this_year and this_month and this_day):
-            this_year = year_str
-            this_month = month_str
-            this_day = day_str
+            if (int(year_str) == this_datetime.year and
+                    int(month_str) == this_datetime.month and
+                    int(day_str) == this_datetime.day):
+                write_game_svg_html_from_filename_tuple(tup, write_game_html)
+                game_html_id_tuple_list.append(
+                    get_game_from_filename_tuple(filename_tuple)
+                )
 
-        if not (year_str == this_year and month_str == this_month and
-                day_str == this_day):
-            this_datetime = parse(
-                '{}-{}-{}'.format(this_year, this_month, this_day)
-            )
+        object_html_str = get_object_html_str(game_html_id_tuple_list)
+        write_game_index(object_html_str, this_datetime, output_dir,
+                         write_date_html, False)
 
-            object_html_str = get_object_html_str(game_html_id_tuple_list)
-            write_game_index(object_html_str, this_datetime, output_dir,
-                             write_date_html, False)
-
-            this_year = year_str
-            this_month = month_str
-            this_day = day_str
-            game_html_id_tuple_list = []
-
-        write_game_svg_html_from_filename_tuple(tup, write_game_html)
-        game_html_id_tuple_list.append(
-            get_game_from_filename_tuple(filename_tuple)
-        )
+        game_html_id_tuple_list = []
+        this_datetime += day_interval
 
 def get_filename_list(start_date_str, end_date_str, input_dir):
     filename_list = []
