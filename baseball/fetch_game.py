@@ -598,7 +598,7 @@ def game_set_doubleheader(i, game_dict, game_dict_list, game, this_datetime):
     if look_behind_id[:-2] == this_id[:-2] and look_behind_id != this_id:
         game.is_doubleheader = True
 
-    now_date = this_datetime.astimezone(timezone('America/New_York')).date()
+    now_date = this_datetime.date()
     est_date = (game.start_datetime if game.start_datetime
                 else game.expected_start_datetime).astimezone(
                     timezone(game.timezone_str)
@@ -689,7 +689,8 @@ def get_game_from_date(this_datetime, this_away_code, this_home_code,
         if ((away_code and home_code) and (away_code == this_away_code) and
                 (home_code == this_home_code) and game_number_is_match):
             game = baseball.process_game_json.get_game_obj(game_dict)
-            game_set_doubleheader(i, game_dict, game_dict_list, game)
+            game_set_doubleheader(i, game_dict, game_dict_list, game,
+                                  this_datetime)
 
     return game
 
