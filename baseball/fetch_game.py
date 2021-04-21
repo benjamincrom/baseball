@@ -373,6 +373,7 @@ def get_generated_html_id_list(game_id_list, today_date_str, output_dir,
                                           game_num_str)
 
         if game:
+
             write_game_svg_and_html(game_id, game, output_path,
                                     write_game_html)
 
@@ -479,7 +480,7 @@ def get_object_html_str(game_html_id_tuple_list):
             subtitle_flag = False
             if ((not (est_time.hour == 23 and est_time.minute == 33)) and
                     (not (est_time.hour == 0 and est_time.minute == 0)) and
-                    (not game.is_suspended) and (not game.is_postponed)):
+                    (not (game.is_suspended and not game.is_today))):
                 title_str += '{}'.format(
                     start_datetime.strftime('%-I:%M %p %Z')
                 )
@@ -569,11 +570,9 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
                 if len(game.game_date_str.split('-')) == 6:
                     game_html_id_tuple_list.append((game.game_date_str, game))
 
-            if game.expected_start_datetime.astimezone(
-                    timezone(game.timezone_str)).day != day:
-                game.is_postponed = True
+            game_set_doubleheader(i, game_dict, game_dict_list, game,
+                                  this_datetime)
 
-            game_set_doubleheader(i, game_dict, game_dict_list, game)
             write_game_svg_and_html(game.game_date_str, game, output_dir,
                                     write_game_html)
         except:
@@ -589,7 +588,7 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
     write_game_index(object_html_str, this_datetime, output_dir,
                      write_date_html, write_index_html)
 
-def game_set_doubleheader(i, game_dict, game_dict_list, game):
+def game_set_doubleheader(i, game_dict, game_dict_list, game, this_datetime):
     this_id = game_dict['gameData']['game']['id'].split('/')[-1]
     if i < (len(game_dict_list) - 1):
         next_id = game_dict_list[i+1]['gameData']['game']['id'].split('/')[-1]
@@ -599,6 +598,17 @@ def game_set_doubleheader(i, game_dict, game_dict_list, game):
     look_behind_id = game_dict_list[i-1]['gameData']['game']['id'].split('/')[-1]
     if look_behind_id[:-2] == this_id[:-2] and look_behind_id != this_id:
         game.is_doubleheader = True
+
+    now_date = this_datetime.astimezone(timezone('America/New_York')).date()
+    est_date = (game.start_datetime if game.start_datetime
+                else game.expected_start_datetime).astimezone(
+                    timezone(game.timezone_str)
+                ).date()
+
+    if est_date != now_date:
+        game.is_today = False
+        if est_date > now_date:
+            game.is_postponed = True
 
 def write_game_index(object_html_str, this_datetime, output_dir,
                      write_date_html, write_index_html):

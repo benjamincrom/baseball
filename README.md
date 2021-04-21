@@ -116,6 +116,7 @@ game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017
 - is_postponed
 - is_suspended
 - is_doubleheader
+- is_today
 - get_svg_str()
 - json()
 - \_asdict()
