@@ -478,7 +478,8 @@ def get_object_html_str(game_html_id_tuple_list):
 
             subtitle_flag = False
             if ((not (est_time.hour == 23 and est_time.minute == 33)) and
-                    (not (est_time.hour == 0 and est_time.minute == 0))):
+                    (not (est_time.hour == 0 and est_time.minute == 0)) and
+                    (not game.is_suspended) and (not game.is_postponed)):
                 title_str += '{}'.format(
                     start_datetime.strftime('%-I:%M %p %Z')
                 )
@@ -498,8 +499,7 @@ def get_object_html_str(game_html_id_tuple_list):
 
                 title_str += 'Suspended'
                 subtitle_flag = True
-
-            if game.is_postponed:
+            elif game.is_postponed:
                 if subtitle_flag:
                     title_str += ' - '
 
@@ -590,13 +590,13 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
                      write_date_html, write_index_html)
 
 def game_set_doubleheader(i, game_dict, game_dict_list, game):
-    this_id = game_dict['gameData']['game']['id'].split('/')[1]
+    this_id = game_dict['gameData']['game']['id'].split('/')[-1]
     if i < (len(game_dict_list) - 1):
-        next_id = game_dict_list[i+1]['gameData']['game']['id'].split('/')[1]
+        next_id = game_dict_list[i+1]['gameData']['game']['id'].split('/')[-1]
         if next_id[:-2] == this_id[:-2] and next_id != this_id:
             game.is_doubleheader = True
 
-    look_behind_id = game_dict_list[i-1]['gameData']['game']['id'].split('/')[1]
+    look_behind_id = game_dict_list[i-1]['gameData']['game']['id'].split('/')[-1]
     if look_behind_id[:-2] == this_id[:-2] and look_behind_id != this_id:
         game.is_doubleheader = True
 
