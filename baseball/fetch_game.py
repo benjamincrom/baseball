@@ -458,7 +458,7 @@ def get_object_html_str(game_html_id_tuple_list):
     list_index = 0
     for i, (game_html_id, game) in enumerate(game_html_id_tuple_list):
         look_behind_id, _ = game_html_id_tuple_list[i-1]
-        if (not game) or (look_behind_id == game_html_id):
+        if (not game) or (not game.is_today) or (look_behind_id == game_html_id):
             continue
 
         start_datetime = (
@@ -572,9 +572,8 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
             game_set_doubleheader(i, game_dict, game_dict_list, game,
                                   this_datetime)
 
-            if game.is_today:
-                write_game_svg_and_html(game.game_date_str, game, output_dir,
-                                        write_game_html)
+            write_game_svg_and_html(game.game_date_str, game, output_dir,
+                                    write_game_html)
         except:
             exc_type, exc_value, exc_traceback = exc_info()
             lines = format_exception(exc_type, exc_value, exc_traceback)
