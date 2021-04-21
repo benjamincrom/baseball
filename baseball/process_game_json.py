@@ -528,4 +528,10 @@ def get_game_obj(game_dict):
     else:
         game.is_postponed = False
 
+    if ('Suspended' in game_dict.get('gameData', {}).get('status', {}).get(
+            'detailedState', {})):
+        game.is_suspended = True
+    else:
+        game.is_suspended = False
+
     return game

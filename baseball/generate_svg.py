@@ -2275,8 +2275,12 @@ def assemble_game_title_svg(game):
 
         if game.is_doubleheader:
             game_datetime += ', Game {}'.format(game.game_date_str[-1])
-        elif game.is_postponed:
+
+        if game.is_postponed:
             game_datetime += ', Postponed'
+
+        if game.is_suspended:
+            game_datetime += ', Suspended'
     else:
         game_datetime = ''
 

@@ -455,18 +455,11 @@ def generate_game_svgs_for_old_datetime(this_datetime, output_dir,
 
 def get_object_html_str(game_html_id_tuple_list):
     object_html_str = ''
+    list_index = 0
     for i, (game_html_id, game) in enumerate(game_html_id_tuple_list):
-        if not game:
-            continue
-
-        if i < (len(game_html_id_tuple_list) - 1):
-            look_ahead_id, _ = game_html_id_tuple_list[i+1]
-            if look_ahead_id[:-1] == game_html_id[:-1]:
-                game.is_doubleheader = True
-
         look_behind_id, _ = game_html_id_tuple_list[i-1]
-        if look_behind_id[:-1] == game_html_id[:-1]:
-            game.is_doubleheader = True
+        if (not game) or (look_behind_id == game_html_id):
+            continue
 
         start_datetime = (
             game.start_datetime if game.start_datetime
@@ -498,14 +491,21 @@ def get_object_html_str(game_html_id_tuple_list):
 
                 title_str += 'Game {}'.format(game.game_date_str[-1])
                 subtitle_flag = True
-            elif game.is_postponed:
+
+            if game.is_suspended:
+                if subtitle_flag:
+                    title_str += ' - '
+
+                title_str += 'Suspended'
+                subtitle_flag = True
+
+            if game.is_postponed:
                 if subtitle_flag:
                     title_str += ' - '
 
                 title_str += 'Postponed'
                 subtitle_flag = True
-
-        if i % 2 == 0:
+        if list_index % 2 == 0:
             object_html_str += '<tr>'
 
         object_html_str += OBJECT_ENTRY_TEMPLATE.format(
@@ -513,8 +513,10 @@ def get_object_html_str(game_html_id_tuple_list):
             game_id_str=game_html_id
         )
 
-        if i % 2 == 1:
+        if list_index % 2 == 1:
             object_html_str += '</tr>'
+
+        list_index += 1
 
     return object_html_str
 
@@ -588,13 +590,14 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
                      write_date_html, write_index_html)
 
 def game_set_doubleheader(i, game_dict, game_dict_list, game):
+    this_id = game_dict['gameData']['game']['id'].split('/')[1]
     if i < (len(game_dict_list) - 1):
-        look_ahead_id = game_dict_list[i+1]['gameData']['game']['id']
-        if look_ahead_id[:-2] == game_dict['gameData']['game']['id'][:-2]:
+        next_id = game_dict_list[i+1]['gameData']['game']['id'].split('/')[1]
+        if next_id[:-2] == this_id[:-2] and next_id != this_id:
             game.is_doubleheader = True
 
-    look_behind_id = game_dict_list[i-1]['gameData']['game']['id']
-    if look_behind_id[:-2] == game_dict['gameData']['game']['id'][:-2]:
+    look_behind_id = game_dict_list[i-1]['gameData']['game']['id'].split('/')[1]
+    if look_behind_id[:-2] == this_id[:-2] and look_behind_id != this_id:
         game.is_doubleheader = True
 
 def write_game_index(object_html_str, this_datetime, output_dir,
