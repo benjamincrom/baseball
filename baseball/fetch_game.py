@@ -373,7 +373,6 @@ def get_generated_html_id_list(game_id_list, today_date_str, output_dir,
                                           game_num_str)
 
         if game:
-
             write_game_svg_and_html(game_id, game, output_path,
                                     write_game_html)
 
