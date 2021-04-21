@@ -572,8 +572,9 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
             game_set_doubleheader(i, game_dict, game_dict_list, game,
                                   this_datetime)
 
-            write_game_svg_and_html(game.game_date_str, game, output_dir,
-                                    write_game_html)
+            if game.is_today:
+                write_game_svg_and_html(game.game_date_str, game, output_dir,
+                                        write_game_html)
         except:
             exc_type, exc_value, exc_traceback = exc_info()
             lines = format_exception(exc_type, exc_value, exc_traceback)
