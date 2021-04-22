@@ -17,6 +17,7 @@ EASTERN_TIMEZONE_STR = 'America/New_York'
 DEFAULT_LOGO = 'baseball-fairy-161.png'
 LOGO_DICT = {
     'LAA': 'team_logos/angels.gif',
+    'CAL': 'team_logos/angels.gif',
     'HOU': 'team_logos/astros.gif',
     'OAK': 'team_logos/athletics.gif',
     'TOR': 'team_logos/blue-jays.gif',
@@ -29,9 +30,11 @@ LOGO_DICT = {
     'LAD': 'team_logos/dodgers.gif',
     'SF': 'team_logos/giants.gif',
     'CLE': 'team_logos/indians.gif',
+    'NAS': 'team_logos/nl.svg',
+    'AAS': 'team_logos/al.svg',
     'SEA': 'team_logos/mariners.gif',
     'MIA': 'team_logos/marlins.gif',
-    'FLO': 'team_logos/marlins.gif',
+    'FLO': 'team_logos/florida.svg',
     'NYM': 'team_logos/mets.gif',
     'WSH': 'team_logos/nationals.gif',
     'BAL': 'team_logos/orioles.gif',
@@ -46,6 +49,7 @@ LOGO_DICT = {
     'KC': 'team_logos/royals.gif',
     'DET': 'team_logos/tigers.gif',
     'MIN': 'team_logos/twins.gif',
+    'MON': 'team_logos/expos.svg',
     'CWS': 'team_logos/white-sox.gif',
     'CHW': 'team_logos/white-sox.gif',
     'NYY': 'team_logos/yankees.gif'

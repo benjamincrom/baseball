@@ -460,7 +460,11 @@ def get_object_html_str(game_html_id_tuple_list):
     object_html_str = ''
     list_index = 0
     for i, (game_html_id, game) in enumerate(game_html_id_tuple_list):
-        look_behind_id, _ = game_html_id_tuple_list[i-1]
+        if i > 0:
+            look_behind_id, _ = game_html_id_tuple_list[i-1]
+        else:
+            look_behind_id = None
+
         if (not game) or (not game.is_today) or (look_behind_id == game_html_id):
             continue
 
