@@ -719,12 +719,18 @@ def write_game_svg_and_html(game_id, game, output_path, write_html=False):
     output_svg_path = join(output_path, svg_filename)
     output_html_path = join(output_path, html_filename)
 
-    with open(output_svg_path, 'w') as filehandle:
-        filehandle.write(svg_text)
+    old_svg_text = ''
+    if exists(output_svg_path):
+        with open(output_svg_path, 'r') as filehandle:
+            old_svg_text = filehandle.read()
 
-    if write_html:
-        with open(output_html_path, 'w') as filehandle:
-            filehandle.write(html_text)
+    if old_svg_text != svg_text:
+        with open(output_svg_path, 'w') as filehandle:
+            filehandle.write(svg_text)
+
+        if write_html:
+            with open(output_html_path, 'w') as filehandle:
+                filehandle.write(html_text)
 
 def get_game_from_files_new(live_json_file):
     this_game = None
