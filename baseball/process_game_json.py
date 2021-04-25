@@ -353,11 +353,7 @@ def set_player_list(team_dict, gamedata_dict, team):
         team.append(new_player)
 
 def initialize_team(team_gamedata_dict, team_livedata_dict, full_gamedata_dict):
-    team = Team(
-        team_gamedata_dict['name'],
-        team_gamedata_dict['abbreviation']
-    )
-
+    team = Team(team_gamedata_dict['name'], team_gamedata_dict['abbreviation'])
     set_player_list(team_livedata_dict, full_gamedata_dict, team)
     if team_livedata_dict.get('pitchers'):
         team.pitcher_list = [
