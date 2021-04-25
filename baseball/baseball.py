@@ -919,7 +919,9 @@ class PlateAppearance:
                 fielders_choice = False
                 for event in self.event_list:
                     if (isinstance(event, RunnerAdvance) and
-                            event.runner == self.batter and event.end_base):
+                            event.runner == self.batter and
+                            event.end_base and
+                            not 'Error' in self.plate_appearance_summary):
                         fielders_choice = True
 
                 if fielders_choice:
