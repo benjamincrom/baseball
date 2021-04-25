@@ -916,8 +916,17 @@ class PlateAppearance:
             if self.get_play_str() == 'CI':
                 scorecard_summary = self.get_play_str() + suffix_str
             else:
-                scorecard_summary = (self.get_play_str() + throws_str +
-                                     suffix_str)
+                fielders_choice = False
+                for event in self.event_list:
+                    if (isinstance(event, RunnerAdvance) and
+                            event.runner == self.batter and event.end_base):
+                        fielders_choice = True
+
+                if fielders_choice:
+                    scorecard_summary = 'FC' + throws_str + suffix_str
+                else:
+                    scorecard_summary = (self.get_play_str() + throws_str +
+                                         suffix_str)
 
         return on_base, scorecard_summary
 
