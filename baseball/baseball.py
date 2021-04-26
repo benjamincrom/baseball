@@ -911,6 +911,11 @@ class PlateAppearance:
                 ON_BASE_SUMMARY_DICT[self.plate_appearance_summary] +
                 suffix_str
             )
+
+            if (self.plate_appearance_summary == 'Home Run' and
+                    ('inside-the-park' in self.plate_appearance_description or
+                     'inside the park' in self.plate_appearance_description)):
+                scorecard_summary = 'I' + scorecard_summary
         else:
             on_base = False
             if self.get_play_str() == 'CI':
