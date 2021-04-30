@@ -270,7 +270,8 @@ def get_batter_runs(batter, inning_half_list):
 def is_at_bat(plate_appearance):
     at_bat_flag = True
 
-    if plate_appearance.plate_appearance_summary == 'Runner Out':
+    if (plate_appearance.plate_appearance_summary == 'Runner Out' or
+            plate_appearance.plate_appearance_summary == 'Extra Innings Runner'):
         at_bat_flag = False
 
     for code in NOT_AT_BAT_CODE_LIST:
@@ -872,7 +873,8 @@ def get_team_plate_appearances(inning_half_list):
         [appearance
          for appearance_list in inning_half_list
          for appearance in appearance_list
-         if appearance.plate_appearance_summary != 'Runner Out']
+         if (appearance.plate_appearance_summary != 'Runner Out' and
+             appearance.plate_appearance_summary != 'Extra Innings Runner')]
     )
 
 def get_team_stats(game, inning_half_str):

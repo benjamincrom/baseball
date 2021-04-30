@@ -601,8 +601,44 @@ SVG_BASE_3_TEMPLATE = (
     '</text>'
 )
 
+SVG_BASE_3_EXTRA_INNINGS_TEMPLATE = (
+    '<path d="M164 89 L 111 142" stroke="black" '
+    'fill="transparent" stroke-width="11"/>'
+    '<text x="199" y="93" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_number}</text>'
+    '<text x="199" y="114" font-family="Arial" text-anchor="start" '
+    'font-size="{base_2_size}">{base_2_summary}'
+    '<title id="title">{base_2_title}</title>'
+    '</text>'
+    '<text x="132" y="93" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_number}</text>'
+    '<text x="132" y="114" font-family="Arial" text-anchor="end" '
+    'font-size="{base_3_size}">{base_3_summary}'
+    '<title id="title">{base_3_title}</title>'
+    '</text>'
+)
+
 SVG_BASE_3_OUT_TEMPLATE = (
     '<path d="M162 192 L 216 138 L 164 89 L 138 116" stroke="black" '
+    'fill="transparent" stroke-width="11"/>'
+    '<path d="M130 109 L 145 124" stroke="black" fill="transparent" '
+    'stroke-width="5"/>'
+    '<text x="199" y="93" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_number}</text>'
+    '<text x="199" y="114" font-family="Arial" text-anchor="start" '
+    'font-size="{base_2_size}">{base_2_summary}'
+    '<title id="title">{base_2_title}</title>'
+    '</text>'
+    '<text x="132" y="93" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_number}</text>'
+    '<text x="132" y="114" font-family="Arial" text-anchor="end" '
+    'font-size="{base_3_size}">{base_3_summary}'
+    '<title id="title">{base_3_title}</title>'
+    '</text>'
+)
+
+SVG_BASE_3_OUT_EXTRA_INNINGS_TEMPLATE = (
+    '<path d="M164 89 L 138 116" stroke="black" '
     'fill="transparent" stroke-width="11"/>'
     '<path d="M130 109 L 145 124" stroke="black" fill="transparent" '
     'stroke-width="5"/>'
@@ -1119,7 +1155,7 @@ def get_base_font_size(base_2_summary, base_3_summary, base_4_summary):
     return base_2_size, base_3_size, base_4_size
 
 def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
-                             batter_out_base):
+                             batter_out_base, start_on_second):
     (base_2_number,
      base_2_summary,
      base_2_title,
@@ -1138,7 +1174,6 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
         if batter_out_base == '1B':
             base_svg = ''
         elif batter_out_base == '2B':
-
             base_svg = SVG_BASE_2_OUT_TEMPLATE.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
@@ -1146,7 +1181,12 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                 base_2_size=base_2_size
             )
         elif batter_out_base == '3B':
-            base_svg = SVG_BASE_3_OUT_TEMPLATE.format(
+            if start_on_second:
+                this_template = SVG_BASE_3_OUT_EXTRA_INNINGS_TEMPLATE
+            else:
+                this_template = SVG_BASE_3_OUT_TEMPLATE
+
+            base_svg = this_template.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
                 base_2_title=base_2_title,
@@ -1184,7 +1224,12 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                 base_2_size=base_2_size
             )
         elif batter_final_base == '3B':
-            base_svg = SVG_BASE_3_TEMPLATE.format(
+            if start_on_second:
+                this_template = SVG_BASE_3_EXTRA_INNINGS_TEMPLATE
+            else:
+                this_template = SVG_BASE_3_TEMPLATE
+
+            base_svg = this_template.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
                 base_2_title=base_2_title,
@@ -1338,11 +1383,17 @@ def get_base_svg(plate_appearance, plate_appearance_list):
     if home_plate_pa and third_base_pa == home_plate_pa:
         third_base_pa = None
 
+    if plate_appearance.plate_appearance_summary == 'Extra Innings Runner':
+        start_on_second = True
+    else:
+        start_on_second = False
+
     base_svg = process_base_appearances(second_base_pa,
                                         third_base_pa,
                                         home_plate_pa,
                                         batter_final_base,
-                                        batter_out_base)
+                                        batter_out_base,
+                                        start_on_second)
 
     return base_svg
 
@@ -1450,7 +1501,9 @@ def get_svg_content_list(game):
                         get_outs_svg(plate_appearance, prev_plate_appearance)
                     )
 
-                    if player_got_on_base(plate_appearance):
+                    if (player_got_on_base(plate_appearance) or
+                            (plate_appearance.plate_appearance_summary ==
+                             'Extra Innings Runner')):
                         plate_appearance_svg += get_base_svg(
                             plate_appearance,
                             plate_appearance_list
@@ -2205,17 +2258,26 @@ def assemble_box_content_dict(game):
         bottom_offset = bottom_pa_index % LEN_BATTING_LIST
         this_x_pos = inning_num * BOX_WIDTH
         if inning_half_str == 'bottom':
+            if summary == 'Extra Innings Runner':
+                bottom_offset = (bottom_pa_index - 1) % LEN_BATTING_LIST
+
             if (summary != 'Runner Out' and
                     'Caught Stealing' not in summary and
-                    'Pickoff' not in summary):
+                    'Pickoff' not in summary and
+                    'Extra Innings Runner' not in summary):
                 bottom_pa_index += 1
 
             this_y_pos = (HEIGHT // 2 +
                           bottom_offset * BOX_HEIGHT +
                           BOX_HEIGHT // 2)
         elif inning_half_str == 'top':
+            if summary == 'Extra Innings Runner':
+                top_offset = (top_pa_index - 1)% LEN_BATTING_LIST
+
             if (summary != 'Runner Out' and
-                    'Caught Stealing' not in summary):
+                    'Caught Stealing' not in summary and
+                    'Pickoff' not in summary and
+                    'Extra Innings Runner' not in summary):
                 top_pa_index += 1
 
             this_y_pos = (top_offset * BOX_HEIGHT +

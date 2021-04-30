@@ -260,9 +260,33 @@ def process_half_inning(plate_appearance_dict_list, inning_half_str, game_obj):
     if inning_half_str not in ('top', 'bottom'):
         raise ValueError('Invalid inning half str.')
 
+    next_batter_num = 1
     plate_appearance_list = []
     inning_num = len(game_obj.inning_list) + 1
-    next_batter_num = 1
+    est_time = (game_obj.start_datetime if game_obj.start_datetime
+                else game_obj.expected_start_datetime).astimezone(
+                    timezone('America/New_York')
+                )
+
+    if inning_num >= 10 and (est_time.year == 2020 or est_time.year == 2021):
+        if inning_half_str == 'top':
+            batting_team = game_obj.away_team
+            last_batter = (
+                game_obj.inning_list[inning_num - 2].top_half_appearance_list[-1].batter
+            )
+        elif inning_half_str == 'bottom':
+            batting_team = game_obj.home_team
+            last_batter = (
+                game_obj.inning_list[inning_num - 2].bottom_half_appearance_list[-1].batter
+            )
+
+        extra_appearance_obj = PlateAppearance(None, None, batting_team,
+                                               '', 'Extra Innings Runner', None,
+                                               last_batter, 0, [], [], [])
+
+        plate_appearance_list.append(extra_appearance_obj)
+        next_batter_num += 1
+
     for plate_appearance_dict in plate_appearance_dict_list:
         event_list = []
         if plate_appearance_dict['result'].get('event') == 'Game Advisory':
