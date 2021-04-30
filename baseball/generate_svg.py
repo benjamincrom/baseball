@@ -1032,8 +1032,8 @@ def get_runners_svg(plate_appearance):
             is_forceout_desc = (
                 'Forceout' in runner_event.run_description or
                 (
-                    ('Double Play' in runner_event.run_description or
-                     'Triple Play' in runner_event.run_description or
+                    ('double play' in runner_event.run_description.lower() or
+                     'triple play' in runner_event.run_description.lower() or
                      'DP' in runner_event.run_description or
                      'TP' in runner_event.run_description)
                     and
@@ -1169,7 +1169,6 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
     base_2_size, base_3_size, base_4_size = get_base_font_size(base_2_summary,
                                                                base_3_summary,
                                                                base_4_summary)
-
     if batter_out_base:
         if batter_out_base == '1B':
             base_svg = ''

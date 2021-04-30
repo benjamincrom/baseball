@@ -302,6 +302,22 @@ def process_half_inning(plate_appearance_dict_list, inning_half_str, game_obj):
 
         next_batter_num += 1
 
+    batters_set = set([plate_appearance.batter
+                       for plate_appearance in plate_appearance_list])
+
+    runners_set = set([event.runner
+                       for plate_appearance in plate_appearance_list
+                       for event in plate_appearance.event_list
+                       if isinstance(event, RunnerAdvance)])
+
+    diff_list = list(runners_set - batters_set)
+
+    for plate_appearance in plate_appearance_list:
+        extra_runner_frame = None
+        if plate_appearance.plate_appearance_summary == 'Extra Innings Runner':
+            if diff_list and len(diff_list) == 1:
+                plate_appearance.batter = diff_list[0]
+
     return plate_appearance_list
 
 def process_inning(baseball_inning, game_obj):
