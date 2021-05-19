@@ -66,6 +66,8 @@ HTML_INDEX_PAGE = (
     'jquery.min.js"></script>'
     '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
     '<meta name="viewport" content="width=device-width, initial-scale=0.35">'
+    '<meta http-equiv="Pragma" content="no-cache">'
+    '<meta http-equiv="Expires" content="-1">'
     '<meta http-equiv="cache-control" content="no-cache">'
     '<!-- Global site tag (gtag.js) - Google Analytics -->'
     '<script async src="https://www.googletagmanager.com/gtag/js'
