@@ -567,7 +567,12 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
     game_html_id_tuple_list = []
     for i, game_dict in enumerate(game_dict_list):
         try:
-            game = baseball.process_game_json.get_game_obj(game_dict)
+            is_doubleheader = game_is_doubleheader(i, game_dict, game_dict_list)
+            game = baseball.process_game_json.get_game_obj(game_dict,
+                                                           is_doubleheader)
+
+            set_game_status(game, this_datetime)
+
             if len(game.game_date_str.split('-')) == 6:
                 game_html_id_tuple_list.append((game.game_date_str, game))
             else:
@@ -596,17 +601,21 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
     write_game_index(object_html_str, this_datetime, output_dir,
                      write_date_html, write_index_html)
 
-def game_set_doubleheader(i, game_dict, game_dict_list, game, this_datetime):
+def game_is_doubleheader(i, game_dict, game_dict_list):
+    is_doubleheader = False
     this_id = game_dict['gameData']['game']['id'].split('/')[-1]
     if i < (len(game_dict_list) - 1):
         next_id = game_dict_list[i+1]['gameData']['game']['id'].split('/')[-1]
         if next_id[:-2] == this_id[:-2] and next_id != this_id:
-            game.is_doubleheader = True
+            is_doubleheader = True
 
     look_behind_id = game_dict_list[i-1]['gameData']['game']['id'].split('/')[-1]
     if look_behind_id[:-2] == this_id[:-2] and look_behind_id != this_id:
-        game.is_doubleheader = True
+        is_doubleheader = True
 
+    return is_doubleheader
+
+def set_game_status(game, this_datetime):
     now_date = this_datetime.date()
     est_date = (game.start_datetime if game.start_datetime
                 else game.expected_start_datetime).astimezone(
@@ -697,9 +706,11 @@ def get_game_from_date(this_datetime, this_away_code, this_home_code,
 
         if ((away_code and home_code) and (away_code == this_away_code) and
                 (home_code == this_home_code) and game_number_is_match):
-            game = baseball.process_game_json.get_game_obj(game_dict)
-            game_set_doubleheader(i, game_dict, game_dict_list, game,
-                                  this_datetime)
+            is_doubleheader = game_is_doubleheader(i, game_dict, game_dict_list)
+            game = baseball.process_game_json.get_game_obj(game_dict,
+                                                           is_doubleheader)
+
+            set_game_status(game, this_datetime)
 
     return game
 

@@ -268,19 +268,37 @@ def process_half_inning(plate_appearance_dict_list, inning_half_str, game_obj):
                     timezone('America/New_York')
                 )
 
-    if ((inning_num >= 10 and (est_time.year == 2020 or est_time.year == 2021)) or
-            (inning_num >= 8 and (est_time.year == 2020 or est_time.year == 2021)
-             and game_obj.is_doubleheader)):
+    if ((est_time.year == 2020 or est_time.year == 2021) and
+            (inning_num >= 10 or (inning_num >= 8 and game_obj.is_doubleheader))):
         if inning_half_str == 'top':
             batting_team = game_obj.away_team
-            last_batter = (
-                game_obj.inning_list[inning_num - 2].top_half_appearance_list[-1].batter
+            last_pa = (
+                game_obj.inning_list[inning_num - 2].top_half_appearance_list[-1]
             )
+
+            summary = last_pa.plate_appearance_summary
+            if (summary == 'Runner Out' or 'Caught Stealing' in summary or
+                    'Pickoff' in summary):
+                last_pa = (
+                    game_obj.inning_list[inning_num - 2].top_half_appearance_list[-2]
+                )
+
+            last_batter = last_pa.batter
+
         elif inning_half_str == 'bottom':
             batting_team = game_obj.home_team
-            last_batter = (
-                game_obj.inning_list[inning_num - 2].bottom_half_appearance_list[-1].batter
+            last_pa = (
+                game_obj.inning_list[inning_num - 2].bottom_half_appearance_list[-1]
             )
+
+            summary = last_pa.plate_appearance_summary
+            if (summary == 'Runner Out' or 'Caught Stealing' in summary or
+                    'Pickoff' in summary):
+                last_pa = (
+                    game_obj.inning_list[inning_num - 2].bottom_half_appearance_list[-2]
+                )
+
+            last_batter = last_pa.batter
 
         extra_appearance_obj = PlateAppearance(None, None, batting_team,
                                                '', 'Extra Innings Runner', None,
@@ -526,7 +544,7 @@ def initialize_game(this_game, attendance_str, temperature_str, weather_str,
 
     return game_obj
 
-def get_game_obj(game_dict):
+def get_game_obj(game_dict, is_doubleheader=False):
     game = initialize_game(
         game_dict,
         game_dict.get('gameData', {}).get('gameInfo', {}).get(
@@ -539,6 +557,7 @@ def get_game_obj(game_dict):
             'dateTime', '')
     )
 
+    game.is_doubleheader = is_doubleheader
     inning_dict_list = get_inning_dict_list(game_dict)
     set_game_inning_list(inning_dict_list, game)
     set_pitcher_wls_codes(game_dict, game)
