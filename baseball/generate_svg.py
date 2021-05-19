@@ -1328,6 +1328,8 @@ def get_base_svg(plate_appearance, plate_appearance_list):
                     event.runner == batter):
                 if not event.end_base:
                     batter_is_done = True
+                elif event.end_base and batter_is_done:
+                    batter_is_done = False
 
                 for out_runner, out_base in this_pa.out_runners_list:
                     if out_base == '1st' and event.start_base == '1B':
@@ -1382,10 +1384,9 @@ def get_base_svg(plate_appearance, plate_appearance_list):
     if home_plate_pa and third_base_pa == home_plate_pa:
         third_base_pa = None
 
-    if plate_appearance.plate_appearance_summary == 'Extra Innings Runner':
-        start_on_second = True
-    else:
-        start_on_second = False
+    start_on_second = bool(
+        plate_appearance.plate_appearance_summary == 'Extra Innings Runner'
+    )
 
     base_svg = process_base_appearances(second_base_pa,
                                         third_base_pa,
