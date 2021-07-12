@@ -33,6 +33,7 @@ MLB_URL_PATTERN = ('http://gd2.mlb.com/components/game/mlb/year_{year}/'
 HTML_INDEX_PAGE = (
     '<html>'
     '<head>'
+    '<meta http-equiv="refresh" content="1200">'
     '<style>'
     '.clickme'
     '{{'
@@ -254,6 +255,7 @@ HTML_INDEX_PAGE = (
 HTML_WRAPPER = (
     '<html>'
     '<head>'
+    '<meta http-equiv="refresh" content="1200">'
     '<title>{title}</title>'
     '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
     '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/'
