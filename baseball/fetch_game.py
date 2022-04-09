@@ -22,7 +22,7 @@ PLAYERS_SUFFIX = 'players.xml'
 INNING_SUFFIX = 'inning/inning_all.xml'
 
 ALL_GAMES_URL = ('http://gdx.mlb.com/components/game/mlb/year_{year:04d}/'
-                 'month_{month:02d}/day_{day:02d}/miniscoreboard.json')
+                 'month_{month:02d}/day_{day:02d}/master_scoreboard.json')
 
 GAME_URL_TEMPLATE = 'http://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live'
 
