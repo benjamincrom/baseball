@@ -268,7 +268,7 @@ def process_half_inning(plate_appearance_dict_list, inning_half_str, game_obj):
                     timezone('America/New_York')
                 )
 
-    if ((est_time.year == 2020 or est_time.year == 2021) and
+    if ((est_time.year >= 2020) and
             (inning_num >= 10 or (inning_num >= 8 and game_obj.is_doubleheader))):
         if inning_half_str == 'top':
             batting_team = game_obj.away_team
