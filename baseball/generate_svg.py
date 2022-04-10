@@ -29,7 +29,7 @@ LOGO_DICT = {
     'ARI': 'team_logos/diamondbacks.gif',
     'LAD': 'team_logos/dodgers.gif',
     'SF': 'team_logos/giants.gif',
-    'CLE': 'team_logos/indians.gif',
+    'CLE': 'team_logos/guardians.png',
     'NAS': 'team_logos/nl.svg',
     'AAS': 'team_logos/al.svg',
     'SEA': 'team_logos/mariners.gif',
