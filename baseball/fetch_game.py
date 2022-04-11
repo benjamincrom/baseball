@@ -1091,7 +1091,7 @@ def get_game_from_url(date_str, away_code, home_code, game_number):
 
 def generate_today_game_svgs(output_dir, write_game_html=False,
                              write_date_html=False, write_index_html=False):
-    time_shift = timedelta(hours=9)
+    time_shift = timedelta(minutes=545)
     today_datetime = datetime.utcnow() - time_shift
     try:
         write_games_for_date(
