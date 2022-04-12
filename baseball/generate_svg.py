@@ -1847,6 +1847,10 @@ def add_away_pitcher_sub_division_lines(game):
                 num_appearances = len(inning.bottom_half_appearance_list)
                 mod_num = num_appearances % LEN_BATTING_LIST
                 for appearance in inning.bottom_half_appearance_list:
+                    if appearance.plate_appearance_summary == 'Extra Innings Runner':
+                        inning_pa_num += 1
+                        continue
+
                     if (inning_num == pitcher_app.end_inning_num and
                             (inning_pa_num == pitcher_app.end_inning_batter_num
                              or pitcher_app.end_inning_half == 'top')):
@@ -1902,6 +1906,10 @@ def add_home_pitcher_sub_division_lines(game):
                 last_batter_no_pa = False
 
                 for appearance in inning.top_half_appearance_list:
+                    if appearance.plate_appearance_summary == 'Extra Innings Runner':
+                        inning_pa_num += 1
+                        continue
+
                     if (inning_num == pitcher_app.end_inning_num and
                             inning_pa_num == pitcher_app.end_inning_batter_num
                             and pitcher_app.end_inning_half != 'bottom'):
