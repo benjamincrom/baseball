@@ -132,8 +132,6 @@ HTML_INDEX_PAGE = (
     'text or just click <a style="color:lightblue" href="abbreviations.html">'
     'here</a>.'
     '<br />'
-    'Posters available for $15 plus shipping. Email for details.'
-    '<br />'
     '<br />'
     '<font size="6" color="white">Select a date</font>'
     '<br />'
