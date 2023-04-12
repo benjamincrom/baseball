@@ -189,6 +189,7 @@ HTML_INDEX_PAGE = (
     '<option {day_list[30]} value="31">31</option>'
     '</select>'
     '<select name="year" id="year">'
+    '<option {year_list[2023]} value="2023">2023</option>'
     '<option {year_list[2022]} value="2022">2022</option>'
     '<option {year_list[2021]} value="2021">2021</option>'
     '<option {year_list[2020]} value="2020">2020</option>'
