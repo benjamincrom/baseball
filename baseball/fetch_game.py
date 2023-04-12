@@ -24,6 +24,10 @@ INNING_SUFFIX = 'inning/inning_all.xml'
 ALL_GAMES_URL = ('http://gdx.mlb.com/components/game/mlb/year_{year:04d}/'
                  'month_{month:02d}/day_{day:02d}/master_scoreboard.json')
 
+ALL_GAMES_URL_NEW = ('http://statsapi.mlb.com/api/v1/schedule/games/?sportId=1'
+                 '&startDate={year:04d}-{month:02d}-{day:02d}'
+                 '&endDate={year:04d}-{month:02d}-{day:02d}')
+
 GAME_URL_TEMPLATE = 'http://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live'
 
 MLB_URL_PATTERN = ('http://gd2.mlb.com/components/game/mlb/year_{year}/'
@@ -185,6 +189,7 @@ HTML_INDEX_PAGE = (
     '<option {day_list[30]} value="31">31</option>'
     '</select>'
     '<select name="year" id="year">'
+    '<option {year_list[2023]} value="2023">2023</option>'
     '<option {year_list[2022]} value="2022">2022</option>'
     '<option {year_list[2021]} value="2021">2021</option>'
     '<option {year_list[2020]} value="2020">2020</option>'
@@ -713,6 +718,50 @@ def get_game_from_date(this_datetime, this_away_code, this_home_code,
 
     return game
 
+def get_game_from_date_new(this_datetime, this_away_code, this_home_code,
+                       this_game_number):
+    month = this_datetime.month
+    day = this_datetime.day
+    year = this_datetime.year
+    all_games_dict = get(
+        ALL_GAMES_URL_NEW.format(month=month, day=day, year=year)
+    ).json()
+
+    game_list = []
+    for x in all_games_dict['dates']:
+        for y in x['games']:
+            game_list.append(y['gamePk'])
+
+    game_dict_list = [get(GAME_URL_TEMPLATE.format(game_pk=game_pk)).json()
+                      for game_pk in game_list]
+
+    game = None
+    for i, game_dict in enumerate(game_dict_list):
+        away_code = (
+            game_dict.get('gameData', {}).get('teams', {}).get(
+                'away', {}).get('abbreviation', {})
+        )
+
+        home_code = (
+            game_dict.get('gameData', {}).get('teams', {}).get(
+                'home', {}).get('abbreviation', {})
+        )
+
+        game_number_is_match = (
+            this_game_number == game_dict.get('gameData', {}).get(
+                'game', {}).get('gameNumber', {})
+        )
+
+        if ((away_code and home_code) and (away_code == this_away_code) and
+                (home_code == this_home_code) and game_number_is_match):
+            is_doubleheader = game_is_doubleheader(i, game_dict, game_dict_list)
+            game = baseball.process_game_json.get_game_obj(game_dict,
+                                                           is_doubleheader)
+
+            set_game_status(game, this_datetime)
+
+    return game
+
 def get_formatted_date_str(input_date_str):
     this_date = parse(input_date_str)
     this_date_str = '{}-{}-{}'.format(str(this_date.year),
@@ -1022,9 +1071,27 @@ def get_game_xml_from_url(date_str, away_code, home_code, game_number):
 
     return game_id, boxscore_raw_xml, players_raw_xml, inning_raw_xml
 
-def get_game_from_url_new(date_str, this_date, away_code, home_code,
+def get_game_from_url_deprecated(date_str, this_date, away_code, home_code,
                           game_number):
     this_game = get_game_from_date(this_date, away_code, home_code,
+                                   game_number)
+
+    formatted_date_str = get_formatted_date_str(date_str)
+    game_id = '-'.join(
+        [formatted_date_str, away_code, home_code, str(game_number)]
+    )
+
+    if not this_game:
+        print('No data found for {} {} {} {}'.format(date_str,
+                                                     away_code,
+                                                     home_code,
+                                                     game_number))
+
+    return game_id, this_game
+
+def get_game_from_url_new(date_str, this_date, away_code, home_code,
+                          game_number):
+    this_game = get_game_from_date_new(this_date, away_code, home_code,
                                    game_number)
 
     formatted_date_str = get_formatted_date_str(date_str)
@@ -1066,7 +1133,7 @@ def get_game_from_url(date_str, away_code, home_code, game_number):
     game_id = None
     try:
         this_date = parse(date_str)
-        if int(this_date.year) >= 2019:
+        if int(this_date.year) >= 2015:
             game_id, this_game = get_game_from_url_new(
                 date_str, this_date, away_code, home_code, game_number
             )
