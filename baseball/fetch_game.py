@@ -25,8 +25,8 @@ ALL_GAMES_URL = ('http://gdx.mlb.com/components/game/mlb/year_{year:04d}/'
                  'month_{month:02d}/day_{day:02d}/master_scoreboard.json')
 
 ALL_GAMES_URL_NEW = ('http://statsapi.mlb.com/api/v1/schedule/games/?sportId=1'
-                 '&startDate={year:04d}-{month:02d}-{day:02d}'
-                 '&endDate={year:04d}-{month:02d}-{day:02d}')
+                     '&startDate={year:04d}-{month:02d}-{day:02d}'
+                     '&endDate={year:04d}-{month:02d}-{day:02d}')
 
 GAME_URL_TEMPLATE = 'http://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live'
 
@@ -556,17 +556,18 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
     month = this_datetime.month
     day = this_datetime.day
     year = this_datetime.year
+    print(ALL_GAMES_URL_NEW.format(month=month, day=day, year=year))
     all_games_dict = get(
-        ALL_GAMES_URL.format(month=month, day=day, year=year)
+        ALL_GAMES_URL_NEW.format(month=month, day=day, year=year)
     ).json()
 
-    if isinstance(all_games_dict['data']['games'].get('game', []), dict):
-        all_games_dict['data']['games']['game'] = [
-            all_games_dict['data']['games']['game']
-        ]
+    #if isinstance(all_games_dict['dates'][0]['games'][0], dict):
+    #    all_games_dict['data']['games']['game'] = [
+    #        all_games_dict['data']['games']['game']
+    #    ]
 
-    game_tuple_list = [(x['id'], x['game_pk'])
-                       for x in all_games_dict['data']['games'].get('game', [])]
+    game_tuple_list = [(None, x['gamePk'])
+                       for x in all_games_dict['dates'][0]['games']]
 
     game_dict_list = [get(GAME_URL_TEMPLATE.format(game_pk=game_pk)).json()
                       for _, game_pk in game_tuple_list]
