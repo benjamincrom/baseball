@@ -730,7 +730,7 @@ def get_game_from_date_new(this_datetime, this_away_code, this_home_code,
     game_list = []
     for x in all_games_dict['dates']:
         for y in x['games']:
-            newlist.append(y['gamePk'])
+            game_list.append(y['gamePk'])
 
     game_dict_list = [get(GAME_URL_TEMPLATE.format(game_pk=game_pk)).json()
                       for game_pk in game_list]
@@ -1133,12 +1133,8 @@ def get_game_from_url(date_str, away_code, home_code, game_number):
     game_id = None
     try:
         this_date = parse(date_str)
-        if int(this_date.year) > 2022:
+        if int(this_date.year) >= 2015:
             game_id, this_game = get_game_from_url_new(
-                date_str, this_date, away_code, home_code, game_number
-            )
-        if int(this_date.year) >= 2019:
-            game_id, this_game = get_game_from_url_deprecated(
                 date_str, this_date, away_code, home_code, game_number
             )
         else:
