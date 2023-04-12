@@ -114,6 +114,8 @@ def process_plate_appearance(plate_appearance, inning_half_str, inning_num,
                                next_batter_num, switching_team)
         elif event['type'] == 'no_pitch':
             pass
+        elif event['type'] == 'stepoff':
+            pass
         else:
             raise Exception('Invalid event type')
 
