@@ -561,16 +561,15 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
         ALL_GAMES_URL_NEW.format(month=month, day=day, year=year)
     ).json()
 
-    #if isinstance(all_games_dict['dates'][0]['games'][0], dict):
-    #    all_games_dict['data']['games']['game'] = [
-    #        all_games_dict['data']['games']['game']
-    #    ]
+    if len(all_games_dict['dates']) == 0:
+        game_dict_list = []
+        game_tuple_list = []
+    else:
+        game_tuple_list = [(None, x['gamePk'])
+                           for x in all_games_dict['dates'][0]['games']]
 
-    game_tuple_list = [(None, x['gamePk'])
-                       for x in all_games_dict['dates'][0]['games']]
-
-    game_dict_list = [get(GAME_URL_TEMPLATE.format(game_pk=game_pk)).json()
-                      for _, game_pk in game_tuple_list]
+        game_dict_list = [get(GAME_URL_TEMPLATE.format(game_pk=game_pk)).json()
+                          for _, game_pk in game_tuple_list]
 
     game_html_id_tuple_list = []
     for i, game_dict in enumerate(game_dict_list):
