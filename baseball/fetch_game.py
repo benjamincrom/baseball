@@ -556,7 +556,6 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
     month = this_datetime.month
     day = this_datetime.day
     year = this_datetime.year
-    print(ALL_GAMES_URL_NEW.format(month=month, day=day, year=year))
     all_games_dict = get(
         ALL_GAMES_URL_NEW.format(month=month, day=day, year=year)
     ).json()
