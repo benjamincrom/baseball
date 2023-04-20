@@ -6,6 +6,7 @@ from os.path import isdir, isfile, exists, abspath, join
 from sys import exc_info
 from traceback import format_exception
 from xml.etree.ElementTree import fromstring
+from pathlib import Path
 
 from dateutil.parser import parse
 from pytz import timezone
@@ -435,7 +436,7 @@ def generate_game_svgs_for_old_datetime(this_datetime, output_dir,
                                         write_date_html=False,
                                         write_index_html=False):
     if not exists(output_dir):
-        mkdir(output_dir)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
 
     today_date_str = get_today_date_str(this_datetime)
     month = int(this_datetime.month)
@@ -551,7 +552,7 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
                                         write_game_html, write_date_html,
                                         write_index_html):
     if not exists(output_dir):
-        mkdir(output_dir)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
 
     month = this_datetime.month
     day = this_datetime.day
