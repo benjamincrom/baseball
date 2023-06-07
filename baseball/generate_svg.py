@@ -26,7 +26,7 @@ LOGO_DICT = {
     'ML4': 'team_logos/brewers.gif',
     'STL': 'team_logos/cardinals.gif',
     'CHC': 'team_logos/cubs.gif',
-    'ARI': 'team_logos/diamondbacks.gif',
+    'AZ': 'team_logos/diamondbacks.gif',
     'LAD': 'team_logos/dodgers.gif',
     'SF': 'team_logos/giants.gif',
     'CLE': 'team_logos/guardians.png',
