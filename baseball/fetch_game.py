@@ -6,6 +6,7 @@ from os.path import isdir, isfile, exists, abspath, join
 from sys import exc_info
 from traceback import format_exception
 from xml.etree.ElementTree import fromstring
+from pathlib import Path
 
 from dateutil.parser import parse
 from pytz import timezone
@@ -435,7 +436,7 @@ def generate_game_svgs_for_old_datetime(this_datetime, output_dir,
                                         write_date_html=False,
                                         write_index_html=False):
     if not exists(output_dir):
-        mkdir(output_dir)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
 
     today_date_str = get_today_date_str(this_datetime)
     month = int(this_datetime.month)
@@ -551,7 +552,7 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
                                         write_game_html, write_date_html,
                                         write_index_html):
     if not exists(output_dir):
-        mkdir(output_dir)
+        Path(output_dir).mkdir(parents=True, exist_ok=True)
 
     month = this_datetime.month
     day = this_datetime.day
@@ -1070,24 +1071,6 @@ def get_game_xml_from_url(date_str, away_code, home_code, game_number):
 
     return game_id, boxscore_raw_xml, players_raw_xml, inning_raw_xml
 
-def get_game_from_url_deprecated(date_str, this_date, away_code, home_code,
-                          game_number):
-    this_game = get_game_from_date(this_date, away_code, home_code,
-                                   game_number)
-
-    formatted_date_str = get_formatted_date_str(date_str)
-    game_id = '-'.join(
-        [formatted_date_str, away_code, home_code, str(game_number)]
-    )
-
-    if not this_game:
-        print('No data found for {} {} {} {}'.format(date_str,
-                                                     away_code,
-                                                     home_code,
-                                                     game_number))
-
-    return game_id, this_game
-
 def get_game_from_url_new(date_str, this_date, away_code, home_code,
                           game_number):
     this_game = get_game_from_date_new(this_date, away_code, home_code,
@@ -1132,14 +1115,9 @@ def get_game_from_url(date_str, away_code, home_code, game_number):
     game_id = None
     try:
         this_date = parse(date_str)
-        if int(this_date.year) >= 2015:
-            game_id, this_game = get_game_from_url_new(
-                date_str, this_date, away_code, home_code, game_number
-            )
-        else:
-            game_id, this_game = get_game_from_url_old(
-                date_str, away_code, home_code, game_number
-            )
+        game_id, this_game = get_game_from_url_new(
+            date_str, this_date, away_code, home_code, game_number
+        )
     except:
         exc_type, exc_value, exc_traceback = exc_info()
         lines = format_exception(exc_type, exc_value, exc_traceback)

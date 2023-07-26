@@ -2,11 +2,12 @@ from collections import namedtuple
 
 from pytz import timezone
 
-from baseball.baseball_events import (AUTOMATIC_BALL_POSITION,
-                                      Substitution,
-                                      Pitch,
-                                      Pickoff,
-                                      RunnerAdvance)
+from baseball import (Pickoff,
+                      Pitch,
+                      RunnerAdvance,
+                      Substitution,
+                      Switch,
+                      AUTOMATIC_BALL_POSITION)
 
 FakePlateAppearance = namedtuple(
     'FakePlateAppearance',
@@ -54,7 +55,6 @@ LOGO_DICT = {
     'CHW': 'team_logos/white-sox.gif',
     'NYY': 'team_logos/yankees.gif'
 }
-
 
 HEIGHT = 4513
 WIDTH = 3192

@@ -4,11 +4,17 @@ from re import search, sub
 
 from pytz import timezone
 
-from baseball.baseball import (Player, PlayerAppearance, PlateAppearance, Game,
-                               Inning, Team)
-
-from baseball.baseball_events import (AUTOMATIC_BALL_POSITION, Pitch, Pickoff,
-                                      RunnerAdvance)
+from baseball import (Game,
+                      Inning,
+                      Pitch,
+                      Pickoff,
+                      PlateAppearance,
+                      Player,
+                      PlayerAppearance,
+                      RunnerAdvance,
+                      Team,
+                      AUTOMATIC_BALL_POSITION,
+                      EASTERN_TIMEZONE_STR)
 
 from baseball.process_game_xml import (
     get_datetime, get_sub_switch_steal_flags, parse_substitution,
