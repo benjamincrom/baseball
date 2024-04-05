@@ -98,7 +98,7 @@ HTML_INDEX_PAGE = (
     'd=o.createElement(u);d.async=1;d.src=n \n'
     'n=o.getElementsByTagName(u)[0];n.parentNode.insertBefore(d,n) '
     '}})(window,document,\'script\',\'https://www.datadoghq-browser-agent.com/'
-    'datadog-rum.js\',\'DD_RUM\')\n'
+    'us1/v5/datadog-rum.js\',\'DD_RUM\')\n'
     'DD_RUM.onReady(function() {{ '
     'DD_RUM.init({{ '
     'clientToken: \'pubddae1190ff21ff570dd36eaffc141c4d\', '
