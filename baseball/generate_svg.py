@@ -239,7 +239,7 @@ PITCHER_STATS_HEADER = (
 )
 
 PITCHER_STATS_LINE_TEMPLATE = (
-    '<a target="_parent" xlink:href="http://m.mlb.com/player/{pitcher_id}">'
+    '<a target="_parent" xlink:href="http://mlb.com/player/{pitcher_id}">'
     '<text x="10" y="{name_y_pos}" font-family="Arial" font-size="{size_1}" '
     'text-anchor="start" fill="blue">{pitcher}</text></a>'
     '<text x="40" y="{stats_y_pos}" font-family="Arial" font-size="{size_2}" '
@@ -443,7 +443,7 @@ BATTER_SVG_HEADER = (
 )
 
 BATTER_NAME_TEMPLATE = (
-    '<a target="_parent" xlink:href="http://m.mlb.com/player/{batter_id}">'
+    '<a target="_parent" xlink:href="http://mlb.com/player/{batter_id}">'
     '<text x="10" y="{name_y_pos}" font-family="Arial" '
     'font-size="{batter_font_size}" '
     'text-anchor="start" fill="blue">{batter}</text></a>'
