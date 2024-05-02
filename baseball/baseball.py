@@ -114,7 +114,7 @@ STADIUM_TIMEZONE_DICT = {
     'Kauffman Stadium': 'America/Chicago',
     'American Family Field': 'America/Chicago',
     'Coors Field': 'America/Denver',
-    'Chase Field': 'America/Denver',
+    'Chase Field': 'America/Phoenix',
     'Safeco Field': 'America/Los_Angeles',
     'AT&T Park': 'America/Los_Angeles',
     'Oakland-Alameda County Coliseum': 'America/Los_Angeles',
