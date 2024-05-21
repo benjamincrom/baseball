@@ -123,7 +123,7 @@ HTML_INDEX_PAGE = (
     '<body style="background-color:black;">'
     '<div id="header" style="width:1160px; margin:0 auto; '
     'text-align: center;">'
-    '<img src="baseball-fairy-bat-250.png" height="250"><br />'
+    '<img src="/baseball-fairy-bat-250.png" height="250"><br />'
     '<font size="7" color="white">'
     'LiveBaseballScorecards.com'
     '</font><br />'
