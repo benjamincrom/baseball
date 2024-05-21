@@ -1515,8 +1515,6 @@ def get_svg_content_list(game):
 
                     prev_plate_appearance = plate_appearance
 
-
-
     return content_list
 
 def get_batter_spacing_values(batter_list):
