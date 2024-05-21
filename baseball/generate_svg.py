@@ -1,4 +1,5 @@
 from collections import namedtuple
+from datetime import datetime, timedelta
 
 from pytz import timezone
 
@@ -461,7 +462,7 @@ HOME_LOGO = (
     'xmlns:xlink="http://www.w3.org/1999/xlink">'
     '<rect x="0" y="0" width="266" height="200" stroke="black" fill="white" '
     'stroke-width="1"/>'
-    '<image xlink:href="{logo}" x="50" y="0" height="200" '
+    '<image xlink:href="/{logo}" x="50" y="0" height="200" '
     'width="163" />'
     '</svg>'
 )
@@ -472,7 +473,7 @@ AWAY_LOGO = (
     'xmlns:xlink="http://www.w3.org/1999/xlink">'
     '<rect x="0" y="0" width="266" height="200" stroke="black" fill="white" '
     'stroke-width="1"/>'
-    '<image xlink:href="{logo}" x="50" y="0" height="200" '
+    '<image xlink:href="/{logo}" x="50" y="0" height="200" '
     'width="163" />'
     '</svg>'
 )
@@ -925,7 +926,7 @@ def process_pickoff(x_val, y_val, event, pitch_svg):
 
     return pitch_svg
 
-def get_pitch_svg(plate_appearance):
+def get_pitch_svg(plate_appearance, cutoff_datetime=None):
     pitch_svg = ''
     x_val = FIRST_PITCH_X_VAL
     y_val = FIRST_PITCH_Y_VAL
@@ -936,9 +937,15 @@ def get_pitch_svg(plate_appearance):
             x_val += PITCH_X_OFFSET
 
         if isinstance(event, Pitch):
+            if cutoff_datetime and cutoff_datetime < event.pitch_datetime:
+                break
+
             pitch_svg = process_pitch(x_val, y_val, event, pitch_svg)
             y_val += PITCH_Y_OFFSET
         elif isinstance(event, Pickoff):
+            if cutoff_datetime and cutoff_datetime < event.pickoff_datetime:
+                break
+
             pitch_svg += process_pickoff(x_val, y_val, event, pitch_svg)
             y_val += PITCH_Y_OFFSET
 
@@ -1450,12 +1457,15 @@ def get_hit_svg(plate_appearance):
 
     return hit_svg
 
-def get_count_svg(plate_appearance):
+def get_count_svg(plate_appearance, cutoff_datetime=None):
     balls = 0
     strikes = 0
     for event in plate_appearance.event_list:
         if (isinstance(event, Pitch) and
                 'In play' not in event.pitch_description):
+            if cutoff_datetime and cutoff_datetime < event.pitch_datetime:
+                break
+
             if ('Strike' in event.pitch_description or
                     'Missed Bunt' in event.pitch_description or
                     'Foul Bunt' in event.pitch_description):
@@ -1480,7 +1490,8 @@ def get_inning_half_stats_tuple_list(game):
 
     return inning_half_stats_tuple_list
 
-def get_svg_content_list(game):
+def get_svg_content_list(game, delay_seconds=0):
+    cutoff_datetime = datetime.now(datetime.UTC) - timedelta(seconds=delay_seconds)
     content_list = []
     for inning_index, inning in enumerate(game.inning_list):
         tuple_list = [(inning.top_half_appearance_list, 'top'),
@@ -1491,22 +1502,27 @@ def get_svg_content_list(game):
                 prev_plate_appearance = None
                 for plate_appearance_tuple in enumerate(plate_appearance_list):
                     pa_index, plate_appearance = plate_appearance_tuple
+                    if cutoff_datetime > plate_appearance.end_datetime:
+                        plate_appearance_svg = '{}{}{}{}{}{}'.format(
+                            get_summary_svg(plate_appearance),
+                            get_pitch_svg(plate_appearance),
+                            get_runners_svg(plate_appearance),
+                            get_count_svg(plate_appearance),
+                            get_hit_svg(plate_appearance),
+                            get_outs_svg(plate_appearance, prev_plate_appearance)
+                        )
 
-                    plate_appearance_svg = '{}{}{}{}{}{}'.format(
-                        get_summary_svg(plate_appearance),
-                        get_pitch_svg(plate_appearance),
-                        get_runners_svg(plate_appearance),
-                        get_count_svg(plate_appearance),
-                        get_hit_svg(plate_appearance),
-                        get_outs_svg(plate_appearance, prev_plate_appearance)
-                    )
-
-                    if (player_got_on_base(plate_appearance) or
-                            (plate_appearance.plate_appearance_summary ==
-                             'Extra Innings Runner')):
-                        plate_appearance_svg += get_base_svg(
-                            plate_appearance,
-                            plate_appearance_list
+                        if (player_got_on_base(plate_appearance) or
+                                (plate_appearance.plate_appearance_summary ==
+                                 'Extra Innings Runner')):
+                            plate_appearance_svg += get_base_svg(plate_appearance,
+                                                                 plate_appearance_list)
+                    elif cutoff_datetime < plate_appearance.start_datetime:
+                        return content_list
+                    elif cutoff_datetime < plate_appearance.end_datetime:
+                        plate_appearance_svg = '{}{}'.format(
+                            get_pitch_svg(plate_appearance, cutoff_datetime),
+                            get_count_svg(plate_appearance, cutoff_datetime)
                         )
 
                     id_tuple = (inning_index + 1, inning_half_str, pa_index + 1)
@@ -1517,6 +1533,8 @@ def get_svg_content_list(game):
                     )
 
                     prev_plate_appearance = plate_appearance
+
+
 
     return content_list
 
@@ -2255,9 +2273,9 @@ def write_individual_pa_svg(svg_content, inning_pa_num, this_inning_tuple_list,
 
     return this_svg
 
-def assemble_box_content_dict(game):
+def assemble_box_content_dict(game, delay_seconds):
     content_list_svg = ''
-    svg_content_list = get_svg_content_list(game)
+    svg_content_list = get_svg_content_list(game, delay_seconds)
     top_pa_index = 0
     bottom_pa_index = 0
     for id_tuple, svg_content, summary in svg_content_list:
@@ -2272,7 +2290,7 @@ def assemble_box_content_dict(game):
             if (summary != 'Runner Out' and
                     'Caught Stealing' not in summary and
                     'Pickoff' not in summary and
-                    'Extra Innings Runner' not in summary):
+                    ' Extra Innings Runner' not in summary):
                 bottom_pa_index += 1
 
             this_y_pos = (HEIGHT // 2 +

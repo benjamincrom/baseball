@@ -71,7 +71,7 @@ HTML_INDEX_PAGE = (
     '</style>'
     '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/'
     'jquery.min.js"></script>'
-    '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
+    '<link rel="icon" type="image/png" href="/baseball-fairy-161.png" />'
     '<meta name="viewport" content="width=device-width, initial-scale=0.35">'
     '<!-- Global site tag (gtag.js) - Google Analytics -->'
     '<script async src="https://www.googletagmanager.com/gtag/js'
