@@ -392,7 +392,6 @@ HTML_WRAPPER = (
     '<div id="delay"></div>'
     '</font>'
     '</div>'
-    '<br />'
     '<div align="center">'
     '<object id="{title}"></object>'
     '</div>'
