@@ -382,7 +382,7 @@ HTML_WRAPPER = (
     '</script>'
     '</head>'
     '<body style="background-color:black;" onload="setdelay()">'
-    '<meta name="viewport" content="width=device-width, initial-scale=0.15">'
+    '<meta name="viewport" content="width=device-width, initial-scale=0.17">'
     '<div id="delay-header" style="width:100%; background:#282828; '
     'margin:0 auto; text-align: left;">'
     '<font size="4" color="white">'#Set time delay (seconds): '
