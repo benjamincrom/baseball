@@ -383,7 +383,7 @@ HTML_WRAPPER = (
     '<body style="background-color:black;" onload="setdelay()">'
     '<div id="delay-header" style="width:100%; background:#282828; '
     'margin:0 auto; text-align: left;">'
-    #'<font size="4" color="white">Set time delay (seconds): '
+    '<font size="4" color="white">'#Set time delay (seconds): '
     #'<input type="text" id="delay_seconds" name="delay_seconds">'
     #'<input type="submit" value="Apply" onclick="applydelay()">'
     #'<input type="submit" value="Reset" '
