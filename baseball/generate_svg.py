@@ -1884,7 +1884,8 @@ def add_away_pitcher_sub_division_lines(game):
                                                              y_pos=y_pos)
                         )
 
-                    if appearance.plate_appearance_summary != 'Runner Out':
+                    if (appearance.plate_appearance_summary != 'Runner Out' and
+                            'Caught Stealing' not in appearance.plate_appearance_summary):
                         inning_pa_num += 1
                         total_pa_num += 1
 
@@ -1924,7 +1925,8 @@ def add_home_pitcher_sub_division_lines(game):
                             )
                         )
 
-                    if appearance.plate_appearance_summary == 'Runner Out':
+                    if (appearance.plate_appearance_summary == 'Runner Out' or
+                            'Caught Stealing' in appearance.plate_appearance_summary):
                         last_batter_no_pa = True
                     else:
                         total_pa_num += 1
