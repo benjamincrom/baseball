@@ -6,9 +6,9 @@ from ddtrace import tracer
 
 @tracer.wrap(service="get_todays_games", resource="wrapper")
 def get_todays_games():
-    shutil.rmtree(f'/mnt/delay_volume/15000')
-    os.mkdir(f'/mnt/delay_volume/15000')
-    for i in range(14995, -5, -5):
+    shutil.rmtree(f'/mnt/delay_volume/5000')
+    os.mkdir(f'/mnt/delay_volume/5000')
+    for i in range(4995, -5, -5):
         files = os.listdir(f'/mnt/delay_volume/{str(i)}')
         for this_file in files:
             source_path = f'/mnt/delay_volume/{str(i)}/{this_file}'
