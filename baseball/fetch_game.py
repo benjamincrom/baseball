@@ -303,7 +303,7 @@ HTML_WRAPPER = (
     '<meta http-equiv="Expires" content="0">'
     '<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">'
     '<title>{title}</title>'
-    '<link rel="icon" type="image/png" href="baseball-fairy-161.png" />'
+    '<link rel="icon" type="image/png" href="/baseball-fairy-161.png" />'
     '<script>'
     'function setdelay() {{'
     'if (typeof window.location.href.split(\'/\')[4] !== \'undefined\') {{'
