@@ -6,8 +6,8 @@ from ddtrace import tracer
 
 @tracer.wrap(service="get_todays_games", resource="wrapper")
 def get_todays_games():
-    shutil.rmtree(f'/mnt/delay_volume/3600')
-    os.mkdir(f'/mnt/delay_volume/3600')
+    shutil.rmtree('/mnt/delay_volume/3600')
+    os.mkdir('/mnt/delay_volume/3600')
     for i in range(3595, -5, -5):
         files = os.listdir(f'/mnt/delay_volume/{str(i)}')
         for this_file in files:
@@ -25,10 +25,10 @@ def get_todays_games():
 
 
     baseball.generate_today_game_svgs("/mnt/delay_volume/0", True, True, True)
-    files = os.listdir(f'/mnt/delay_volume/0')
+    files = os.listdir('/mnt/delay_volume/0')
     for this_file in files:
         source_path = f'/mnt/delay_volume/0/{this_file}'
-        dest_path = f'/var/www/html/'
+        dest_path = '/var/www/html/'
         with open(source_path, 'r') as filehandle:
             try:
                 with open(f'{dest_path}{this_file}', 'r') as filehandle_2:
@@ -38,8 +38,7 @@ def get_todays_games():
                         shutil.copy("/mnt/delay_volume/0/" + this_file, "/var/www/html")
             except:
                 shutil.copy("/mnt/delay_volume/0/" + this_file, "/var/www/html")
-                
+
 
 if __name__ == '__main__':
     get_todays_games()
-
