@@ -21,12 +21,15 @@ class MyLmdb(Lmdb):
 
 @tracer.wrap(service="get_todays_games", resource="wrapper")
 def get_todays_games():
-    shutil.rmtree(f'/mnt/delay_volume/3600')
-    os.mkdir(f'/mnt/delay_volume/3600')
     with MyLmdb.open("/mnt/delay_volume/hash.db", "c") as hash_map:
+        for this_file in os.listdir('/mnt/delay_volume/3600'):
+            file_path = f'/mnt/delay_volume/3600/{this_file}'
+            hash_map[file_path] = None
+
+        shutil.rmtree('/mnt/delay_volume/3600')
+        os.mkdir('/mnt/delay_volume/3600')
         for i in range(3595, -5, -5):
-            files = os.listdir(f'/mnt/delay_volume/{str(i)}')
-            for this_file in files:
+            for this_file in os.listdir(f'/mnt/delay_volume/{str(i)}'):
                 source_path = f'/mnt/delay_volume/{str(i)}/{this_file}'
                 dest_dir = f'/mnt/delay_volume/{str(i+5)}/'
                 dest_path = f'{dest_dir}{this_file}'
@@ -62,9 +65,10 @@ def get_todays_games():
             source_path = f'{prime_dir}{this_file}'
             dest_path = f'{dest_dir}{this_file}'
             with open(source_path, 'r') as filehandle:
+                source_svg_text = filehandle.read()
+                hash_map[source_path] = hash(source_svg_text)
                 try:
                     with open(dest_path, 'r') as filehandle_2:
-                        source_svg_text = filehandle.read()
                         dest_svg_text = filehandle_2.read()
                         if source_svg_text != dest_svg_text:
                             shutil.copy(source_path, dest_dir)
