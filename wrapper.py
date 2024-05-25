@@ -24,7 +24,7 @@ def get_todays_games():
     with MyLmdb.open("/mnt/delay_volume/hash.db", "c") as hash_map:
         for this_file in os.listdir('/mnt/delay_volume/3600'):
             file_path = f'/mnt/delay_volume/3600/{this_file}'
-            hash_map[file_path] = None
+            hash_map[file_path] = 0
 
         shutil.rmtree('/mnt/delay_volume/3600')
         os.mkdir('/mnt/delay_volume/3600')
