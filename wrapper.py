@@ -27,17 +27,17 @@ class MyLmdb(Lmdb):
 
 @tracer.wrap(service="get_todays_games", resource="wrapper")
 def get_todays_games():
-    with MyLmdb.open("/mnt/delay_volume/hash.db", "c", map_size=2**30, autogrow=False) as hash_map:
-        for this_file in os.listdir('/mnt/delay_volume/3600'):
-            file_path = f'/mnt/delay_volume/3600/{this_file}'
+    with MyLmdb.open("/mnt/delay/hash.db", "c", map_size=2**30, autogrow=False) as hash_map:
+        for this_file in os.listdir('/mnt/delay/3600'):
+            file_path = f'/mnt/delay/3600/{this_file}'
             hash_map[file_path] = 0
 
-        shutil.rmtree('/mnt/delay_volume/3600')
-        os.mkdir('/mnt/delay_volume/3600')
+        shutil.rmtree('/mnt/delay/3600')
+        os.mkdir('/mnt/delay/3600')
         for i in range(3595, -5, -5):
-            for this_file in os.listdir(f'/mnt/delay_volume/{str(i)}'):
-                source_path = f'/mnt/delay_volume/{str(i)}/{this_file}'
-                dest_dir = f'/mnt/delay_volume/{str(i+5)}/'
+            for this_file in os.listdir(f'/mnt/delay/{str(i)}'):
+                source_path = f'/mnt/delay/{str(i)}/{this_file}'
+                dest_dir = f'/mnt/delay/{str(i+5)}/'
                 dest_path = f'{dest_dir}{this_file}'
                 source_hash = hash_map.get(source_path, 0)
                 dest_hash = hash_map.get(dest_path, 0)
@@ -66,7 +66,7 @@ def get_todays_games():
                     dest_hash = source_hash
                     hash_map[dest_path] = dest_hash
 
-        prime_dir = "/mnt/delay_volume/0/"
+        prime_dir = "/mnt/delay/0/"
         dest_dir = '/var/www/html/'
         baseball.generate_today_game_svgs(prime_dir, True, True, True)
         files = os.listdir(prime_dir)
