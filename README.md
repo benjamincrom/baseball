@@ -62,7 +62,7 @@ with open(game_id + '.svg', 'w') as fh:
 
 Fetch a list of game objects which each contain metadata and events for a single MLB game.
 
-First, download and unzip the [source data zip file](https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_files_2008-2017.zip):
+First, download and unzip the [source data zip file](https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_1974_2021.zip):
 ```shell
 wget https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_files_2008-2017.zip
 unzip baseball_files_2008-2017.zip -d ./baseball_files_2008-2017
