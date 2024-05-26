@@ -64,13 +64,13 @@ Fetch a list of game objects which each contain metadata and events for a single
 
 First, download and unzip the [source data zip file](https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_1974_2021.zip):
 ```shell
-wget https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_files_2008-2017.zip
-unzip baseball_files_2008-2017.zip -d ./baseball_files_2008-2017
+wget https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_1974_2021.zip
+unzip baseball_1974_2021.zip -d ./baseball_1974_2021
 ```
 Then import the files in Python using this library:
 ```python
 import baseball
-game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017', 'baseball_files_2008-2017')
+game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017', 'baseball_1974_2021')
 ```
 
 ## Get Game generator given target directory and date range
