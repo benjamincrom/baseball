@@ -16,11 +16,11 @@ def my_hash(input):
 
 class MyLmdb(Lmdb):
     def _pre_key(self, value):
-        return value.encode("utf-8")
+        return str(value).encode("utf-8")
     def _post_key(self, value):
         return value.decode("utf-8")
     def _pre_value(self, value):
-        return value.encode("utf-8")
+        return str(value).encode("utf-8")
     def _post_value(self, value):
         return value.decode("utf-8")
 
