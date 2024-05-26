@@ -169,7 +169,7 @@ HTML_INDEX_PAGE = (
     'style="color:lightblue">livebaseballscorecards@gmail.com</a>'
     '<br />'
     'For abbreviation definitions, hover your mouse over the scorecard '
-    'text or just click <a style="color:lightblue" href="abbreviations.html">'
+    'text or just click <a style="color:lightblue" href="/abbreviations.html">'
     'here</a>.'
     '<br />'
     '<br />'
