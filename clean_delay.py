@@ -12,7 +12,7 @@ def del_folder_contents(folder):
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-del_folder_contents('/mnt/delay_volume')
+del_folder_contents('/mnt/delay')
 
 for i in range(0, 3605, 5):
-    os.mkdir(f'/mnt/delay_volume/{str(i)}')
+    os.mkdir(f'/mnt/delay/{str(i)}')
