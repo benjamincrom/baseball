@@ -70,7 +70,7 @@ unzip baseball_1974_2021.zip -d ./baseball_1974_2021
 Then import the files in Python using this library:
 ```python
 import baseball
-game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017', 'baseball_1974_2021')
+game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017', 'baseball_1974_2021/1974_2021')
 ```
 
 ## Get Game generator given target directory and date range
