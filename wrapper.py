@@ -30,7 +30,7 @@ def get_todays_games():
     with MyLmdb.open("/mnt/delay/hash.db", "c", map_size=2**30, autogrow=False) as hash_map:
         for this_file in os.listdir('/mnt/delay/3600'):
             file_path = f'/mnt/delay/3600/{this_file}'
-            hash_map[file_path] = 0
+            hash_map[file_path] = ""
 
         shutil.rmtree('/mnt/delay/3600')
         os.mkdir('/mnt/delay/3600')
