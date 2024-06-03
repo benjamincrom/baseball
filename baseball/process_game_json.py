@@ -23,7 +23,7 @@ def process_pitch(event):
     else:
         pitch_type = ''
 
-    pitch_datetime = get_datetime(event['startTime'])
+    pitch_datetime = get_datetime(event.get('startTime', None))
 
     if (not event['pitchData']['coordinates'].get('x') or
             not event['pitchData']['coordinates'].get('y') or
@@ -81,7 +81,7 @@ def process_plate_appearance(plate_appearance, inning_half_str, inning_num,
         elif event['type'] == 'action':
             event_description = event['details']['description']
             event_summary = event['details'].get('event', '')
-            event_datetime = get_datetime(event['startTime'])
+            event_datetime = get_datetime(event.get('startTime'))
 
             substitution_flag, switch_flag, _ = get_sub_switch_steal_flags(
                 event_summary,
@@ -205,8 +205,8 @@ def process_at_bat(plate_appearance, event_list, game_obj,
     else:
         raise ValueError('Batter ID not in player_dict')
 
-    start_datetime = get_datetime(plate_appearance['about']['startTime'])
-    end_datetime = get_datetime(plate_appearance['about']['endTime'])
+    start_datetime = get_datetime(plate_appearance['about'].get('startTime'))
+    end_datetime = get_datetime(plate_appearance['about'].get('endTime'))
     plate_appearance_summary = (
         plate_appearance['result'].get('event', '').strip()
     )
@@ -506,12 +506,12 @@ def initialize_game(this_game, attendance_str, temperature_str, weather_str,
         for play_event in first_play['playEvents']:
             if play_event['type'] == 'pitch':
                 start_date = get_datetime(
-                    play_event['startTime']
+                    play_event.get('startTime')
                 )
                 break
 
         end_date = get_datetime(
-            this_game['liveData']['plays']['allPlays'][-1]['about']['endTime']
+            this_game['liveData']['plays']['allPlays'][-1]['about'].get('endTime')
         )
 
     if start_date:
