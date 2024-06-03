@@ -402,8 +402,8 @@ def set_player_list(team_dict, gamedata_dict, team):
             jersey_number
         )
 
-        new_player.pitch_hand = gamedata_player_dict['pitchHand']['code']
-        new_player.bat_side = gamedata_player_dict['batSide']['code']
+        new_player.pitch_hand = gamedata_player_dict.get('pitchHand', {}).get('code')
+        new_player.bat_side = gamedata_player_dict.get('batSide', {}).get('code')
 
         if this_player_dict['seasonStats']['pitching']['era'] != '-.--':
             this_era = float(this_player_dict['seasonStats']['pitching']['era'])
