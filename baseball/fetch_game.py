@@ -1,3 +1,4 @@
+from copy import deepcopy
 from datetime import timedelta, datetime
 from json import loads
 from multiprocessing import Pool
@@ -662,8 +663,37 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
     for i, game_dict in enumerate(game_dict_list):
         try:
             is_doubleheader = game_is_doubleheader(i, game_dict, game_dict_list)
-            game = baseball.process_game_json.get_game_obj(game_dict,
-                                                           is_doubleheader)
+
+            both_teams_players_id_list = get_both_teams_players(game_dict['liveData']['boxscore']['teams'])
+
+            if both_teams_players_id_list:
+                list_len = len(both_teams_players_id_list)
+                binary_str_list = [
+                    '{:0{width}b}'.format(k, width=list_len) for k in range(2 ** list_len)
+                ]
+                for this_str in binary_str_list:
+                    game_dict_copy = deepcopy(game_dict)
+                    for i, this_char in enumerate(this_str):
+                        this_player_id = both_teams_players_id_list[i]
+                        if this_char == '1':
+                            del(game_dict_copy['liveData']['boxscore']['teams']['home']['players'][this_player_id])
+                        elif this_char == '0':
+                            del(game_dict_copy['liveData']['boxscore']['teams']['away']['players'][this_player_id])
+                        else:
+                            raise Exception("Should be binary string")
+
+                    try:
+                        game = baseball.process_game_json.get_game_obj(game_dict_copy,
+                                                                       is_doubleheader)
+                    except:
+                        continue
+
+                    break
+
+
+            else:
+                game = baseball.process_game_json.get_game_obj(game_dict,
+                                                               is_doubleheader)
 
             set_game_status(game, this_datetime)
 
@@ -761,6 +791,12 @@ def write_game_index(object_html_str, this_datetime, output_dir,
             with open(write_location, 'w', encoding='utf-8') as fh:
                 fh.write(output_html)
 
+def get_both_teams_players(teams_dict):
+    home_player_key_list = teams_dict['home']['players'].keys()
+    away_player_key_list = teams_dict['away']['players'].keys()
+    duplicate_key_list = list(set(home_player_key_list) & set(away_player_key_list))
+    return duplicate_key_list
+
 def get_game_from_date(this_datetime, this_away_code, this_home_code,
                        this_game_number):
     month = this_datetime.month
@@ -798,6 +834,7 @@ def get_game_from_date(this_datetime, this_away_code, this_home_code,
         if ((away_code and home_code) and (away_code == this_away_code) and
                 (home_code == this_home_code) and game_number_is_match):
             is_doubleheader = game_is_doubleheader(i, game_dict, game_dict_list)
+
             game = baseball.process_game_json.get_game_obj(game_dict,
                                                            is_doubleheader)
 
@@ -842,6 +879,7 @@ def get_game_from_date_new(this_datetime, this_away_code, this_home_code,
         if ((away_code and home_code) and (away_code == this_away_code) and
                 (home_code == this_home_code) and game_number_is_match):
             is_doubleheader = game_is_doubleheader(i, game_dict, game_dict_list)
+
             game = baseball.process_game_json.get_game_obj(game_dict,
                                                            is_doubleheader)
 
