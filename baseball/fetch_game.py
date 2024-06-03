@@ -626,14 +626,14 @@ def get_object_html_str(game_html_id_tuple_list):
 
 def write_games_for_date(this_datetime, output_dir, write_game_html=False,
                          write_date_html=False, write_index_html=False):
-    if this_datetime.year >= 2019:
-        generate_game_svgs_for_new_datetime(this_datetime, output_dir,
-                                            write_game_html, write_date_html,
-                                            write_index_html)
-    else:
-        generate_game_svgs_for_old_datetime(this_datetime, output_dir,
-                                            write_game_html, write_date_html,
-                                            write_index_html)
+    #if this_datetime.year >= 2019:
+    generate_game_svgs_for_new_datetime(this_datetime, output_dir,
+                                        write_game_html, write_date_html,
+                                        write_index_html)
+    #else:
+    #    generate_game_svgs_for_old_datetime(this_datetime, output_dir,
+    #                                        write_game_html, write_date_html,
+    #                                        write_index_html)
 
 def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
                                         write_game_html, write_date_html,
