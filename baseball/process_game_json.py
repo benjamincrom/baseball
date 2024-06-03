@@ -431,7 +431,10 @@ def initialize_team(team_gamedata_dict, team_livedata_dict, full_gamedata_dict):
     for _, player_dict in team_livedata_dict['players'].items():
         if player_dict.get('battingOrder'):
             batting_order = int(player_dict['battingOrder'])
-            position = player_dict['allPositions'][0]['code']
+            if len(player_dict['allPositions']) > 0:
+                position = player_dict['allPositions'][0]['code']
+            else:
+                position = None
 
             if batting_order % 100 == 0:
                 batting_index = int((batting_order / 100) - 1)
