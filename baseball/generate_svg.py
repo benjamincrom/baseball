@@ -14,10 +14,10 @@ FakePlateAppearance = namedtuple(
 )
 
 EASTERN_TIMEZONE_STR = 'America/New_York'
-DEFAULT_LOGO = 'baseball-fairy-161.png'
+AWAY_DEFAULT_LOGO = 'baseball-fairy-161-away.png'
+HOME_DEFAULT_LOGO = 'baseball-fairy-161-home.png'
 LOGO_DICT = {
     'LAA': 'team_logos/angels.gif',
-    #'CAL': 'team_logos/cal-angels.gif',
     'HOU': 'team_logos/astros.gif',
     'OAK': 'team_logos/athletics.gif',
     'TOR': 'team_logos/blue-jays.gif',
@@ -31,7 +31,6 @@ LOGO_DICT = {
     'LAD': 'team_logos/dodgers.gif',
     'SF': 'team_logos/giants.gif',
     'CLE': 'team_logos/guardians.png',
-    #'CLE': 'team_logos/indians.gif',
     'NAS': 'team_logos/nl.svg',
     'AAS': 'team_logos/al.svg',
     'SEA': 'team_logos/mariners.gif',
@@ -45,7 +44,6 @@ LOGO_DICT = {
     'PIT': 'team_logos/pirates.gif',
     'TEX': 'team_logos/rangers.gif',
     'TB': 'team_logos/rays.gif',
-    #'TB': 'team_logos/devil-rays.gif',
     'CIN': 'team_logos/reds.gif',
     'BOS': 'team_logos/red-sox.gif',
     'COL': 'team_logos/rockies.gif',
@@ -2206,14 +2204,14 @@ def get_logo(game):
     signature_svg = ''
     x_pos = game_width - BOX_WIDTH
     y_pos = 8 * BOX_HEIGHT + BOX_HEIGHT // 2
-    away_logo_str = LOGO_DICT.get(game.away_team.abbreviation, DEFAULT_LOGO)
+    away_logo_str = LOGO_DICT.get(game.away_team.abbreviation, AWAY_DEFAULT_LOGO)
     signature_svg += AWAY_LOGO.format(x_pos=x_pos,
                                       y_pos=y_pos,
                                       logo=away_logo_str)
 
     x_pos = game_width - BOX_WIDTH
     y_pos = 8 * BOX_HEIGHT + BOX_HEIGHT // 2 + HEIGHT // 2
-    home_logo_str = LOGO_DICT.get(game.home_team.abbreviation, DEFAULT_LOGO)
+    home_logo_str = LOGO_DICT.get(game.home_team.abbreviation, HOME_DEFAULT_LOGO)
     signature_svg += HOME_LOGO.format(x_pos=x_pos,
                                       y_pos=y_pos,
                                       logo=home_logo_str)
