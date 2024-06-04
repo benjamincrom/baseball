@@ -379,6 +379,8 @@ class Team:
             player = self.find_player('Gene Hayden')
         elif player_key == 'Ted Wieand':
             player = self.find_player('Franklin Wieand')
+        elif player_key == 'Bucky Brandon':
+            player = self.find_player('Darrell Brandon')
             
 
         if player:
