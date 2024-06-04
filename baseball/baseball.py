@@ -383,6 +383,8 @@ class Team:
             player = self.find_player('Darrell Brandon')
         elif player_key == 'Candy Harris':
             player = self.find_player('Alonzo Harris')
+        elif player_key == 'Jose Baez':
+            player = self.find_player('Jose Báez')
             
 
         if player:
