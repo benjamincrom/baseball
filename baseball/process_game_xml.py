@@ -653,8 +653,8 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
     steal_description = None
     for event_container in baseball_half_inning:
         event_datetime = get_datetime(event_container.get('tfs_zulu'))
-        event_description = event_container.get('des')
-        event_summary = event_container.get('event')
+        event_description = event_container.get('des', '')
+        event_summary = event_container.get('event', '')
         inning_num = len(game_obj.inning_list) + 1
         next_batter_num = len(plate_appearance_list) + 1
         if event_container.tag == 'action':
