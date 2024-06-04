@@ -315,6 +315,7 @@ def parse_substitution(substitution_datetime, description, event_summary,
         position_num = 1
 
     outgoing_player_name = get_name_only(outgoing_player_name)
+
     incoming_player = this_team[incoming_player_name]
     outgoing_player = this_team[outgoing_player_name]
     if incoming_player is None:

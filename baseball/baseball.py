@@ -368,8 +368,8 @@ class Team:
         player = self.find_player(player_key)
         if player:
             return player
-        elif player_key == 'William Demars':
-            player = self.find_player('Billy Demars')
+        elif player_key == 'William DeMars':
+            player = self.find_player('Billy DeMars')
             if player:
                 return player
             else:
