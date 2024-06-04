@@ -317,6 +317,18 @@ def parse_substitution(substitution_datetime, description, event_summary,
     outgoing_player_name = get_name_only(outgoing_player_name)
     incoming_player = this_team[incoming_player_name]
     outgoing_player = this_team[outgoing_player_name]
+    if incoming_player is None:
+        if this_team == game_obj.away_team:
+            that_team = game_obj.home_team
+        elif this_team == game_obj.home_team:
+            that_team = game_obj.away_team
+        else:
+            raise ValueError("Not valid team")
+
+        incoming_player = that_team[incoming_player_name]
+        if incoming_player is None:
+            raise ValueError("Invalid substition, no incoming player")
+
     substitution_obj = Substitution(substitution_datetime,
                                     incoming_player,
                                     outgoing_player,
