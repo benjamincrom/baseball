@@ -369,7 +369,12 @@ class Team:
         if player:
             return player
         else:
-            raise ValueError('{} not found in team'.format(player_key))
+            if player == 'William Demars':
+                player = self.find_player('Billy Demars')
+                if player:
+                    return player
+                else:
+                    raise ValueError('{} not found in team'.format(player_key))
 
     def __repr__(self):
         return_str = (

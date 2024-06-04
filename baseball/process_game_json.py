@@ -79,7 +79,7 @@ def process_plate_appearance(plate_appearance, inning_half_str, inning_num,
             pickoff_obj = process_pickoff(event)
             event_list.append(pickoff_obj)
         elif event['type'] == 'action':
-            event_description = event['details']['description']
+            event_description = event['details'].get('description')
             event_summary = event['details'].get('event', '')
             event_datetime = get_datetime(event.get('startTime'))
 
