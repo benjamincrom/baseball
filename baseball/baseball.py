@@ -373,6 +373,13 @@ class Team:
             player = self.find_player('Billy DeMars')
         elif player_key == 'Yo-Yo Davalillo':
             player = self.find_player('Pompeyo Davalillo')
+        elif player_key == 'Moose Morton':
+            player = self.find_player('Guy Morton')
+        elif player_key == 'Lefty Hayden':
+            player = self.find_player('Gene Hayden')
+        elif player_key == 'Ted Wieand':
+            player = self.find_player('Franklin Wieand')
+            
 
         if player:
             return player
