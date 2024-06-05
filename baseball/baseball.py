@@ -393,7 +393,38 @@ class Team:
             player = self.find_player('José Álvarez')
         elif player_key == 'Victor Rodriguez':
             player = self.find_player('Victor Rodríguez')
-            
+        elif player_key == 'Eddie Tucker':
+            player = self.find_player('Scooter Tucker')
+        elif player_key == 'Wily Mo Pena':
+            player = self.find_player('Wily Mo Peña')
+        elif player_key == 'Jose Hernandez':
+            player = self.find_player('José Hernández')
+        elif player_key == 'Carlos Hernandez':
+            player = self.find_player('Carlos Hernández')
+        elif player_key == 'Oliver Perez':
+            player = self.find_player('Oliver Pérez')
+        elif player_key == 'Einar Diaz':
+            player = self.find_player('Einar Díaz')
+        elif player_key == 'Adrian Beltre':
+            player = self.find_player('Adrian Beltré')
+        elif player_key == 'Carlos Beltran':
+            player = self.find_player('Carlos Beltrán')
+        elif player_key == 'Javier Lopez':
+            player = self.find_player('Javier López')
+        elif player_key == 'Eddie Perez':
+            player = self.find_player('Eddie Pérez')
+        elif player_key == 'Adrian Gonzalez':
+            player = self.find_player('Adrián González')
+        elif player_key == 'Robinson Cano':
+            player = self.find_player('Robinson Canó')
+        elif player_key == 'Brayan Pena':
+            player = self.find_player('Brayan Peña')
+        elif player_key == 'Edwin Encarnacion':
+            player = self.find_player('Edwin Encarnación')
+        elif player_key == 'Francisco Rodriguez':
+            player = self.find_player('Francisco Rodríguez')
+        elif player_key == 'Mendy Lopez':
+            player = self.find_player('Mendy López')
 
         if player:
             return player
