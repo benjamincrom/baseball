@@ -385,6 +385,14 @@ class Team:
             player = self.find_player('Alonzo Harris')
         elif player_key == 'Jose Baez':
             player = self.find_player('Jose Báez')
+        elif player_key == 'Puchy Delgado':
+            player = self.find_player('Luis Delgado')
+        elif player_key == 'Tony Pena':
+            player = self.find_player('Tony Peña')
+        elif player_key == 'Jose Alvarez':
+            player = self.find_player('José Álvarez')
+        elif player_key == 'Victor Rodriguez':
+            player = self.find_player('Victor Rodríguez')
             
 
         if player:
