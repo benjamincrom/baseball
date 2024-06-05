@@ -583,6 +583,8 @@ class Team:
             player = self.find_player('Yoendrys Gómez')
         elif player_key == 'Joe JimÃ©nez':
             player = self.find_player('Joe Jiménez')
+        elif player_key == 'Joe Jimenez':
+            player = self.find_player('Joe Jiménez')
         elif player_key == 'Jesus Sanchez':
             player = self.find_player('Jesús Sánchez')
         elif player_key == 'Rene Garcia':
@@ -1065,6 +1067,126 @@ class Team:
             player = self.find_player('Ronald Acuña Jr.')
         elif player_key == 'Yender Caramo':
             player = self.find_player('Yender Cáramo')
+        elif player_key == 'Ivan de Jesus':
+            player = self.find_player('Iván De Jesús Jr.')
+        elif player_key == 'Bryant Elliott':
+            player = self.find_player('Bryant Elliot')
+        elif player_key == 'Carlos Martinez':
+            player = self.find_player('Carlos Martinez')
+        elif player_key == 'Joe Jimenez':
+            player = self.find_player('Joe Jimenez')
+        elif player_key == 'Jhon NuÃ±ez':
+            player = self.find_player('Jhon Nuñez')
+        elif player_key == 'Ronald Pena':
+            player = self.find_player('Ronald Peña')
+        elif player_key == 'CÃ©sar HernÃ¡ndez':
+            player = self.find_player('César Hernández')
+        elif player_key == 'Franklin Perez':
+            player = self.find_player('Franklin Pérez')
+        elif player_key == 'Jonathan LoÃ¡isiga':
+            player = self.find_player('Jonathan Loáisiga')
+        elif player_key == 'Daysbel Hernandez':
+            player = self.find_player('Daysbel Hernández')
+        elif player_key == 'Michael Harris  Zach McKinstry':
+            player = self.find_player('Michael Harris II')
+        elif player_key == 'Edwin Rios':
+            player = self.find_player('Player')
+        elif player_key == 'Raffi Vizcaino':
+            player = self.find_player('Raffi Vizcaíno')
+        elif player_key == 'B.  J. Lopez':
+            player = self.find_player('Javy Lopez')
+        elif player_key == 'Julio Eusebio':
+            player = self.find_player('Ricky Eusebio')
+        elif player_key == 'Miller Diaz':
+            player = self.find_player('Miller Díaz')
+        elif player_key == 'Danny De La Calle':
+            player = self.find_player('Daniel De La Calle')
+        elif player_key == 'Gary SÃ¡nchez':
+            player = self.find_player('Gary Sánchez')
+        elif player_key == 'Jose Hernandez':
+            player = self.find_player('Jose Hernandez')
+        elif player_key == 'Chris Alleyne':
+            player = self.find_player('Chris Alleyne')
+        elif player_key == 'Kike Hernandez':
+            player = self.find_player('Enrique Hernández')
+        elif player_key == 'Robert Zarate':
+            player = self.find_player('Robert Zárate')
+        elif player_key == 'FÃ©lix PeÃ±a':
+            player = self.find_player('Felix Pie')
+        elif player_key == 'Randy Rodriguez':
+            player = self.find_player('Randy Rodriguez')
+        elif player_key == 'Norel Gonzalez':
+            player = self.find_player('Norel González')
+        elif player_key == 'Mandy Alvarez':
+            player = self.find_player('Armando Alvarez')
+        elif player_key == 'Jose A.   Valdez':
+            player = self.find_player('Jose Valdez')
+        elif player_key == 'Alexander Vizcaino':
+            player = self.find_player('Alexander Vizcaíno')
+        elif player_key == 'Ramon Rodriguez':
+            player = self.find_player('Ramón Rodríguez')
+        elif player_key == 'Jonathan Rodriguez':
+            player = self.find_player('Johnathan Rodriguez')
+        elif player_key == 'Eric Marinez':
+            player = self.find_player('Eric Mariñez')
+        elif player_key == 'Ivan De Jesus':
+            player = self.find_player('Ivan De Jesus')
+        elif player_key == 'Bryant Elliott':
+            player = self.find_player('Bryant Elliot')
+        elif player_key == 'Angel Lopez Alvarez':
+            player = self.find_player('Angel Lopez')
+        elif player_key == 'Norwith Gudino':
+            player = self.find_player('Norwith Gudiño')
+        elif player_key == 'Carlos Sanchez':
+            player = self.find_player('Carlos Sanchez')
+        elif player_key == 'Jack Lopez':
+            player = self.find_player('Jack López')
+        elif player_key == 'Jack LÃ³pez':
+            player = self.find_player('Jack López')
+        elif player_key == 'Roddery Munoz':
+            player = self.find_player('Roddery Muñoz')
+        elif player_key == 'Gerardo Concepcion':
+            player = self.find_player('Gerardo Concepción')
+        elif player_key == 'Danuerys De La Cruz':
+            player = self.find_player('Daneurys De La Cruz')
+        elif player_key == 'Jose Lopez':
+            player = self.find_player('José Lopez')
+        elif player_key == 'Jimmy CrooksI':
+            player = self.find_player('Jimmy Crooks')
+        elif player_key == 'Li-Jen Chu':
+            player = self.find_player('Kungkuan Giljegiljaw')
+        elif player_key == 'Reshard Munroe':
+            player = self.find_player('Shard Munroe')
+        elif player_key == 'Andres Nunez':
+            player = self.find_player('Andrés Núñez')
+        elif player_key == 'Elniery Garcia':
+            player = self.find_player('Elniery García')
+        elif player_key == 'Malcom Nunez':
+            player = self.find_player('Malcom Nuñez')
+        elif player_key == 'Jose Garcia':
+            player = self.find_player('Jose Garcia')
+        elif player_key == 'Richelson Pena':
+            player = self.find_player('Richelson Peña')
+        elif player_key == 'Ignacio Alvarez':
+            player = self.find_player('Nacho Alvarez Jr.')
+        elif player_key == 'Nelson VelÃ¡zquez':
+            player = self.find_player('Nelson Velázquez')
+        elif player_key == 'Nelson Velazquez':
+            player = self.find_player('Nelson Velázquez')
+        elif player_key == 'J.P. Martinez':
+            player = self.find_player('J.P. Martínez')
+        elif player_key == 'Luis Garcia':
+            player = self.find_player('Luis García')
+        elif player_key == 'Luis Garcia Jr.':
+            player = self.find_player('Luis García Jr.')
+        elif player_key == 'J. P. Martinez':
+            player = self.find_player('J.P. Martínez')
+        elif player_key == 'Ronald Acuna Jr.':
+            player = self.find_player('Ronald Acuña Jr.')
+        elif player_key == 'Michael Harris':
+            player = self.find_player('Michael Harris II')
+        elif player_key == 'JT Realmuto':
+            player = self.find_player('J.T. Realmuto')
 
         if player:
             return player
