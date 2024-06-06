@@ -1093,8 +1093,6 @@ class Team:
             player = self.find_player('Daysbel Hernández')
         elif player_key == 'Michael Harris':
             player = self.find_player('Michael Harris II')
-        elif player_key == 'Edwin Rios':''
-            player = self.find_player('Player')
         elif player_key == 'Raffi Vizcaino':
             player = self.find_player('Raffi Vizcaíno')
         elif player_key == 'Raffi VizcaÃno':
