@@ -1134,7 +1134,7 @@ class Team:
         elif player_key == 'Eric Marinez':
             player = self.find_player('Eric Mariñez')
         elif player_key == 'Ivan De Jesus':
-            player = self.find_player('Ivan De Jesus')
+            player = self.find_player('Iván De Jesús Jr.')
         elif player_key == 'Bryant Elliott':
             player = self.find_player('Bryant Elliot')
         elif player_key == 'Angel Lopez Alvarez':
