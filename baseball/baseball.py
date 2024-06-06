@@ -934,7 +934,7 @@ class Team:
         elif player_key == 'Ronald Guzman':
             player = self.find_player('Ronald Guzmán')
         elif player_key == 'Jose Hernandez':
-            player = self.find_player('José Urquidy')
+            player = self.find_player('José Hernández')
         elif player_key == 'Jose Butto':
             player = self.find_player('José Buttó')
         elif player_key == 'Vidal Nuno':
@@ -1093,7 +1093,7 @@ class Team:
             player = self.find_player('Daysbel Hernández')
         elif player_key == 'Michael Harris':
             player = self.find_player('Michael Harris II')
-        elif player_key == 'Edwin Rios':
+        elif player_key == 'Edwin Rios':''
             player = self.find_player('Player')
         elif player_key == 'Raffi Vizcaino':
             player = self.find_player('Raffi Vizcaíno')
@@ -1187,6 +1187,8 @@ class Team:
             player = self.find_player('Luis García Jr.')
         elif player_key == 'J. P. Martinez':
             player = self.find_player('J.P. Martínez')
+        elif player_key == 'Ronald Acuna Jr. ':
+            player = self.find_player('Ronald Acuña Jr.')
         elif player_key == 'Ronald Acuna Jr.':
             player = self.find_player('Ronald Acuña Jr.')
         elif player_key == 'Michael Harris':
