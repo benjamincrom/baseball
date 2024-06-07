@@ -663,11 +663,9 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
     for i, game_dict in enumerate(game_dict_list):
         try:
             is_doubleheader = game_is_doubleheader(i, game_dict, game_dict_list)
-
             both_teams_players_id_list = get_both_teams_players(game_dict['liveData']['boxscore']['teams'])
-
-            if both_teams_players_id_list:
-                list_len = len(both_teams_players_id_list)
+            list_len = len(both_teams_players_id_list)
+            if both_teams_players_id_list and list_len <= 6:
                 binary_str_list = [
                     '{:0{width}b}'.format(k, width=list_len) for k in range(2 ** list_len)
                 ]
