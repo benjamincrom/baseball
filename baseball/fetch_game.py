@@ -711,9 +711,14 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
             exc_type, exc_value, exc_traceback = exc_info()
             lines = format_exception(exc_type, exc_value, exc_traceback)
             exception_str = ' '.join(lines)
-            print('{} {} {}'.format(datetime.utcnow(),
-                                    game_dict['gameData']['game']['id'],
-                                    exception_str))
+            if 'gameData' in game_dict:
+                print('{} {} {}'.format(datetime.utcnow(),
+                                        game_dict['gameData']['game']['id'],
+                                        exception_str))
+            else:
+                print('{} {} {}'.format(datetime.utcnow(),
+                                        "gameData not in game_dict",
+                                        exception_str))
 
     object_html_str = get_object_html_str(game_html_id_tuple_list)
 
