@@ -126,6 +126,423 @@ STADIUM_TIMEZONE_DICT = {
     'T-Mobile Park': 'America/Los_Angeles'
 }
 
+SPECIAL_CASE_NAME_DICT = {
+    'William DeMars': 'Billy DeMars',
+    'Yo-Yo Davalillo': 'Pompeyo Davalillo',
+    'Moose Morton': 'Guy Morton',
+    'Lefty Hayden': 'Gene Hayden',
+    'Ted Wieand': 'Franklin Wieand',
+    'Bucky Brandon': 'Darrell Brandon',
+    'Candy Harris': 'Alonzo Harris',
+    'Jose Baez': 'Jose Báez',
+    'Puchy Delgado': 'Luis Delgado',
+    'Tony Pena': 'Tony Peña',
+    'Jose Alvarez': 'José Álvarez',
+    'Victor Rodriguez': 'Victor Rodríguez',
+    'Eddie Tucker': 'Scooter Tucker',
+    'Wily Mo Pena': 'Wily Mo Peña',
+    'Carlos Hernandez': 'Carlos Hernández',
+    'Oliver Perez': 'Oliver Pérez',
+    'Einar Diaz': 'Einar Díaz',
+    'Adrian Beltre': 'Adrian Beltré',
+    'Carlos Beltran': 'Carlos Beltrán',
+    'Javier Lopez': 'Javier López',
+    'Eddie Perez': 'Eddie Pérez',
+    'Adrian Gonzalez': 'Adrián González',
+    'Robinson Cano': 'Robinson Canó',
+    'Brayan Pena': 'Brayan Peña',
+    'Edwin Encarnacion': 'Edwin Encarnación',
+    'Francisco Rodriguez': 'Francisco Rodríguez',
+    'Mendy Lopez': 'Mendy López',
+    'Jeremy Pena': 'Jeremy Peña',
+    'Jonathan Sanchez': 'Jonathan Sánchez',
+    'Jonathan Bermudez': 'Jonathan Bermúdez',
+    'Andrew Suarez': 'Andrew Suárez',
+    'Omar Narvaez': 'Omar Narváez',
+    'Eloy Jimenez': 'Eloy Jiménez',
+    'Moises Gomez': 'Moisés Gómez',
+    'Jason Garcia': 'Jason García',
+    'Francisco Mejia': 'Francisco Mejía',
+    'Carlos Rodon': 'Carlos Rodón',
+    'Michael Harris': 'Michael Harris II',
+    'Zach McKinstry': 'Zach McKinstry',
+    'Allen Cordoba': 'Allen Córdoba',
+    'Ronaldo Hernandez': 'Ronaldo Hernández',
+    'Ricardo Sanchez': 'Ricardo Sánchez',
+    'Matt Pare': 'Matt Paré',
+    'Miguel Gonzalez': 'Miguel González',
+    'Felix Pena': 'Félix Peña',
+    'Yohander Mendez': 'Yohander Méndez',
+    'Dom Nunez': 'Dom Nuñez',
+    'Randy Vasquez': 'Randy Vásquez',
+    'Angel Rondon': 'Angel Rondón',
+    'Yandy Diaz': 'Yandy Díaz',
+    'Edwin Diaz': 'Edwin Díaz',
+    'Jose De Leon': 'José De León',
+    'Angel Martinez': 'Angel Martínez',
+    'Adeiny Hechavarria': 'Adeiny Hechavarría',
+    'Adeiny HechavarrÃa': 'Adeiny Hechavarría',
+    'Jan Vazquez': 'Jan Vázquez',
+    'Neil Ramirez': 'Neil Ramírez',
+    'Chris Alleyne': 'Chris Alleyne',
+    'Bruce Rondon': 'Bruce Rondón',
+    'Anibal Sanchez': 'Aníbal Sánchez',
+    'Pedro Florimon': 'Pedro Florimón',
+    'Eury Perez': 'Eury Pérez',
+    'Yasmany Tomas': 'Yasmany Tomás',
+    'Roel Ramirez': 'Roel Ramírez',
+    'Yennsy Diaz': 'Yennsy Díaz',
+    'David Banuelos': 'David Bañuelos',
+    'Wenceel Perez': 'Wenceel Pérez',
+    'Aneury Tavarez': 'Aneury Tavárez',
+    'Marcos Castanon': 'Marcos Castañon',
+    'Dariel Alvarez': 'Dariel Álvarez',
+    'Jose Rondon': 'José Rondón',
+    'Miguel Diaz': 'Miguel Díaz',
+    'Arismendy Alcantara': 'Arismendy Alcántara',
+    'Ubaldo Jimenez': 'Ubaldo Jiménez',
+    'Dario Alvarez': 'Dario Álvarez',
+    'Sergio Alcantara': 'Sergio Alcántara',
+    'Jonathan Guzman': 'Jonathan Guzmán',
+    'Ozzie Martinez': 'Osvaldo Martínez',
+    'Carlos Perez': 'Carlos Pérez',
+    'Jonathan Hernandez': 'Jonathan Hernández',
+    'Hector Gomez': 'Héctor Gómez',
+    'Michael De Leon': 'Michael De León',
+    'Kristopher Negron': 'Kristopher Negrón',
+    'Deivi Garcia': 'Deivi García',
+    'Erick Pena': 'Erick Peña',
+    'Manuel Rodriguez': 'Manuel Rodríguez',
+    'Lewin Diaz': 'Lewin Díaz',
+    'Hernan Perez': 'Hernán Pérez',
+    'Edwin O Diaz': 'Edwin Díaz',
+    'Alex Ramirez': 'Alex Ramírez',
+    'Ranger Suarez': 'Ranger Suárez',
+    'Guillermo Zuniga': 'Guillermo Zuñiga',
+    'Luis Frias': 'Luis Frías',
+    'Michael Perez': 'Michael Pérez',
+    'Jose Berrios': 'José Berríos',
+    'Jerar Encarnacion': 'Jerar Encarnación',
+    'Julian Fernandez': 'Julian Fernández',
+    'Darwinzon Hernandez': 'Darwinzon Hernández',
+    'Vidal Brujan': 'Vidal Bruján',
+    'Emilio Pagan': 'Emilio Pagán',
+    'Teoscar Hernandez': 'Teoscar Hernández',
+    'Francisco Perez': 'Francisco Pérez',
+    'Willy Garcia': 'Willy García',
+    'Julio Urias': 'Julio Urías',
+    'Joe Colon': 'Joe Colón',
+    'Yoendrys Gomez': 'Yoendrys Gómez',
+    'Joe JimÃ©nez': 'Joe Jiménez',
+    'Joe Jimenez': 'Joe Jiménez',
+    'Jesus Sanchez': 'Jesús Sánchez',
+    'Rene Garcia': 'René García',
+    'Andres Munoz': 'Andrés Muñoz',
+    'Ismael Guillon': 'Ismael Guillón',
+    'Yacksel Rios': 'Yacksel Ríos',
+    'Yoan Lopez': 'Yoan López',
+    'Jorge Lopez': 'Jorge López',
+    'Kelvin Gutierrez': 'Kelvin Gutiérrez',
+    'Andy Ibanez': 'Andy Ibáñez',
+    'Robel Garcia': 'Robel García',
+    'Ronny Rodriguez': 'Ronny Rodríguez',
+    'Ricardo Genoves': 'Ricardo Genovés',
+    'Victor Gonzalez': 'Victor González',
+    'Eliezer Alvarez': 'Eliezer Álvarez',
+    'Gary Sanchez': 'Gary Sánchez',
+    'Yairo Munoz': 'Yairo Muñoz',
+    'Endy Rodriguez': 'Endy Rodríguez',
+    'Yefry Ramirez': 'Yefry Ramírez',
+    'Rafael Marchan': 'Rafael Marchán',
+    'Vimael Machin': 'Vimael Machín',
+    'Ronald Bolanos': 'Ronald Bolaños',
+    'Deivy Grullon': 'Deivy Grullón',
+    'Cristopher Sanchez': 'Cristopher Sánchez',
+    'Carlos Estevez': 'Carlos Estévez',
+    'Jonathan Rodriguez': 'Jonathan Rodríguez',
+    'Leandro Cedeno': 'Leandro Cedeño',
+    'Albert Suarez': 'Albert Suárez',
+    'Yefri Perez': 'Yefri Pérez',
+    'Edgar Garcia': 'Edgar García',
+    'Miguel Gomez': 'Miguel Gómez',
+    'Rafael Martin': 'Rafael Martín',
+    'Humberto Mejia': 'Humberto Mejía',
+    'D\'Arby Myers': 'Johnni Turbo',
+    'Oscar Hernandez': 'Óscar Hernández',
+    'Yusniel Diaz': 'Yusniel Díaz',
+    'Eugenio Suarez': 'Eugenio Suárez',
+    'Julio Rodriguez': 'Julio Rodríguez',
+    'Nerwilian Cedeno': 'Nerwilian Cedeño',
+    'Marcel Renteria': 'Marcel Rentería',
+    'Roberto Perez': 'Roberto Pérez',
+    'Dayan Diaz': 'Dayan Díaz',
+    'Michael Harris': 'Michael Harris II',
+    'Luis Garcia': 'Luis García',
+    'Renato Nunez': 'Renato Núñez',
+    'Santiago Chavez': 'Santiago Chávez',
+    'Rodolfo Duran': 'Rodolfo Durán',
+    'Sandy Baez': 'Sandy Báez',
+    'Jose A.   Valdez': 'José A. Váldez',
+    'Wilderd Patino': 'Wilderd Patiño',
+    'Miguel Sanchez': 'Miguel Sánchez',
+    'Jonathan Loaisiga': 'Jonathan Loáisiga',
+    'Randy Rodriguez': 'Randy Rodríguez',
+    'Alexis Diaz': 'Alexis Díaz',
+    'Elias Diaz': 'Elias Díaz',
+    'Erik Gonzalez': 'Erik González',
+    'Omar Estevez': 'Omar Estévez',
+    'Carlos Corporan': 'Carlos Corporán',
+    'Ramon Vazquez': 'Ramón Vázquez',
+    'Xavier Cedeno': 'Xavier Cedeño',
+    'Hector Sanchez': 'Héctor Sánchez',
+    'Marco Hernandez': 'Marco Hernández',
+    'Jose Briceno': 'José Briceño',
+    'Pedro Araujo': 'Pedro Araújo',
+    'Luis Gonzalez': 'Luis González',
+    'Paco Rodriguez': 'Paco Rodríguez',
+    'Luis Avilan': 'Luis Avilán',
+    'Luis Urias': 'Luis Urías',
+    'Carlos Frias': 'Carlos Frías',
+    'Alfredo Gonzalez': 'Alfredo González',
+    'MoisÃ©s GÃ³mez': 'Moisés Gómez',
+    'Victor Alcantara': 'Victor Alcántara',
+    'Ricardo Rodriguez': 'Ricardo Rodríguez',
+    'Emilio Bonifacio': 'Emilio Bonifácio',
+    'Reynaldo Lopez': 'Reynaldo López',
+    'Yohan Ramirez': 'Yohan Ramírez',
+    'Hector Noesi': 'Hector Noesí',
+    'Jose Manuel Fernandez': 'José Manuel Fernández',
+    'Cionel Perez': 'Cionel Pérez',
+    'Jose Fermin': 'José Fermín',
+    'Andres Gimenez': 'Andrés Giménez',
+    'Aderlin Rodriguez': 'Aderlin Rodríguez',
+    'Anthony Garcia': 'Anthony García',
+    'Angel Sanchez': 'Angel Sánchez',
+    'Daniel Alvarez': 'Daniel Álvarez',
+    'Richard Rodriguez': 'Richard Rodríguez',
+    'Adrian Martinez': 'Adrián Martínez',
+    'Yerry Rodriguez': 'Yerry Rodríguez',
+    'Sean Rodriguez': 'Sean Rodríguez',
+    'Jhan Marinez': 'Jhan Mariñez',
+    'Gorkys Hernandez': 'Gorkys Hernández',
+    'Jhoulys Chacin': 'Jhoulys Chacín',
+    'Angel Pagan': 'Ángel Pagán',
+    'Richard RodrÃ­guez': 'Richard Rodríguez',
+    'Roenis Elias': 'Roenis Elías',
+    'Felipe VÃ¡zquez': 'Felipe Vázquez',
+    'Felipe Vazquez': 'Felipe Vázquez',
+    'Javier Baez': 'Javier Báez',
+    'Javier BÃ¡ez': 'Javier Báez',
+    'Cesar Hernandez': 'César Hernández',
+    'Ramon Urias': 'Ramón Urías',
+    'Audry Perez': 'Audry Pérez',
+    'Nasim Nunez': 'Nasim Nuñez',
+    'Jesmuel Valentin': 'Jesmuel Valentín',
+    'Jonathan Arauz': 'Jonathan Araúz',
+    'Yoelqui Cespedes': 'Yoelqui Céspedes',
+    'Pedro Leon': 'Pedro León',
+    'Oscar Colas': 'Oscar Colás',
+    'Chi Chi Gonzalez': 'Chi Chi González',
+    'Yolmer Sanchez': 'Yolmer Sánchez',
+    'Derian Gonzalez': 'Derian González',
+    'Roberto Pena': 'Roberto Peña',
+    'Luis Marte': 'Luis Marté',
+    'Hector Rondon': 'Héctor Rondón',
+    'Xavier Fernandez': 'Xavier Fernández',
+    'Jose Lopez': 'José López',
+    'Kevin Alcantara': 'Kevin Alcántara',
+    'Arodys Vizcaino': 'Arodys Vizcaíno',
+    'Christian Colon': 'Christian Colón',
+    'Aledmys Diaz': 'Aledmys Díaz',
+    'David Garcia': 'David García',
+    'Samir Duenez': 'Samir Dueñez',
+    'Edinson Vólquez': 'Edinson Volquez',
+    'Avisail Garcia': 'Avisaíl García',
+    'AvisaÃl GarcÃa': 'Avisaíl García',
+    'Adolis Garcia': 'Adolis García',
+    'Jose J.   De Los Santos': 'Jose De Los Santos',
+    'Dedniel Nunez': 'Dedniel Núñez',
+    'Elieser Hernandez': 'Elieser Hernández',
+    'Joely Rodriguez': 'Joely Rodríguez',
+    'Jairo Diaz': 'Jairo Díaz',
+    'Sixto Sanchez': 'Sixto Sánchez',
+    'Erasmo Ramirez': 'Erasmo Ramírez',
+    'Jaime Garcia': 'Jaime García',
+    'Jose Dominguez': 'José Domínguez',
+    'Jasson Dominguez': 'Jasson Domínguez',
+    'Jose Martinez': 'José Martínez',
+    'Williams Perez': 'Williams Pérez',
+    'Rayan Gonzalez': 'Rayan González',
+    'JC Ramirez': 'JC Ramírez',
+    'Yonny Hernandez': 'Yonny Hernández',
+    'Jose Yepez': 'José Yépez',
+    'Jose Ramirez': 'José Ramírez',
+    'Wilking Rodriguez': 'Wilking Rodríguez',
+    'Darien Nunez': 'Darien Núñez',
+    'Rony Garcia': 'Rony García',
+    'Cam Schlitter': 'Cam Schlittler',
+    'Pedro Pages': 'Pedro Pagés',
+    'Pedro Baez': 'Pedro Báez',
+    'Carlos Gomez': 'Carlos Gómez',
+    'Domingo German': 'Domingo Germán',
+    'Pablo Lopez': 'Pablo López',
+    'Andy Gonzalez': 'Andy González',
+    'Keinner Pina': 'Keinner Piña',
+    'Alex Colome': 'Alex Colomé',
+    'Enrique Hernandez': 'Enrique Hernández',
+    'Jhon Nunez': 'Jhon Nuñez',
+    'Ariel Pena': 'Ariel Peña',
+    'Ofreidy Gomez': 'Ofreidy Gómez',
+    'Yacksel RÃ­os': 'Yacksel Ríos',
+    'Hector Velazquez': 'Hector Velázquez',
+    'Andrew Perez': 'Andrew Pérez',
+    'Jorge Guzman': 'Jorge Guzmán',
+    'Jarlin Garcia': 'Jarlín García',
+    'Jonny Deluca': 'Jonny DeLuca',
+    'Mauricio Dubon': 'Mauricio Dubón',
+    'Jeison Guzman': 'Jeison Guzmán',
+    'Dom NuÃ±ez': 'Dom Nuñez',
+    'Manny Pina': 'Manny Piña',
+    'Jose Urena': 'José Ureña',
+    'Edwin Rios': 'Edwin Ríos',
+    'Roberto Gomez': 'Roberto Gómez',
+    'Felix Hernandez': 'Félix Hernández',
+    'Yoenis Céspedes': 'Yoenis Cespedes',
+    'Ronald Guzman': 'Ronald Guzmán',
+    'Jose Hernandez': 'José Hernández',
+    'Jose Butto': 'José Buttó',
+    'Vidal Nuno': 'Vidal Nuño',
+    'Randy Cesar': 'Randy César',
+    'Kevin Vicuna': 'Kevin Vicuña',
+    'Aaron Munoz': 'Aaron Muñoz',
+    'Leury Garcia': 'Leury García',
+    'Bengie Gonzalez': 'Bengie González',
+    'Jose Rodriguez': 'José Rodríguez',
+    'Manny Banuelos': 'Manny Bañuelos',
+    'Oscar Mercado': 'Óscar Mercado',
+    'Gio Gonzalez': 'Gio González',
+    'Sammy Solis': 'Sammy Solís',
+    'Yimi Garcia': 'Yimi García',
+    'Dereck Rodriguez': 'Dereck Rodríguez',
+    'Sandy Leon': 'Sandy León',
+    'Martin Perez': 'Martín Pérez',
+    'Adalberto Mejia': 'Adalberto Mejía',
+    'Luisangel Acuna': 'Luisangel Acuña',
+    'Isan Diaz': 'Isan Díaz',
+    'Anyelo Gomez': 'Anyelo Gómez',
+    'Ali Sanchez': 'Ali Sánchez',
+    'Carlos Gonzalez': 'Carlos González',
+    'Melvin Adon': 'Melvin Adón',
+    'Harol Gonzalez': 'Harol González',
+    'Harold Ramirez': 'Harold Ramírez',
+    'Dany Jimenez': 'Dany Jiménez',
+    'Francisco Pena': 'Francisco Peña',
+    'Seranthony Dominguez': 'Seranthony Domínguez',
+    'Jose Fernandez': 'José Fernández',
+    'David Rodriguez': 'David Rodríguez',
+    'Jose Sanchez': 'José Sánchez',
+    'Luis Patino': 'Luis Patiño',
+    'Joe Jimenez': 'Joe Jimenez',
+    'Ariel Hernandez': 'Ariel Hernández',
+    'Marcos Diplan': 'Marcos Diplán',
+    'Jeanmar Gomez': 'Jeanmar Gómez',
+    'Sergio AlcÃ¡ntara': 'Sergio Alcántara',
+    'Jack Lopez': 'Jack López',
+    'Delvin Perez': 'Delvin Pérez',
+    'Severino Gonzalez': 'Severino González',
+    'Eduardo Jimenez': 'Eduardo Jiménez',
+    'Buddy Reed': 'Michael Reed',
+    'Juan Gamez': 'Juan Gámez',
+    'Jumbo Diaz': 'Jumbo Díaz',
+    'Jorge Ona': 'Jorge Oña',
+    'Raul Alcantara': 'Raúl Alcántara',
+    'Adonis Garcia': 'Adonis García',
+    'Miguel Sano': 'Miguel Sanó',
+    'Eduardo Nunez': 'Eduardo Núñez',
+    'J.  P. Martinez': 'J.P. Martínez',
+    'JP Martinez': 'J.P. Martínez',
+    'J. C. Mejia': 'J.C. Mejía',
+    'Junior Fernandez': 'Junior Fernández',
+    'Jean Carlos Mejia': 'J.C. Mejía',
+    'German Marquez': 'Germán Márquez',
+    'Jose Miguel Fernandez': 'José Miguel Fernández',
+    'Ronald Acuna': 'Ronald Acuña Jr.',
+    'J.  C. Mejia': 'J.C. Mejía',
+    'Nelson Velazquez': 'Nelson Velázquez',
+    'Ronald Acuna Jr.': 'Ronald Acuña Jr.',
+    'Ronald Acuna Jr': 'Ronald Acuña Jr.',
+    'Christian Vazquez': 'Christian Vázquez',
+    'Julio Pablo Martinez': 'J.P. Martínez',
+    'Jake Gatewood': 'Henry Gatewood',
+    'Ronald AcuÃ±a Jr.': 'Ronald Acuña Jr.',
+    'Yender Caramo': 'Yender Cáramo',
+    'Ivan de Jesus': 'Iván De Jesús Jr.',
+    'Ivan De Jesus': 'Iván De Jesús Jr.',
+    'Bryant Elliott': 'Bryant Elliot',
+    'Carlos Martinez': 'Carlos Martínez',
+    'Carlos Martínez': 'Carlos Martinez',
+    'Joe Jimenez': 'Joe Jimenez',
+    'Jhon NuÃ±ez': 'Jhon Nuñez',
+    'Ronald Pena': 'Ronald Peña',
+    'CÃ©sar HernÃ¡ndez': 'César Hernández',
+    'Franklin Perez': 'Franklin Pérez',
+    'Jonathan LoÃ¡isiga': 'Jonathan Loáisiga',
+    'Daysbel Hernandez': 'Daysbel Hernández',
+    'Michael Harris': 'Michael Harris II',
+    'Raffi Vizcaino': 'Raffi Vizcaíno',
+    'Raffi VizcaÃno': 'Raffi Vizcaíno',
+    'BJ Lopez': 'B.J. López',
+    'B.  J. Lopez': 'B.J. López',
+    'B. J. Lopez': 'B.J. López',
+    'Julio Eusebio': 'Ricky Eusebio',
+    'Miller Diaz': 'Miller Díaz',
+    'Danny De La Calle': 'Daniel De La Calle',
+    'Gary SÃ¡nchez': 'Gary Sánchez',
+    'Chris Alleyne': 'Bubba Alleyne',
+    'Kike Hernandez': 'Enrique Hernández',
+    'Robert Zarate': 'Robert Zárate',
+    'FÃ©lix PeÃ±a': 'Félix Peña',
+    'Norel Gonzalez': 'Norel González',
+    'Mandy Alvarez': 'Armando Alvarez',
+    'Jose A.   Valdez': 'José A. Váldez',
+    'Jose A. Valdez': 'José A. Váldez',
+    'Alexander Vizcaino': 'Alexander Vizcaíno',
+    'Ramon Rodriguez': 'Ramón Rodríguez',
+    'Jonathan Rodriguez': 'Johnathan Rodriguez',
+    'Eric Marinez': 'Eric Mariñez',
+    'Bryant Elliott': 'Bryant Elliot',
+    'Angel Lopez Alvarez': 'Angel Lopez',
+    'Norwith Gudino': 'Norwith Gudiño',
+    'Carlos Sanchez': 'Yolmer Sánchez',
+    'Jack Lopez': 'Jack López',
+    'Jack LÃ³pez': 'Jack López',
+    'Roddery Munoz': 'Roddery Muñoz',
+    'Gerardo Concepcion': 'Gerardo Concepción',
+    'Danuerys De La Cruz': 'Daneurys De La Cruz',
+    'Jose Lopez': 'José Lopez',
+    'Jimmy CrooksI': 'Jimmy Crooks',
+    'Li-Jen Chu': 'Kungkuan Giljegiljaw',
+    'Reshard Munroe': 'Shard Munroe',
+    'Andres Nunez': 'Andrés Núñez',
+    'Elniery Garcia': 'Elniery García',
+    'Malcom Nunez': 'Malcom Nuñez',
+    'Jose Garcia': 'Jose Barrero',
+    'Richelson Pena': 'Richelson Peña',
+    'Ignacio Alvarez': 'Nacho Alvarez Jr.',
+    'Nelson VelÃ¡zquez': 'Nelson Velázquez',
+    'Nelson Velazquez': 'Nelson Velázquez',
+    'J.P. Martinez': 'J.P. Martínez',
+    'Luis GarcÃa': 'Luis García',
+    'Luis Garcia Jr.': 'Luis García Jr.',
+    'J. P. Martinez': 'J.P. Martínez',
+    'Ronald Acuna Jr. ': 'Ronald Acuña Jr.',
+    'Ronald Acuna Jr.': 'Ronald Acuña Jr.',
+    'Michael Harris': 'Michael Harris II',
+    'JT Realmuto': 'J.T. Realmuto',
+    'Yariel Rodriguez': 'Yariel Rodríguez',
+    'Josue Briceno': 'Josue Briceño'
+}
+
 EASTERN_TIMEZONE_STR = 'America/New_York'
 
 def strip_this_suffix(pattern, suffix, input_str):
@@ -369,834 +786,8 @@ class Team:
         if player:
             return player
 
-        if player_key == 'William DeMars':
-            player = self.find_player('Billy DeMars')
-        elif player_key == 'Yo-Yo Davalillo':
-            player = self.find_player('Pompeyo Davalillo')
-        elif player_key == 'Moose Morton':
-            player = self.find_player('Guy Morton')
-        elif player_key == 'Lefty Hayden':
-            player = self.find_player('Gene Hayden')
-        elif player_key == 'Ted Wieand':
-            player = self.find_player('Franklin Wieand')
-        elif player_key == 'Bucky Brandon':
-            player = self.find_player('Darrell Brandon')
-        elif player_key == 'Candy Harris':
-            player = self.find_player('Alonzo Harris')
-        elif player_key == 'Jose Baez':
-            player = self.find_player('Jose Báez')
-        elif player_key == 'Puchy Delgado':
-            player = self.find_player('Luis Delgado')
-        elif player_key == 'Tony Pena':
-            player = self.find_player('Tony Peña')
-        elif player_key == 'Jose Alvarez':
-            player = self.find_player('José Álvarez')
-        elif player_key == 'Victor Rodriguez':
-            player = self.find_player('Victor Rodríguez')
-        elif player_key == 'Eddie Tucker':
-            player = self.find_player('Scooter Tucker')
-        elif player_key == 'Wily Mo Pena':
-            player = self.find_player('Wily Mo Peña')
-        elif player_key == 'Carlos Hernandez':
-            player = self.find_player('Carlos Hernández')
-        elif player_key == 'Oliver Perez':
-            player = self.find_player('Oliver Pérez')
-        elif player_key == 'Einar Diaz':
-            player = self.find_player('Einar Díaz')
-        elif player_key == 'Adrian Beltre':
-            player = self.find_player('Adrian Beltré')
-        elif player_key == 'Carlos Beltran':
-            player = self.find_player('Carlos Beltrán')
-        elif player_key == 'Javier Lopez':
-            player = self.find_player('Javier López')
-        elif player_key == 'Eddie Perez':
-            player = self.find_player('Eddie Pérez')
-        elif player_key == 'Adrian Gonzalez':
-            player = self.find_player('Adrián González')
-        elif player_key == 'Robinson Cano':
-            player = self.find_player('Robinson Canó')
-        elif player_key == 'Brayan Pena':
-            player = self.find_player('Brayan Peña')
-        elif player_key == 'Edwin Encarnacion':
-            player = self.find_player('Edwin Encarnación')
-        elif player_key == 'Francisco Rodriguez':
-            player = self.find_player('Francisco Rodríguez')
-        elif player_key == 'Mendy Lopez':
-            player = self.find_player('Mendy López')
-        elif player_key == 'Jeremy Pena':
-            player = self.find_player('Jeremy Peña')
-        elif player_key == 'Jonathan Sanchez':
-            player = self.find_player('Jonathan Sánchez')
-        elif player_key == 'Jonathan Bermudez':
-            player = self.find_player('Jonathan Bermúdez')
-        elif player_key == 'Andrew Suarez':
-            player = self.find_player('Andrew Suárez')
-        elif player_key == 'Omar Narvaez':
-            player = self.find_player('Omar Narváez')
-        elif player_key == 'Eloy Jimenez':
-            player = self.find_player('Eloy Jiménez')
-        elif player_key == 'Moises Gomez':
-            player = self.find_player('Moisés Gómez')
-        elif player_key == 'Jason Garcia':
-            player = self.find_player('Jason García')
-        elif player_key == 'Francisco Mejia':
-            player = self.find_player('Francisco Mejía')
-        elif player_key == 'Carlos Rodon':
-            player = self.find_player('Carlos Rodón')
-        elif player_key == 'Michael Harris':
-            player = self.find_player('Michael Harris II')
-        elif player_key == 'Zach McKinstry':
-            player = self.find_player('Zach McKinstry')
-        elif player_key == 'Allen Cordoba':
-            player = self.find_player('Allen Córdoba')
-        elif player_key == 'Ronaldo Hernandez':
-            player = self.find_player('Ronaldo Hernández')
-        elif player_key == 'Ricardo Sanchez':
-            player = self.find_player('Ricardo Sánchez')
-        elif player_key == 'Matt Pare':
-            player = self.find_player('Matt Paré')
-        elif player_key == 'Miguel Gonzalez':
-            player = self.find_player('Miguel González')
-        elif player_key == 'Felix Pena':
-            player = self.find_player('Félix Peña')
-        elif player_key == 'Yohander Mendez':
-            player = self.find_player('Yohander Méndez')
-        elif player_key == 'Dom Nunez':
-            player = self.find_player('Dom Nuñez')
-        elif player_key == 'Randy Vasquez':
-            player = self.find_player('Randy Vásquez')
-        elif player_key == 'Angel Rondon':
-            player = self.find_player('Angel Rondón')
-        elif player_key == 'Yandy Diaz':
-            player = self.find_player('Yandy Díaz')
-        elif player_key == 'Edwin Diaz':
-            player = self.find_player('Edwin Díaz')
-        elif player_key == 'Jose De Leon':
-            player = self.find_player('José De León')
-        elif player_key == 'Angel Martinez':
-            player = self.find_player('Angel Martínez')
-        elif player_key == 'Adeiny Hechavarria':
-            player = self.find_player('Adeiny Hechavarría')
-        elif player_key == 'Adeiny HechavarrÃa':
-            player = self.find_player('Adeiny Hechavarría')
-        elif player_key == 'Jan Vazquez':
-            player = self.find_player('Jan Vázquez')
-        elif player_key == 'Neil Ramirez':
-            player = self.find_player('Neil Ramírez')
-        elif player_key == 'Chris Alleyne':
-            player = self.find_player('Chris Alleyne')
-        elif player_key == 'Bruce Rondon':
-            player = self.find_player('Bruce Rondón')
-        elif player_key == 'Anibal Sanchez':
-            player = self.find_player('Aníbal Sánchez')
-        elif player_key == 'Pedro Florimon':
-            player = self.find_player('Pedro Florimón')
-        elif player_key == 'Eury Perez':
-            player = self.find_player('Eury Pérez')
-        elif player_key == 'Yasmany Tomas':
-            player = self.find_player('Yasmany Tomás')
-        elif player_key == 'Roel Ramirez':
-            player = self.find_player('Roel Ramírez')
-        elif player_key == 'Yennsy Diaz':
-            player = self.find_player('Yennsy Díaz')
-        elif player_key == 'David Banuelos':
-            player = self.find_player('David Bañuelos')
-        elif player_key == 'Wenceel Perez':
-            player = self.find_player('Wenceel Pérez')
-        elif player_key == 'Aneury Tavarez':
-            player = self.find_player('Aneury Tavárez')
-        elif player_key == 'Marcos Castanon':
-            player = self.find_player('Marcos Castañon')
-        elif player_key == 'Dariel Alvarez':
-            player = self.find_player('Dariel Álvarez')
-        elif player_key == 'Jose Rondon':
-            player = self.find_player('José Rondón')
-        elif player_key == 'Miguel Diaz':
-            player = self.find_player('Miguel Díaz')
-        elif player_key == 'Arismendy Alcantara':
-            player = self.find_player('Arismendy Alcántara')
-        elif player_key == 'Ubaldo Jimenez':
-            player = self.find_player('Ubaldo Jiménez')
-        elif player_key == 'Dario Alvarez':
-            player = self.find_player('Dario Álvarez')
-        elif player_key == 'Sergio Alcantara':
-            player = self.find_player('Sergio Alcántara')
-        elif player_key == 'Jonathan Guzman':
-            player = self.find_player('Jonathan Guzmán')
-        elif player_key == 'Ozzie Martinez':
-            player = self.find_player('Osvaldo Martínez')
-        elif player_key == 'Carlos Perez':
-            player = self.find_player('Carlos Pérez')
-        elif player_key == 'Jonathan Hernandez':
-            player = self.find_player('Jonathan Hernández')
-        elif player_key == 'Hector Gomez':
-            player = self.find_player('Héctor Gómez')
-        elif player_key == 'Michael De Leon':
-            player = self.find_player('Michael De León')
-        elif player_key == 'Kristopher Negron':
-            player = self.find_player('Kristopher Negrón')
-        elif player_key == 'Deivi Garcia':
-            player = self.find_player('Deivi García')
-        elif player_key == 'Erick Pena':
-            player = self.find_player('Erick Peña')
-        elif player_key == 'Manuel Rodriguez':
-            player = self.find_player('Manuel Rodríguez')
-        elif player_key == 'Lewin Diaz':
-            player = self.find_player('Lewin Díaz')
-        elif player_key == 'Hernan Perez':
-            player = self.find_player('Hernán Pérez')
-        elif player_key == 'Edwin O Diaz':
-            player = self.find_player('Edwin Díaz')
-        elif player_key == 'Alex Ramirez':
-            player = self.find_player('Alex Ramírez')
-        elif player_key == 'Ranger Suarez':
-            player = self.find_player('Ranger Suárez')
-        elif player_key == 'Guillermo Zuniga':
-            player = self.find_player('Guillermo Zuñiga')
-        elif player_key == 'Luis Frias':
-            player = self.find_player('Luis Frías')
-        elif player_key == 'Michael Perez':
-            player = self.find_player('Michael Pérez')
-        elif player_key == 'Jose Berrios':
-            player = self.find_player('José Berríos')
-        elif player_key == 'Jerar Encarnacion':
-            player = self.find_player('Jerar Encarnación')
-        elif player_key == 'Julian Fernandez':
-            player = self.find_player('Julian Fernández')
-        elif player_key == 'Darwinzon Hernandez':
-            player = self.find_player('Darwinzon Hernández')
-        elif player_key == 'Vidal Brujan':
-            player = self.find_player('Vidal Bruján')
-        elif player_key == 'Emilio Pagan':
-            player = self.find_player('Emilio Pagán')
-        elif player_key == 'Teoscar Hernandez':
-            player = self.find_player('Teoscar Hernández')
-        elif player_key == 'Francisco Perez':
-            player = self.find_player('Francisco Pérez')
-        elif player_key == 'Willy Garcia':
-            player = self.find_player('Willy García')
-        elif player_key == 'Julio Urias':
-            player = self.find_player('Julio Urías')
-        elif player_key == 'Joe Colon':
-            player = self.find_player('Joe Colón')
-        elif player_key == 'Yoendrys Gomez':
-            player = self.find_player('Yoendrys Gómez')
-        elif player_key == 'Joe JimÃ©nez':
-            player = self.find_player('Joe Jiménez')
-        elif player_key == 'Joe Jimenez':
-            player = self.find_player('Joe Jiménez')
-        elif player_key == 'Jesus Sanchez':
-            player = self.find_player('Jesús Sánchez')
-        elif player_key == 'Rene Garcia':
-            player = self.find_player('René García')
-        elif player_key == 'Andres Munoz':
-            player = self.find_player('Andrés Muñoz')
-        elif player_key == 'Ismael Guillon':
-            player = self.find_player('Ismael Guillón')
-        elif player_key == 'Yacksel Rios':
-            player = self.find_player('Yacksel Ríos')
-        elif player_key == 'Yoan Lopez':
-            player = self.find_player('Yoan López')
-        elif player_key == 'Jorge Lopez':
-            player = self.find_player('Jorge López')
-        elif player_key == 'Kelvin Gutierrez':
-            player = self.find_player('Kelvin Gutiérrez')
-        elif player_key == 'Andy Ibanez':
-            player = self.find_player('Andy Ibáñez')
-        elif player_key == 'Robel Garcia':
-            player = self.find_player('Robel García')
-        elif player_key == 'Ronny Rodriguez':
-            player = self.find_player('Ronny Rodríguez')
-        elif player_key == 'Ricardo Genoves':
-            player = self.find_player('Ricardo Genovés')
-        elif player_key == 'Victor Gonzalez':
-            player = self.find_player('Victor González')
-        elif player_key == 'Eliezer Alvarez':
-            player = self.find_player('Eliezer Álvarez')
-        elif player_key == 'Gary Sanchez':
-            player = self.find_player('Gary Sánchez')
-        elif player_key == 'Yairo Munoz':
-            player = self.find_player('Yairo Muñoz')
-        elif player_key == 'Endy Rodriguez':
-            player = self.find_player('Endy Rodríguez')
-        elif player_key == 'Yefry Ramirez':
-            player = self.find_player('Yefry Ramírez')
-        elif player_key == 'Rafael Marchan':
-            player = self.find_player('Rafael Marchán')
-        elif player_key == 'Vimael Machin':
-            player = self.find_player('Vimael Machín')
-        elif player_key == 'Ronald Bolanos':
-            player = self.find_player('Ronald Bolaños')
-        elif player_key == 'Deivy Grullon':
-            player = self.find_player('Deivy Grullón')
-        elif player_key == 'Cristopher Sanchez':
-            player = self.find_player('Cristopher Sánchez')
-        elif player_key == 'Carlos Estevez':
-            player = self.find_player('Carlos Estévez')
-        elif player_key == 'Jonathan Rodriguez':
-            player = self.find_player('Jonathan Rodríguez')
-        elif player_key == 'Leandro Cedeno':
-            player = self.find_player('Leandro Cedeño')
-        elif player_key == 'Albert Suarez':
-            player = self.find_player('Albert Suárez')
-        elif player_key == 'Yefri Perez':
-            player = self.find_player('Yefri Pérez')
-        elif player_key == 'Edgar Garcia':
-            player = self.find_player('Edgar García')
-        elif player_key == 'Miguel Gomez':
-            player = self.find_player('Miguel Gómez')
-        elif player_key == 'Rafael Martin':
-            player = self.find_player('Rafael Martín')
-        elif player_key == 'Humberto Mejia':
-            player = self.find_player('Humberto Mejía')
-        elif player_key == 'D\'Arby Myers':
-            player = self.find_player('Johnni Turbo')
-        elif player_key == 'Oscar Hernandez':
-            player = self.find_player('Óscar Hernández')
-        elif player_key == 'Yusniel Diaz':
-            player = self.find_player('Yusniel Díaz')
-        elif player_key == 'Eugenio Suarez':
-            player = self.find_player('Eugenio Suárez')
-        elif player_key == 'Julio Rodriguez':
-            player = self.find_player('Julio Rodríguez')
-        elif player_key == 'Nerwilian Cedeno':
-            player = self.find_player('Nerwilian Cedeño')
-        elif player_key == 'Marcel Renteria':
-            player = self.find_player('Marcel Rentería')
-        elif player_key == 'Roberto Perez':
-            player = self.find_player('Roberto Pérez')
-        elif player_key == 'Dayan Diaz':
-            player = self.find_player('Dayan Díaz')
-        elif player_key == 'Michael Harris':
-            player = self.find_player('Michael Harris II')
-        elif player_key == 'Luis Garcia':
-            player = self.find_player('Luis García')
-        elif player_key == 'Renato Nunez':
-            player = self.find_player('Renato Núñez')
-        elif player_key == 'Santiago Chavez':
-            player = self.find_player('Santiago Chávez')
-        elif player_key == 'Rodolfo Duran':
-            player = self.find_player('Rodolfo Durán')
-        elif player_key == 'Sandy Baez':
-            player = self.find_player('Sandy Báez')
-        elif player_key == 'Jose A.   Valdez':
-            player = self.find_player('José A. Váldez')
-        elif player_key == 'Wilderd Patino':
-            player = self.find_player('Wilderd Patiño')
-        elif player_key == 'Miguel Sanchez':
-            player = self.find_player('Miguel Sánchez')
-        elif player_key == 'Jonathan Loaisiga':
-            player = self.find_player('Jonathan Loáisiga')
-        elif player_key == 'Randy Rodriguez':
-            player = self.find_player('Randy Rodríguez')
-        elif player_key == 'Alexis Diaz':
-            player = self.find_player('Alexis Díaz')
-        elif player_key == 'Elias Diaz':
-            player = self.find_player('Elias Díaz')
-        elif player_key == 'Erik Gonzalez':
-            player = self.find_player('Erik González')
-        elif player_key == 'Omar Estevez':
-            player = self.find_player('Omar Estévez')
-        elif player_key == 'Carlos Corporan':
-            player = self.find_player('Carlos Corporán')
-        elif player_key == 'Ramon Vazquez':
-            player = self.find_player('Ramón Vázquez')
-        elif player_key == 'Xavier Cedeno':
-            player = self.find_player('Xavier Cedeño')
-        elif player_key == 'Hector Sanchez':
-            player = self.find_player('Héctor Sánchez')
-        elif player_key == 'Marco Hernandez':
-            player = self.find_player('Marco Hernández')
-        elif player_key == 'Jose Briceno':
-            player = self.find_player('José Briceño')
-        elif player_key == 'Pedro Araujo':
-            player = self.find_player('Pedro Araújo')
-        elif player_key == 'Luis Gonzalez':
-            player = self.find_player('Luis González')
-        elif player_key == 'Paco Rodriguez':
-            player = self.find_player('Paco Rodríguez')
-        elif player_key == 'Luis Avilan':
-            player = self.find_player('Luis Avilán')
-        elif player_key == 'Luis Urias':
-            player = self.find_player('Luis Urías')
-        elif player_key == 'Carlos Frias':
-            player = self.find_player('Carlos Frías')
-        elif player_key == 'Alfredo Gonzalez':
-            player = self.find_player('Alfredo González')
-        elif player_key == 'MoisÃ©s GÃ³mez':
-            player = self.find_player('Moisés Gómez')
-        elif player_key == 'Victor Alcantara':
-            player = self.find_player('Victor Alcántara')
-        elif player_key == 'Ricardo Rodriguez':
-            player = self.find_player('Ricardo Rodríguez')
-        elif player_key == 'Emilio Bonifacio':
-            player = self.find_player('Emilio Bonifácio')
-        elif player_key == 'Reynaldo Lopez':
-            player = self.find_player('Reynaldo López')
-        elif player_key == 'Yohan Ramirez':
-            player = self.find_player('Yohan Ramírez')
-        elif player_key == 'Hector Noesi':
-            player = self.find_player('Hector Noesí')
-        elif player_key == 'Jose Manuel Fernandez':
-            player = self.find_player('José Manuel Fernández')
-        elif player_key == 'Cionel Perez':
-            player = self.find_player('Cionel Pérez')
-        elif player_key == 'Jose Fermin':
-            player = self.find_player('José Fermín')
-        elif player_key == 'Andres Gimenez':
-            player = self.find_player('Andrés Giménez')
-        elif player_key == 'Aderlin Rodriguez':
-            player = self.find_player('Aderlin Rodríguez')
-        elif player_key == 'Anthony Garcia':
-            player = self.find_player('Anthony García')
-        elif player_key == 'Angel Sanchez':
-            player = self.find_player('Angel Sánchez')
-        elif player_key == 'Daniel Alvarez':
-            player = self.find_player('Daniel Álvarez')
-        elif player_key == 'Richard Rodriguez':
-            player = self.find_player('Richard Rodríguez')
-        elif player_key == 'Adrian Martinez':
-            player = self.find_player('Adrián Martínez')
-        elif player_key == 'Yerry Rodriguez':
-            player = self.find_player('Yerry Rodríguez')
-        elif player_key == 'Sean Rodriguez':
-            player = self.find_player('Sean Rodríguez')
-        elif player_key == 'Jhan Marinez':
-            player = self.find_player('Jhan Mariñez')
-        elif player_key == 'Gorkys Hernandez':
-            player = self.find_player('Gorkys Hernández')
-        elif player_key == 'Jhoulys Chacin':
-            player = self.find_player('Jhoulys Chacín')
-        elif player_key == 'Angel Pagan':
-            player = self.find_player('Ángel Pagán')
-        elif player_key == 'Richard RodrÃ­guez':
-            player = self.find_player('Richard Rodríguez')
-        elif player_key == 'Roenis Elias':
-            player = self.find_player('Roenis Elías')
-        elif player_key == 'Felipe VÃ¡zquez':
-            player = self.find_player('Felipe Vázquez')
-        elif player_key == 'Felipe Vazquez':
-            player = self.find_player('Felipe Vázquez')
-        elif player_key == 'Javier Baez':
-            player = self.find_player('Javier Báez')
-        elif player_key == 'Javier BÃ¡ez':
-            player = self.find_player('Javier Báez')
-        elif player_key == 'Cesar Hernandez':
-            player = self.find_player('César Hernández')
-        elif player_key == 'Ramon Urias':
-            player = self.find_player('Ramón Urías')
-        elif player_key == 'Audry Perez':
-            player = self.find_player('Audry Pérez')
-        elif player_key == 'Nasim Nunez':
-            player = self.find_player('Nasim Nuñez')
-        elif player_key == 'Jesmuel Valentin':
-            player = self.find_player('Jesmuel Valentín')
-        elif player_key == 'Jonathan Arauz':
-            player = self.find_player('Jonathan Araúz')
-        elif player_key == 'Yoelqui Cespedes':
-            player = self.find_player('Yoelqui Céspedes')
-        elif player_key == 'Pedro Leon':
-            player = self.find_player('Pedro León')
-        elif player_key == 'Oscar Colas':
-            player = self.find_player('Oscar Colás')
-        elif player_key == 'Chi Chi Gonzalez':
-            player = self.find_player('Chi Chi González')
-        elif player_key == 'Yolmer Sanchez':
-            player = self.find_player('Yolmer Sánchez')
-        elif player_key == 'Derian Gonzalez':
-            player = self.find_player('Derian González')
-        elif player_key == 'Roberto Pena':
-            player = self.find_player('Roberto Peña')
-        elif player_key == 'Luis Marte':
-            player = self.find_player('Luis Marté')
-        elif player_key == 'Hector Rondon':
-            player = self.find_player('Héctor Rondón')
-        elif player_key == 'Xavier Fernandez':
-            player = self.find_player('Xavier Fernández')
-        elif player_key == 'Jose Lopez':
-            player = self.find_player('José López')
-        elif player_key == 'Kevin Alcantara':
-            player = self.find_player('Kevin Alcántara')
-        elif player_key == 'Arodys Vizcaino':
-            player = self.find_player('Arodys Vizcaíno')
-        elif player_key == 'Christian Colon':
-            player = self.find_player('Christian Colón')
-        elif player_key == 'Aledmys Diaz':
-            player = self.find_player('Aledmys Díaz')
-        elif player_key == 'David Garcia':
-            player = self.find_player('David García')
-        elif player_key == 'Samir Duenez':
-            player = self.find_player('Samir Dueñez')
-        elif player_key == 'Edinson Vólquez':
-            player = self.find_player('Edinson Volquez')
-        elif player_key == 'Avisail Garcia':
-            player = self.find_player('Avisaíl García')
-        elif player_key == 'AvisaÃl GarcÃa':
-            player = self.find_player('Avisaíl García')
-        elif player_key == 'Adolis Garcia':
-            player = self.find_player('Adolis García')
-        elif player_key == 'Jose J.   De Los Santos':
-            player = self.find_player('Jose De Los Santos')
-        elif player_key == 'Dedniel Nunez':
-            player = self.find_player('Dedniel Núñez')
-        elif player_key == 'Elieser Hernandez':
-            player = self.find_player('Elieser Hernández')
-        elif player_key == 'Joely Rodriguez':
-            player = self.find_player('Joely Rodríguez')
-        elif player_key == 'Jairo Diaz':
-            player = self.find_player('Jairo Díaz')
-        elif player_key == 'Sixto Sanchez':
-            player = self.find_player('Sixto Sánchez')
-        elif player_key == 'Erasmo Ramirez':
-            player = self.find_player('Erasmo Ramírez')
-        elif player_key == 'Jaime Garcia':
-            player = self.find_player('Jaime García')
-        elif player_key == 'Jose Dominguez':
-            player = self.find_player('José Domínguez')
-        elif player_key == 'Jasson Dominguez':
-            player = self.find_player('Jasson Domínguez')
-        elif player_key == 'Jose Martinez':
-            player = self.find_player('José Martínez')
-        elif player_key == 'Williams Perez':
-            player = self.find_player('Williams Pérez')
-        elif player_key == 'Rayan Gonzalez':
-            player = self.find_player('Rayan González')
-        elif player_key == 'JC Ramirez':
-            player = self.find_player('JC Ramírez')
-        elif player_key == 'Yonny Hernandez':
-            player = self.find_player('Yonny Hernández')
-        elif player_key == 'Jose Yepez':
-            player = self.find_player('José Yépez')
-        elif player_key == 'Jose Ramirez':
-            player = self.find_player('José Ramírez')
-        elif player_key == 'Wilking Rodriguez':
-            player = self.find_player('Wilking Rodríguez')
-        elif player_key == 'Darien Nunez':
-            player = self.find_player('Darien Núñez')
-        elif player_key == 'Rony Garcia':
-            player = self.find_player('Rony García')
-        elif player_key == 'Cam Schlitter':
-            player = self.find_player('Cam Schlittler')
-        elif player_key == 'Pedro Pages':
-            player = self.find_player('Pedro Pagés')
-        elif player_key == 'Pedro Baez':
-            player = self.find_player('Pedro Báez')
-        elif player_key == 'Carlos Gomez':
-            player = self.find_player('Carlos Gómez')
-        elif player_key == 'Domingo German':
-            player = self.find_player('Domingo Germán')
-        elif player_key == 'Pablo Lopez':
-            player = self.find_player('Pablo López')
-        elif player_key == 'Andy Gonzalez':
-            player = self.find_player('Andy González')
-        elif player_key == 'Keinner Pina':
-            player = self.find_player('Keinner Piña')
-        elif player_key == 'Alex Colome':
-            player = self.find_player('Alex Colomé')
-        elif player_key == 'Enrique Hernandez':
-            player = self.find_player('Enrique Hernández')
-        elif player_key == 'Jhon Nunez':
-            player = self.find_player('Jhon Nuñez')
-        elif player_key == 'Ariel Pena':
-            player = self.find_player('Ariel Peña')
-        elif player_key == 'Ofreidy Gomez':
-            player = self.find_player('Ofreidy Gómez')
-        elif player_key == 'Yacksel RÃ­os':
-            player = self.find_player('Yacksel Ríos')
-        elif player_key == 'Hector Velazquez':
-            player = self.find_player('Hector Velázquez')
-        elif player_key == 'Andrew Perez':
-            player = self.find_player('Andrew Pérez')
-        elif player_key == 'Jorge Guzman':
-            player = self.find_player('Jorge Guzmán')
-        elif player_key == 'Jarlin Garcia':
-            player = self.find_player('Jarlín García')
-        elif player_key == 'Jonny Deluca':
-            player = self.find_player('Jonny DeLuca')
-        elif player_key == 'Mauricio Dubon':
-            player = self.find_player('Mauricio Dubón')
-        elif player_key == 'Jeison Guzman':
-            player = self.find_player('Jeison Guzmán')
-        elif player_key == 'Dom NuÃ±ez':
-            player = self.find_player('Dom Nuñez')
-        elif player_key == 'Manny Pina':
-            player = self.find_player('Manny Piña')
-        elif player_key == 'Jose Urena':
-            player = self.find_player('José Ureña')
-        elif player_key == 'Edwin Rios':
-            player = self.find_player('Edwin Ríos')
-        elif player_key == 'Roberto Gomez':
-            player = self.find_player('Roberto Gómez')
-        elif player_key == 'Felix Hernandez':
-            player = self.find_player('Félix Hernández')
-        elif player_key == 'Yoenis Céspedes':
-            player = self.find_player('Yoenis Cespedes')
-        elif player_key == 'Ronald Guzman':
-            player = self.find_player('Ronald Guzmán')
-        elif player_key == 'Jose Hernandez':
-            player = self.find_player('José Hernández')
-        elif player_key == 'Jose Butto':
-            player = self.find_player('José Buttó')
-        elif player_key == 'Vidal Nuno':
-            player = self.find_player('Vidal Nuño')
-        elif player_key == 'Randy Cesar':
-            player = self.find_player('Randy César')
-        elif player_key == 'Kevin Vicuna':
-            player = self.find_player('Kevin Vicuña')
-        elif player_key == 'Aaron Munoz':
-            player = self.find_player('Aaron Muñoz')
-        elif player_key == 'Leury Garcia':
-            player = self.find_player('Leury García')
-        elif player_key == 'Bengie Gonzalez':
-            player = self.find_player('Bengie González')
-        elif player_key == 'Jose Rodriguez':
-            player = self.find_player('José Rodríguez')
-        elif player_key == 'Manny Banuelos':
-            player = self.find_player('Manny Bañuelos')
-        elif player_key == 'Oscar Mercado':
-            player = self.find_player('Óscar Mercado')
-        elif player_key == 'Gio Gonzalez':
-            player = self.find_player('Gio González')
-        elif player_key == 'Sammy Solis':
-            player = self.find_player('Sammy Solís')
-        elif player_key == 'Yimi Garcia':
-            player = self.find_player('Yimi García')
-        elif player_key == 'Dereck Rodriguez':
-            player = self.find_player('Dereck Rodríguez')
-        elif player_key == 'Sandy Leon':
-            player = self.find_player('Sandy León')
-        elif player_key == 'Martin Perez':
-            player = self.find_player('Martín Pérez')
-        elif player_key == 'Adalberto Mejia':
-            player = self.find_player('Adalberto Mejía')
-        elif player_key == 'Luisangel Acuna':
-            player = self.find_player('Luisangel Acuña')
-        elif player_key == 'Isan Diaz':
-            player = self.find_player('Isan Díaz')
-        elif player_key == 'Anyelo Gomez':
-            player = self.find_player('Anyelo Gómez')
-        elif player_key == 'Ali Sanchez':
-            player = self.find_player('Ali Sánchez')
-        elif player_key == 'Carlos Gonzalez':
-            player = self.find_player('Carlos González')
-        elif player_key == 'Melvin Adon':
-            player = self.find_player('Melvin Adón')
-        elif player_key == 'Harol Gonzalez':
-            player = self.find_player('Harol González')
-        elif player_key == 'Harold Ramirez':
-            player = self.find_player('Harold Ramírez')
-        elif player_key == 'Dany Jimenez':
-            player = self.find_player('Dany Jiménez')
-        elif player_key == 'Francisco Pena':
-            player = self.find_player('Francisco Peña')
-        elif player_key == 'Seranthony Dominguez':
-            player = self.find_player('Seranthony Domínguez')
-        elif player_key == 'Jose Fernandez':
-            player = self.find_player('José Fernández')
-        elif player_key == 'David Rodriguez':
-            player = self.find_player('David Rodríguez')
-        elif player_key == 'Jose Sanchez':
-            player = self.find_player('José Sánchez')
-        elif player_key == 'Luis Patino':
-            player = self.find_player('Luis Patiño')
-        elif player_key == 'Joe Jimenez':
-            player = self.find_player('Joe Jimenez')
-        elif player_key == 'Ariel Hernandez':
-            player = self.find_player('Ariel Hernández')
-        elif player_key == 'Marcos Diplan':
-            player = self.find_player('Marcos Diplán')
-        elif player_key == 'Jeanmar Gomez':
-            player = self.find_player('Jeanmar Gómez')
-        elif player_key == 'Sergio AlcÃ¡ntara':
-            player = self.find_player('Sergio Alcántara')
-        elif player_key == 'Jack Lopez':
-            player = self.find_player('Jack López')
-        elif player_key == 'Delvin Perez':
-            player = self.find_player('Delvin Pérez')
-        elif player_key == 'Severino Gonzalez':
-            player = self.find_player('Severino González')
-        elif player_key == 'Eduardo Jimenez':
-            player = self.find_player('Eduardo Jiménez')
-        elif player_key == 'Buddy Reed':
-            player = self.find_player('Michael Reed')
-        elif player_key == 'Juan Gamez':
-            player = self.find_player('Juan Gámez')
-        elif player_key == 'Jumbo Diaz':
-            player = self.find_player('Jumbo Díaz')
-        elif player_key == 'Jorge Ona':
-            player = self.find_player('Jorge Oña')
-        elif player_key == 'Raul Alcantara':
-            player = self.find_player('Raúl Alcántara')
-        elif player_key == 'Adonis Garcia':
-            player = self.find_player('Adonis García')
-        elif player_key == 'Miguel Sano':
-            player = self.find_player('Miguel Sanó')
-        elif player_key == 'Eduardo Nunez':
-            player = self.find_player('Eduardo Núñez')
-        elif player_key == 'J.  P. Martinez':
-            player = self.find_player('J.P. Martínez')
-        elif player_key == 'JP Martinez':
-            player = self.find_player('J.P. Martínez')
-        elif player_key == 'J. C. Mejia':
-            player = self.find_player('J.C. Mejía')
-        elif player_key == 'Junior Fernandez':
-            player = self.find_player('Junior Fernández')
-        elif player_key == 'Jean Carlos Mejia':
-            player = self.find_player('J.C. Mejía')
-        elif player_key == 'German Marquez':
-            player = self.find_player('Germán Márquez')
-        elif player_key == 'Jose Miguel Fernandez':
-            player = self.find_player('José Miguel Fernández')
-        elif player_key == 'Ronald Acuna':
-            player = self.find_player('Ronald Acuña Jr.')
-        elif player_key == 'J.  C. Mejia':
-            player = self.find_player('J.C. Mejía')
-        elif player_key == 'Nelson Velazquez':
-            player = self.find_player('Nelson Velázquez')
-        elif player_key == 'Ronald Acuna Jr.':
-            player = self.find_player('Ronald Acuña Jr.')
-        elif player_key == 'Ronald Acuna Jr':
-            player = self.find_player('Ronald Acuña Jr.')
-        elif player_key == 'Christian Vazquez':
-            player = self.find_player('Christian Vázquez')
-        elif player_key == 'Julio Pablo Martinez':
-            player = self.find_player('J.P. Martínez')
-        elif player_key == 'Jake Gatewood':
-            player = self.find_player('Henry Gatewood')
-        elif player_key == 'Ronald AcuÃ±a Jr.':
-            player = self.find_player('Ronald Acuña Jr.')
-        elif player_key == 'Yender Caramo':
-            player = self.find_player('Yender Cáramo')
-        elif player_key == 'Ivan de Jesus':
-            player = self.find_player('Iván De Jesús Jr.')
-        elif player_key == 'Ivan De Jesus':
-            player = self.find_player('Iván De Jesús Jr.')
-        elif player_key == 'Bryant Elliott':
-            player = self.find_player('Bryant Elliot')
-        elif player_key == 'Carlos Martinez':
-            player = self.find_player('Carlos Martínez')
-        elif player_key == 'Carlos Martínez':
-            player = self.find_player('Carlos Martinez')
-        elif player_key == 'Joe Jimenez':
-            player = self.find_player('Joe Jimenez')
-        elif player_key == 'Jhon NuÃ±ez':
-            player = self.find_player('Jhon Nuñez')
-        elif player_key == 'Ronald Pena':
-            player = self.find_player('Ronald Peña')
-        elif player_key == 'CÃ©sar HernÃ¡ndez':
-            player = self.find_player('César Hernández')
-        elif player_key == 'Franklin Perez':
-            player = self.find_player('Franklin Pérez')
-        elif player_key == 'Jonathan LoÃ¡isiga':
-            player = self.find_player('Jonathan Loáisiga')
-        elif player_key == 'Daysbel Hernandez':
-            player = self.find_player('Daysbel Hernández')
-        elif player_key == 'Michael Harris':
-            player = self.find_player('Michael Harris II')
-        elif player_key == 'Raffi Vizcaino':
-            player = self.find_player('Raffi Vizcaíno')
-        elif player_key == 'Raffi VizcaÃno':
-            player = self.find_player('Raffi Vizcaíno')
-        elif player_key == 'BJ Lopez':
-            player = self.find_player('B.J. López')
-        elif player_key == 'B.  J. Lopez':
-            player = self.find_player('B.J. López')
-        elif player_key == 'B. J. Lopez':
-            player = self.find_player('B.J. López')
-        elif player_key == 'Julio Eusebio':
-            player = self.find_player('Ricky Eusebio')
-        elif player_key == 'Miller Diaz':
-            player = self.find_player('Miller Díaz')
-        elif player_key == 'Danny De La Calle':
-            player = self.find_player('Daniel De La Calle')
-        elif player_key == 'Gary SÃ¡nchez':
-            player = self.find_player('Gary Sánchez')
-        elif player_key == 'Chris Alleyne':
-            player = self.find_player('Bubba Alleyne')
-        elif player_key == 'Kike Hernandez':
-            player = self.find_player('Enrique Hernández')
-        elif player_key == 'Robert Zarate':
-            player = self.find_player('Robert Zárate')
-        elif player_key == 'FÃ©lix PeÃ±a':
-            player = self.find_player('Félix Peña')
-        elif player_key == 'Norel Gonzalez':
-            player = self.find_player('Norel González')
-        elif player_key == 'Mandy Alvarez':
-            player = self.find_player('Armando Alvarez')
-        elif player_key == 'Jose A.   Valdez':
-            player = self.find_player('José A. Váldez')
-        elif player_key == 'Jose A. Valdez':
-            player = self.find_player('José A. Váldez')
-        elif player_key == 'Alexander Vizcaino':
-            player = self.find_player('Alexander Vizcaíno')
-        elif player_key == 'Ramon Rodriguez':
-            player = self.find_player('Ramón Rodríguez')
-        elif player_key == 'Jonathan Rodriguez':
-            player = self.find_player('Johnathan Rodriguez')
-        elif player_key == 'Eric Marinez':
-            player = self.find_player('Eric Mariñez')
-        elif player_key == 'Bryant Elliott':
-            player = self.find_player('Bryant Elliot')
-        elif player_key == 'Angel Lopez Alvarez':
-            player = self.find_player('Angel Lopez')
-        elif player_key == 'Norwith Gudino':
-            player = self.find_player('Norwith Gudiño')
-        elif player_key == 'Carlos Sanchez':
-            player = self.find_player('Yolmer Sánchez')
-        elif player_key == 'Jack Lopez':
-            player = self.find_player('Jack López')
-        elif player_key == 'Jack LÃ³pez':
-            player = self.find_player('Jack López')
-        elif player_key == 'Roddery Munoz':
-            player = self.find_player('Roddery Muñoz')
-        elif player_key == 'Gerardo Concepcion':
-            player = self.find_player('Gerardo Concepción')
-        elif player_key == 'Danuerys De La Cruz':
-            player = self.find_player('Daneurys De La Cruz')
-        elif player_key == 'Jose Lopez':
-            player = self.find_player('José Lopez')
-        elif player_key == 'Jimmy CrooksI':
-            player = self.find_player('Jimmy Crooks')
-        elif player_key == 'Li-Jen Chu':
-            player = self.find_player('Kungkuan Giljegiljaw')
-        elif player_key == 'Reshard Munroe':
-            player = self.find_player('Shard Munroe')
-        elif player_key == 'Andres Nunez':
-            player = self.find_player('Andrés Núñez')
-        elif player_key == 'Elniery Garcia':
-            player = self.find_player('Elniery García')
-        elif player_key == 'Malcom Nunez':
-            player = self.find_player('Malcom Nuñez')
-        elif player_key == 'Jose Garcia':
-            player = self.find_player('Jose Barrero')
-        elif player_key == 'Richelson Pena':
-            player = self.find_player('Richelson Peña')
-        elif player_key == 'Ignacio Alvarez':
-            player = self.find_player('Nacho Alvarez Jr.')
-        elif player_key == 'Nelson VelÃ¡zquez':
-            player = self.find_player('Nelson Velázquez')
-        elif player_key == 'Nelson Velazquez':
-            player = self.find_player('Nelson Velázquez')
-        elif player_key == 'J.P. Martinez':
-            player = self.find_player('J.P. Martínez')
-        elif player_key == 'Luis GarcÃa':
-            player = self.find_player('Luis García')
-        elif player_key == 'Luis Garcia Jr.':
-            player = self.find_player('Luis García Jr.')
-        elif player_key == 'J. P. Martinez':
-            player = self.find_player('J.P. Martínez')
-        elif player_key == 'Ronald Acuna Jr. ':
-            player = self.find_player('Ronald Acuña Jr.')
-        elif player_key == 'Ronald Acuna Jr.':
-            player = self.find_player('Ronald Acuña Jr.')
-        elif player_key == 'Michael Harris':
-            player = self.find_player('Michael Harris II')
-        elif player_key == 'JT Realmuto':
-            player = self.find_player('J.T. Realmuto')
-        elif player_key == 'Yariel Rodriguez':
-            player = self.find_player('Yariel Rodríguez')
-        elif player_key == 'Josue Briceno':
-            player = self.find_player('Josue Briceño')
+        if player_key in SPECIAL_CASE_NAME_DICT:
+            player= self.find_player(SPECIAL_CASE_NAME_DICT[player_key])
 
         if player:
             return player
