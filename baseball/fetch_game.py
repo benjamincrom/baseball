@@ -645,6 +645,7 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
     month = this_datetime.month
     day = this_datetime.day
     year = this_datetime.year
+    date_str = '{}-{}-{}'.format(year, month, day)
     all_games_dict = get(
         ALL_GAMES_URL_NEW.format(month=month, day=day, year=year)
     ).json()
@@ -684,6 +685,13 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
                         game = baseball.process_game_json.get_game_obj(game_dict_copy,
                                                                        is_doubleheader)
                     except:
+                        exc_type, exc_value, exc_traceback = exc_info()
+                        lines = format_exception(exc_type, exc_value, exc_traceback)
+                        exception_str = ' '.join(lines)
+                        print('{} {{} {}'.format(datetime.utcnow(),
+                                                 date_str,
+                                                 exception_str))
+
                         continue
 
                     break
@@ -846,7 +854,7 @@ def get_game_from_date(this_datetime, this_away_code, this_home_code,
     return game
 
 def get_game_from_date_new(this_datetime, this_away_code, this_home_code,
-                       this_game_number):
+                           this_game_number):
     month = this_datetime.month
     day = this_datetime.day
     year = this_datetime.year
@@ -969,10 +977,10 @@ def get_game_from_files_old(boxscore_file, player_file, inning_file):
 def get_game_from_filename_tuple(filename_tuple):
     game_id, boxscore_file, player_file, inning_file, live_file = filename_tuple
     year = int(game_id.split('-', 1)[0])
-    if year < 2019:
-        game = get_game_from_files_old(boxscore_file, player_file, inning_file)
-    else:
-        game = get_game_from_files_new(live_file)
+    #if year < 2019:
+    #    game = get_game_from_files_old(boxscore_file, player_file, inning_file)
+    #else:
+    game = get_game_from_files_new(live_file)
 
     return game_id, game
 

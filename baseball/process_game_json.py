@@ -197,7 +197,7 @@ def process_at_bat(plate_appearance, event_list, game_obj,
 
     batter_id = int(plate_appearance['matchup']['batter']['id'])
     if batter_id in game_obj.home_team and batter_id in game_obj.away_team:
-        raise ValueError('Batter ID {} in both team dictionaries.'.format(batter_id))
+        print('Batter ID {} in both team dictionaries.'.format(batter_id))
 
     if batter_id in game_obj.home_team:
         batter = game_obj.home_team[batter_id]
