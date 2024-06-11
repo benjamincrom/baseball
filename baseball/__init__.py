@@ -1,5 +1,4 @@
 from baseball.fetch_game import (get_game_from_url,
-                                 get_game_xml_from_url,
                                  get_game_dict_from_url,
                                  write_svg_from_url,
                                  write_svg_from_file_range,

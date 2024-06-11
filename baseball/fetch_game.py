@@ -22,10 +22,7 @@ BOXSCORE_SUFFIX = 'boxscore.xml'
 PLAYERS_SUFFIX = 'players.xml'
 INNING_SUFFIX = 'inning/inning_all.xml'
 
-ALL_GAMES_URL = ('http://gdx.mlb.com/components/game/mlb/year_{year:04d}/'
-                 'month_{month:02d}/day_{day:02d}/master_scoreboard.json')
-
-ALL_GAMES_URL_NEW = ('http://statsapi.mlb.com/api/v1/schedule/games/?sportId=1'
+ALL_GAMES_URL = ('http://statsapi.mlb.com/api/v1/schedule/games/?sportId=1'
                      '&startDate={year:04d}-{month:02d}-{day:02d}'
                      '&endDate={year:04d}-{month:02d}-{day:02d}')
 
@@ -442,56 +439,6 @@ GET_TODAY_GAMES_USAGE_STR = (
     '  - ./get_today_games.py [OUTPUT DIRECTORY]\n'
 )
 
-def get_today_date_str(this_datetime):
-    today_date_str = '{}-{}-{}'.format(this_datetime.year,
-                                       str(this_datetime.month).zfill(2),
-                                       str(this_datetime.day).zfill(2))
-
-    return today_date_str
-
-def get_generated_html_id_list(game_id_list, today_date_str, output_dir,
-                               write_game_html):
-    if not exists(output_dir):
-        makedirs(output_dir)
-
-    output_path = abspath(output_dir)
-    game_html_id_tuple_list = []
-
-    for game_id in game_id_list:
-        away_mlb_code = game_id.split('_')[-3][:3]
-        home_mlb_code = game_id.split('_')[-2][:3]
-        game_num_str = game_id.split('_')[-1]
-
-        away_code = MLB_REVERSE_TEAM_CODE_DICT.get(away_mlb_code,
-                                                   away_mlb_code.upper())
-
-        home_code = MLB_REVERSE_TEAM_CODE_DICT.get(home_mlb_code,
-                                                   home_mlb_code.upper())
-
-        game_id, game = get_game_from_url(today_date_str,
-                                          away_code,
-                                          home_code,
-                                          game_num_str)
-
-        if game:
-            write_game_svg_and_html(game_id, game, output_path,
-                                    write_game_html)
-
-            game_html_id_tuple_list.append(
-                ('{}-{}-{}-{}'.format(today_date_str,
-                                      away_code,
-                                      home_code,
-                                      game_num_str),
-                 game)
-            )
-        else:
-            raise ValueError(
-                '{} or {} not in MLB team code dict'.format(away_mlb_code,
-                                                            home_mlb_code)
-            )
-
-    return game_html_id_tuple_list
-
 def get_date_lists(this_datetime):
     year = this_datetime.year
     year_list = []
@@ -518,41 +465,6 @@ def get_date_lists(this_datetime):
             day_list.append('')
 
     return year_list, month_list, day_list
-
-def generate_game_svgs_for_old_datetime(this_datetime, output_dir,
-                                        write_game_html=False,
-                                        write_date_html=False,
-                                        write_index_html=False):
-    if not exists(output_dir):
-        mkdir(output_dir)
-
-    today_date_str = get_today_date_str(this_datetime)
-    month = int(this_datetime.month)
-    day = int(this_datetime.day)
-    year = int(this_datetime.year)
-    all_games_dict = get(
-        ALL_GAMES_URL.format(month=month, day=day, year=year)
-    ).json()
-
-    if isinstance(all_games_dict['data']['games'].get('game', []), dict):
-        all_games_dict['data']['games']['game'] = [
-            all_games_dict['data']['games']['game']
-        ]
-
-    game_id_list = [
-        game_dict['id'].replace('-', '_').replace('/', '_')
-        for game_dict in all_games_dict['data']['games'].get('game', [])
-    ]
-
-    game_html_id_tuple_list = get_generated_html_id_list(game_id_list,
-                                                         today_date_str,
-                                                         output_dir,
-                                                         write_game_html)
-
-    object_html_str = get_object_html_str(game_html_id_tuple_list)
-
-    write_game_index(object_html_str, this_datetime, output_dir,
-                     write_date_html, write_index_html)
 
 def get_object_html_str(game_html_id_tuple_list):
     object_html_str = ''
@@ -627,18 +539,13 @@ def get_object_html_str(game_html_id_tuple_list):
 
 def write_games_for_date(this_datetime, output_dir, write_game_html=False,
                          write_date_html=False, write_index_html=False):
-    #if this_datetime.year >= 2019:
-    generate_game_svgs_for_new_datetime(this_datetime, output_dir,
-                                        write_game_html, write_date_html,
-                                        write_index_html)
-    #else:
-    #    generate_game_svgs_for_old_datetime(this_datetime, output_dir,
-    #                                        write_game_html, write_date_html,
-    #                                        write_index_html)
+    generate_game_svgs_for_datetime(this_datetime, output_dir,
+                                    write_game_html, write_date_html,
+                                    write_index_html)
 
-def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
-                                        write_game_html, write_date_html,
-                                        write_index_html):
+def generate_game_svgs_for_datetime(this_datetime, output_dir,
+                                    write_game_html, write_date_html,
+                                    write_index_html):
     if not exists(output_dir):
         mkdir(output_dir)
 
@@ -647,7 +554,7 @@ def generate_game_svgs_for_new_datetime(this_datetime, output_dir,
     year = this_datetime.year
     date_str = '{}-{}-{}'.format(year, month, day)
     all_games_dict = get(
-        ALL_GAMES_URL_NEW.format(month=month, day=day, year=year)
+        ALL_GAMES_URL.format(month=month, day=day, year=year)
     ).json()
 
     if len(all_games_dict['dates']) == 0:
@@ -809,57 +716,12 @@ def get_both_teams_players(teams_dict):
     return duplicate_key_list
 
 def get_game_from_date(this_datetime, this_away_code, this_home_code,
-                       this_game_number):
-    month = this_datetime.month
-    day = this_datetime.day
-    year = this_datetime.year
-    all_games_dict = get(
-        ALL_GAMES_URL.format(month=month, day=day, year=year)
-    ).json()
-
-    game_tuple_list = [
-        (x['id'], x['game_pk'])
-        for x in all_games_dict['data']['games'].get('game', [])
-    ]
-
-    game_dict_list = [get(GAME_URL_TEMPLATE.format(game_pk=game_pk)).json()
-                      for _, game_pk in game_tuple_list]
-
-    game = None
-    for i, game_dict in enumerate(game_dict_list):
-        away_code = (
-            game_dict.get('gameData', {}).get('teams', {}).get(
-                'away', {}).get('abbreviation', {})
-        )
-
-        home_code = (
-            game_dict.get('gameData', {}).get('teams', {}).get(
-                'home', {}).get('abbreviation', {})
-        )
-
-        game_number_is_match = (
-            this_game_number == game_dict.get('gameData', {}).get(
-                'game', {}).get('gameNumber', {})
-        )
-
-        if ((away_code and home_code) and (away_code == this_away_code) and
-                (home_code == this_home_code) and game_number_is_match):
-            is_doubleheader = game_is_doubleheader(i, game_dict, game_dict_list)
-
-            game = baseball.process_game_json.get_game_obj(game_dict,
-                                                           is_doubleheader)
-
-            set_game_status(game, this_datetime)
-
-    return game
-
-def get_game_from_date_new(this_datetime, this_away_code, this_home_code,
                            this_game_number):
     month = this_datetime.month
     day = this_datetime.day
     year = this_datetime.year
     all_games_dict = get(
-        ALL_GAMES_URL_NEW.format(month=month, day=day, year=year)
+        ALL_GAMES_URL.format(month=month, day=day, year=year)
     ).json()
 
     game_list = []
@@ -929,7 +791,7 @@ def write_game_svg_and_html(game_id, game, output_path, write_html=False):
             with open(output_html_path, 'w') as filehandle:
                 filehandle.write(html_text)
 
-def get_game_from_files_new(live_json_file):
+def get_game_from_file(live_json_file):
     this_game = None
 
     try:
@@ -945,55 +807,18 @@ def get_game_from_files_new(live_json_file):
                                   live_json_file,
                                   exception_str))
 
-    return this_game
-
-def get_game_from_files_old(boxscore_file, player_file, inning_file):
-    this_game = None
-
-    try:
-        if (isfile(boxscore_file) and isfile(player_file) and
-                isfile(inning_file)):
-            boxscore_raw = open(boxscore_file, 'r', encoding='utf-8').read()
-            boxscore_xml = fromstring(boxscore_raw)
-            player_raw = open(player_file, 'r', encoding='utf-8').read()
-            player_xml = fromstring(player_raw)
-            inning_raw = open(inning_file, 'r', encoding='utf-8').read()
-            inning_xml = fromstring(inning_raw)
-            this_game = baseball.process_game_xml.get_game_obj(boxscore_xml,
-                                                               player_xml,
-                                                               inning_xml)
-    except:
-        exc_type, exc_value, exc_traceback = exc_info()
-        lines = format_exception(exc_type, exc_value, exc_traceback)
-        exception_str = ' '.join(lines)
-        print('{} ({} {} {}) {}'.format(datetime.utcnow(),
-                                        boxscore_file,
-                                        player_file,
-                                        inning_file,
-                                        exception_str))
-
-    return this_game
-
-def get_game_from_filename_tuple(filename_tuple):
-    game_id, boxscore_file, player_file, inning_file, live_file = filename_tuple
-    year = int(game_id.split('-', 1)[0])
-    #if year < 2019:
-    #    game = get_game_from_files_old(boxscore_file, player_file, inning_file)
-    #else:
-    game = get_game_from_files_new(live_file)
-
-    return game_id, game
+    return this_game.game_date_str, this_game
 
 def get_game_generator(filename_list):
-    for filename_tuple in filename_list:
-        game_id, this_game = get_game_from_filename_tuple(filename_tuple)
+    for filename in filename_list:
+        game_id, this_game = get_game_from_file(filename)
         if this_game:
             yield game_id, this_game
 
-def write_game_svg_html_from_filename_tuple(filename_output_path_tuple,
-                                            write_game_html=False):
-    filename_tuple, output_path = filename_output_path_tuple
-    game_id, game = get_game_from_filename_tuple(filename_tuple)
+def write_game_svg_html_from_filename(filename_output_path_tuple,
+                                      write_game_html=False):
+    filename, output_path = filename_output_path_tuple
+    game_id, game = get_game_from_file(filename)
     if game:
         write_game_svg_and_html(game_id, game, output_path, write_game_html)
 
@@ -1021,10 +846,8 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
 
     output_path = abspath(output_dir)
     filename_output_path_tuple_list = [
-        (filename_tuple, output_path)
-        for filename_tuple in get_filename_list(start_date_str,
-                                                end_date_str,
-                                                input_dir)
+        (filename, output_path)
+        for filename in get_filename_list(start_date_str, end_date_str, input_dir)
     ]
 
     start_datetime = parse(start_date_str)
@@ -1034,28 +857,21 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
     while this_datetime <= end_datetime:
         game_html_id_tuple_list = []
         for tup in filename_output_path_tuple_list:
-            filename_tuple, _ = tup
-            game_id = filename_tuple[0]
-            year_str, month_str, day_str, _, _, _ = game_id.split('-')
-
-            if (int(year_str) == this_datetime.year and
-                    int(month_str) == this_datetime.month and
-                    int(day_str) == this_datetime.day):
-                write_game_svg_html_from_filename_tuple(tup, write_game_html)
-                game_html_id_tuple_list.append(
-                    get_game_from_filename_tuple(filename_tuple)
-                )
+            filename, _ = tup
+            if str(this_datetime).split()[0] in filename:
+                write_game_svg_html_from_filename(tup, write_game_html)
+                game_html_id_tuple_list.append(get_game_from_file(filename))
 
         object_html_str = get_object_html_str(game_html_id_tuple_list)
         write_game_index(object_html_str, this_datetime, output_dir,
                          write_date_html, False)
 
-        game_html_id_tuple_list = []
         this_datetime += day_interval
 
 def get_filename_list(start_date_str, end_date_str, input_dir):
-    filename_list = []
+    return_filename_list = []
     input_path = abspath(input_dir)
+    input_dir_file_list = listdir(input_path)
     start_date = parse(start_date_str)
     end_date = parse(end_date_str)
     day_delta = timedelta(days=1)
@@ -1064,55 +880,26 @@ def get_filename_list(start_date_str, end_date_str, input_dir):
         year = str(this_date.year)
         month = str(this_date.month).zfill(2)
         day = str(this_date.day).zfill(2)
-        filename = '{}/{}/month_{}/day_{}/'.format(input_path, year, month, day)
-        if isdir(filename):
-            file_list = listdir(filename)
-            if file_list:
-                for subfile in file_list:
-                    if subfile.startswith('gid_'):
-                        away_code, home_code, game_num = subfile.split('_')[-3:]
-                        away_code = away_code[:-3]
-                        home_code = home_code[:-3]
-                        away_team, home_team = None, None
-                        away_team = MLB_REVERSE_TEAM_CODE_DICT.get(
-                            away_code, away_code.upper()
-                        )
-                        home_team = MLB_REVERSE_TEAM_CODE_DICT.get(
-                            home_code, home_code.upper()
-                        )
-                        if away_team and home_team:
-                            output_name = '-'.join([year, month, day, away_team,
-                                                    home_team, game_num])
+        this_date_str = '{}-{}-{}-'.format(year, month, day)
+        file_list = [this_filename
+                     for this_filename in input_dir_file_list
+                     if this_date_str in this_filename]
 
-                            subfolder_name = filename + subfile + '/'
-                            if listdir(subfolder_name):
-                                player_filename = subfolder_name + 'players.xml'
-                                boxscore_filename = (subfolder_name +
-                                                     'boxscore.xml')
-
-                                inning_filename = (subfolder_name +
-                                                   'inning/inning_all.xml')
-
-                                live_filename = (subfolder_name + 'live')
-
-                                filename_list.append((output_name,
-                                                      boxscore_filename,
-                                                      player_filename,
-                                                      inning_filename,
-                                                      live_filename))
+        for this_file in file_list:
+            return_filename_list.append('{}/{}'.format(input_path, this_file))
 
         this_date += day_delta
 
-    return filename_list
+    return return_filename_list
 
 def get_game_list_from_file_range(start_date_str, end_date_str, input_dir,
                                     ):
     filename_list = get_filename_list(start_date_str, end_date_str, input_dir)
     process_pool = Pool(NUM_PROCESS_SUBLISTS)
-    #game_tuple_list = process_pool.map(get_game_from_filename_tuple,
+    #game_tuple_list = process_pool.map(get_game_from_file,
     #                                   filename_list)
-    game_tuple_list = [get_game_from_filename_tuple(filename_tuple)
-                       for filename_tuple in filename_list]
+    game_tuple_list = [get_game_from_file(filename)
+                       for filename in filename_list]
 
     return game_tuple_list
 
@@ -1126,7 +913,8 @@ def write_svg_from_url(date_str, away_code, home_code, game_number, output_dir):
         makedirs(output_dir)
 
     output_path = abspath(output_dir)
-    game_id, game = get_game_from_url(date_str, away_code, home_code,
+    this_date = parse(date_str)
+    game_id, game = get_game_from_url(date_str, this_date, away_code, home_code,
                                       game_number)
 
     write_game_svg_and_html(game_id, game, output_path, False)
@@ -1180,35 +968,8 @@ def get_game_dict_from_url(date_str, away_code, home_code, game_number):
 
     return game_id, return_dict
 
-def get_game_xml_from_url(date_str, away_code, home_code, game_number):
-    formatted_date_str = get_formatted_date_str(date_str)
-    date = parse(formatted_date_str)
-
-    game_id = '-'.join(
-        [formatted_date_str, away_code, home_code, str(game_number)]
-    )
-
-    request_url_base = MLB_URL_PATTERN.format(
-        year=date.year,
-        month=str(date.month).zfill(2),
-        day=str(date.day).zfill(2),
-        away_mlb_code=MLB_TEAM_CODE_DICT.get(away_code, away_code.lower()),
-        home_mlb_code=MLB_TEAM_CODE_DICT.get(home_code, home_code.lower()),
-        game_number=game_number
-    )
-
-    boxscore_request_text = get(request_url_base + BOXSCORE_SUFFIX).text
-    if boxscore_request_text == 'GameDay - 404 Not Found':
-        boxscore_raw_xml, players_raw_xml, inning_raw_xml = None, None, None
-    else:
-        boxscore_raw_xml = boxscore_request_text
-        players_raw_xml = get(request_url_base + PLAYERS_SUFFIX).text
-        inning_raw_xml = get(request_url_base + INNING_SUFFIX).text
-
-    return game_id, boxscore_raw_xml, players_raw_xml, inning_raw_xml
-
-def get_game_from_url_deprecated(date_str, this_date, away_code, home_code,
-                          game_number):
+def get_game_from_url(date_str, this_date, away_code, home_code,
+                      game_number):
     this_game = get_game_from_date(this_date, away_code, home_code,
                                    game_number)
 
@@ -1222,71 +983,6 @@ def get_game_from_url_deprecated(date_str, this_date, away_code, home_code,
                                                      away_code,
                                                      home_code,
                                                      game_number))
-
-    return game_id, this_game
-
-def get_game_from_url_new(date_str, this_date, away_code, home_code,
-                          game_number):
-    this_game = get_game_from_date_new(this_date, away_code, home_code,
-                                   game_number)
-
-    formatted_date_str = get_formatted_date_str(date_str)
-    game_id = '-'.join(
-        [formatted_date_str, away_code, home_code, str(game_number)]
-    )
-
-    if not this_game:
-        print('No data found for {} {} {} {}'.format(date_str,
-                                                     away_code,
-                                                     home_code,
-                                                     game_number))
-
-    return game_id, this_game
-
-def get_game_from_url_old(date_str, away_code, home_code, game_number):
-    (game_id,
-     boxscore_raw_xml,
-     players_raw_xml,
-     inning_raw_xml) = get_game_xml_from_url(date_str,
-                                             away_code,
-                                             home_code,
-                                             game_number)
-
-    this_game = get_game_from_xml_strings(boxscore_raw_xml,
-                                          players_raw_xml,
-                                          inning_raw_xml)
-
-    if not this_game:
-        print('No data found for {} {} {} {}'.format(date_str,
-                                                     away_code,
-                                                     home_code,
-                                                     game_number))
-
-    return game_id, this_game
-
-def get_game_from_url(date_str, away_code, home_code, game_number):
-    this_game = None
-    game_id = None
-    try:
-        this_date = parse(date_str)
-        if int(this_date.year) >= 2015:
-            game_id, this_game = get_game_from_url_new(
-                date_str, this_date, away_code, home_code, game_number
-            )
-        else:
-            game_id, this_game = get_game_from_url_old(
-                date_str, away_code, home_code, game_number
-            )
-    except:
-        exc_type, exc_value, exc_traceback = exc_info()
-        lines = format_exception(exc_type, exc_value, exc_traceback)
-        exception_str = ' '.join(lines)
-        print('{} ({}-{}-{}-{}) {}'.format(datetime.utcnow(),
-                                           date_str,
-                                           away_code,
-                                           home_code,
-                                           game_number,
-                                           exception_str))
 
     return game_id, this_game
 
