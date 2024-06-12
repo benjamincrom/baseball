@@ -540,7 +540,8 @@ SPECIAL_CASE_NAME_DICT = {
     'Michael Harris': 'Michael Harris II',
     'JT Realmuto': 'J.T. Realmuto',
     'Yariel Rodriguez': 'Yariel Rodríguez',
-    'Josue Briceno': 'Josue Briceño'
+    'Josue Briceno': 'Josue Briceño',
+    'Joe Jimenez': 'Joe Jiménez'
 }
 
 EASTERN_TIMEZONE_STR = 'America/New_York'
