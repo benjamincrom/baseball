@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='baseball',
-      version='17.22',
+      version='17.23',
       description='Library to download, anaylyze, and visualize events in Major League Baseball games.',
       url='https://github.com/benjamincrom/baseball',
       author='Benjamin B. Crom',

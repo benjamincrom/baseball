@@ -855,16 +855,24 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
     day_interval = timedelta(days=1)
     this_datetime = start_datetime
     while this_datetime <= end_datetime:
-        game_html_id_tuple_list = []
-        for tup in filename_output_path_tuple_list:
-            filename, _ = tup
-            if str(this_datetime).split()[0] in filename:
-                write_game_svg_html_from_filename(tup, write_game_html)
-                game_html_id_tuple_list.append(get_game_from_file(filename))
+        try:
+            game_html_id_tuple_list = []
+            for tup in filename_output_path_tuple_list:
+                filename, _ = tup
+                if str(this_datetime).split()[0] in filename:
+                    write_game_svg_html_from_filename(tup, write_game_html)
+                    game_html_id_tuple_list.append(get_game_from_file(filename))
 
-        object_html_str = get_object_html_str(game_html_id_tuple_list)
-        write_game_index(object_html_str, this_datetime, output_dir,
-                         write_date_html, False)
+            object_html_str = get_object_html_str(game_html_id_tuple_list)
+            write_game_index(object_html_str, this_datetime, output_dir,
+                             write_date_html, False)
+        except:
+            exc_type, exc_value, exc_traceback = exc_info()
+            lines = format_exception(exc_type, exc_value, exc_traceback)
+            exception_str = ' '.join(lines)
+            print('{} ({}) {}'.format(datetime.utcnow(),
+                                      str(this_datetime),
+                                      exception_str))
 
         this_datetime += day_interval
 
