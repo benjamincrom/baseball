@@ -583,7 +583,7 @@ def generate_game_svgs_for_datetime(this_datetime, output_dir,
                         this_player_id = both_teams_players_id_list[i]
                         if this_char == '1':
                             del(game_dict_copy['liveData']['boxscore']['teams']['home']['players'][this_player_id])
-                            elif this_char == '0':
+                        elif this_char == '0':
                             del(game_dict_copy['liveData']['boxscore']['teams']['away']['players'][this_player_id])
                         else:
                             raise Exception("Should be binary string")
