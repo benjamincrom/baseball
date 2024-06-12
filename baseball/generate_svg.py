@@ -2217,14 +2217,14 @@ def get_logo(game):
     away_logo_str = LOGO_DICT.get(game.away_team.abbreviation, AWAY_DEFAULT_LOGO)
     if game.game_date_str[0:4].isdigit():
         if game.away_team.abbreviation == 'HOU' and int(game.game_date_str[0:4]) < 1965:
-            away_logo_str = 'colt.gif'
+            away_logo_str = 'team_logos/colt.gif'
         if game.away_team.abbreviation == 'CLE' and int(game.game_date_str[0:4]) < 1965:
-            away_logo_str = 'indians.gif'
+            away_logo_str = 'team_logos/indians.gif'
         if game.away_team.abbreviation == 'TB' and int(game.game_date_str[0:4]) < 2008:
-            away_logo_str = 'devil.png'
+            away_logo_str = 'team_logos/devil.png'
         if (game.away_team.abbreviation == 'CIN' and
             (int(game.game_date_str[0:4]) >= 1953 and int(game.game_date_str[0:4]) <= 1958)):
-            away_logo_str = 'redlegs.png'
+            away_logo_str = 'team_logos/redlegs.png'
 
     signature_svg += AWAY_LOGO.format(x_pos=x_pos,
                                       y_pos=y_pos,
@@ -2235,14 +2235,14 @@ def get_logo(game):
     home_logo_str = LOGO_DICT.get(game.home_team.abbreviation, HOME_DEFAULT_LOGO)
     if game.game_date_str[0:4].isdigit():
         if game.home_team.abbreviation == 'HOU' and int(game.game_date_str[0:4]) < 1965:
-            home_logo_str = 'colt.gif'
+            home_logo_str = 'team_logos/colt.gif'
         if game.home_team.abbreviation == 'CLE' and int(game.game_date_str[0:4]) < 1965:
-            home_logo_str = 'indians.gif'
+            home_logo_str = 'team_logos/indians.gif'
         if game.home_team.abbreviation == 'TB' and int(game.game_date_str[0:4]) < 2008:
-            home_logo_str = 'devil.png'
+            home_logo_str = 'team_logos/devil.png'
         if (game.home_team.abbreviation == 'CIN' and
             (int(game.game_date_str[0:4]) >= 1953 and int(game.game_date_str[0:4]) <= 1958)):
-            home_logo_str = 'redlegs.png'
+            home_logo_str = 'team_logos/redlegs.png'
 
     signature_svg += HOME_LOGO.format(x_pos=x_pos,
                                       y_pos=y_pos,
