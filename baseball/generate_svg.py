@@ -2218,12 +2218,12 @@ def get_logo(game):
     if game.game_date_str[0:4].isdigit():
         if game.away_team.abbreviation == 'HOU' and int(game.game_date_str[0:4]) < 1965:
             away_logo_str = 'team_logos/colt.gif'
-        if game.away_team.abbreviation == 'CLE' and int(game.game_date_str[0:4]) < 1965:
+        if game.away_team.abbreviation == 'CLE' and int(game.game_date_str[0:4]) < 2022:
             away_logo_str = 'team_logos/indians.gif'
         if game.away_team.abbreviation == 'TB' and int(game.game_date_str[0:4]) < 2008:
             away_logo_str = 'team_logos/devil.png'
         if (game.away_team.abbreviation == 'CIN' and
-            (int(game.game_date_str[0:4]) >= 1953 and int(game.game_date_str[0:4]) <= 1958)):
+            (int(game.game_date_str[0:4]) >= 1954 and int(game.game_date_str[0:4]) <= 1959)):
             away_logo_str = 'team_logos/redlegs.png'
 
     signature_svg += AWAY_LOGO.format(x_pos=x_pos,
@@ -2236,12 +2236,12 @@ def get_logo(game):
     if game.game_date_str[0:4].isdigit():
         if game.home_team.abbreviation == 'HOU' and int(game.game_date_str[0:4]) < 1965:
             home_logo_str = 'team_logos/colt.gif'
-        if game.home_team.abbreviation == 'CLE' and int(game.game_date_str[0:4]) < 1965:
+        if game.home_team.abbreviation == 'CLE' and int(game.game_date_str[0:4]) < 2022:
             home_logo_str = 'team_logos/indians.gif'
         if game.home_team.abbreviation == 'TB' and int(game.game_date_str[0:4]) < 2008:
             home_logo_str = 'team_logos/devil.png'
         if (game.home_team.abbreviation == 'CIN' and
-            (int(game.game_date_str[0:4]) >= 1953 and int(game.game_date_str[0:4]) <= 1958)):
+            (int(game.game_date_str[0:4]) >= 1954 and int(game.game_date_str[0:4]) <= 1959)):
             home_logo_str = 'team_logos/redlegs.png'
 
     signature_svg += HOME_LOGO.format(x_pos=x_pos,
