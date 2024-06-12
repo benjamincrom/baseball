@@ -520,11 +520,25 @@ def initialize_game(this_game, attendance_str, temperature_str, weather_str,
             this_game['liveData']['plays']['allPlays'][-1]['about'].get('endTime')
         )
 
+    if start_datetime_str:
+        expected_start_datetime = get_datetime(start_datetime_str)
+    else:
+        expected_start_datetime = None
+
     if start_date:
         game_str = '{:04d}-{:02d}-{:02d}-{}-{}{}'.format(
             int(start_date.astimezone(timezone('America/New_York')).year),
             int(start_date.astimezone(timezone('America/New_York')).month),
             int(start_date.astimezone(timezone('America/New_York')).day),
+            away_team.abbreviation,
+            home_team.abbreviation,
+            this_game['gameData']['game']['id'][-2:]
+        )
+    elif expected_start_datetime:
+        game_str = '{:04d}-{:02d}-{:02d}-{}-{}{}'.format(
+            int(expected_start_datetime.astimezone(timezone('America/New_York')).year),
+            int(expected_start_datetime.astimezone(timezone('America/New_York')).month),
+            int(expected_start_datetime.astimezone(timezone('America/New_York')).day),
             away_team.abbreviation,
             home_team.abbreviation,
             this_game['gameData']['game']['id'][-2:]
@@ -549,8 +563,8 @@ def initialize_game(this_game, attendance_str, temperature_str, weather_str,
     if weather_str:
         game_obj.weather = weather_str
 
-    if start_datetime_str:
-        game_obj.expected_start_datetime = get_datetime(start_datetime_str)
+    if expected_start_datetime:
+        game_obj.expected_start_datetime = expected_start_datetime
 
     return game_obj
 
