@@ -2215,6 +2215,16 @@ def get_logo(game):
     x_pos = game_width - BOX_WIDTH
     y_pos = 8 * BOX_HEIGHT + BOX_HEIGHT // 2
     away_logo_str = LOGO_DICT.get(game.away_team.abbreviation, AWAY_DEFAULT_LOGO)
+    if game.away_team.abbreviation == 'HOU' and int(game.game_date_str[0:4]) < 1965:
+        away_logo_str = 'colt.gif'
+    if game.away_team.abbreviation == 'CLE' and int(game.game_date_str[0:4]) < 1965:
+        away_logo_str = 'indians.gif'
+    if game.away_team.abbreviation == 'TB' and int(game.game_date_str[0:4]) < 2008:
+        away_logo_str = 'devil.png'
+    if (game.away_team.abbreviation == 'CIN' and
+        (int(game.game_date_str[0:4]) >= 1953 and int(game.game_date_str[0:4]) <= 1958)):
+        away_logo_str = 'redlegs.png'
+
     signature_svg += AWAY_LOGO.format(x_pos=x_pos,
                                       y_pos=y_pos,
                                       logo=away_logo_str)
@@ -2222,6 +2232,16 @@ def get_logo(game):
     x_pos = game_width - BOX_WIDTH
     y_pos = 8 * BOX_HEIGHT + BOX_HEIGHT // 2 + HEIGHT // 2
     home_logo_str = LOGO_DICT.get(game.home_team.abbreviation, HOME_DEFAULT_LOGO)
+    if game.home_team.abbreviation == 'HOU' and int(game.game_date_str[0:4]) < 1965:
+        home_logo_str = 'colt.gif'
+    if game.home_team.abbreviation == 'CLE' and int(game.game_date_str[0:4]) < 1965:
+        home_logo_str = 'indians.gif'
+    if game.home_team.abbreviation == 'TB' and int(game.game_date_str[0:4]) < 2008:
+        home_logo_str = 'devil.png'
+    if (game.home_team.abbreviation == 'CIN' and
+        (int(game.game_date_str[0:4]) >= 1953 and int(game.game_date_str[0:4]) <= 1958)):
+        home_logo_str = 'redlegs.png'
+
     signature_svg += HOME_LOGO.format(x_pos=x_pos,
                                       y_pos=y_pos,
                                       logo=home_logo_str)
