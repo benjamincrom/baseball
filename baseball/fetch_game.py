@@ -583,7 +583,7 @@ def generate_game_svgs_for_datetime(this_datetime, output_dir,
                         this_player_id = both_teams_players_id_list[i]
                         if this_char == '1':
                             del(game_dict_copy['liveData']['boxscore']['teams']['home']['players'][this_player_id])
-                        elif this_char == '0':
+                            elif this_char == '0':
                             del(game_dict_copy['liveData']['boxscore']['teams']['away']['players'][this_player_id])
                         else:
                             raise Exception("Should be binary string")
@@ -809,7 +809,12 @@ def get_game_from_file(live_json_file):
                                   live_json_file,
                                   exception_str))
 
-    return this_game.game_date_str, this_game
+    if this_game:
+        return_str = this_game.game_date_str
+    else:
+        return_str = ''
+
+    return return_str, this_game
 
 def get_game_generator(filename_list):
     for filename in filename_list:
