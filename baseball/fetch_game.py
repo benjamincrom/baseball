@@ -799,8 +799,8 @@ def get_game_from_file(live_json_file):
             live_raw = open(live_json_file, 'r', encoding='utf-8').read()
             game_dict = loads(live_raw)
             this_game = baseball.process_game_json.get_game_obj(game_dict)
-            if this_game and len(this_game.game_date_str < 16):
-                this_game.game_date_str = f"{live_json_file[0:10]}-{this_game.game_date_str}"
+            if this_game and len(this_game.game_date_str) < 16:
+                this_game.game_date_str = f"{live_json_file.split('/')[-1][0:10]}-{this_game.game_date_str}"
     except:
         exc_type, exc_value, exc_traceback = exc_info()
         lines = format_exception(exc_type, exc_value, exc_traceback)
