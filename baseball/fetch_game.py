@@ -799,6 +799,8 @@ def get_game_from_file(live_json_file):
             live_raw = open(live_json_file, 'r', encoding='utf-8').read()
             game_dict = loads(live_raw)
             this_game = baseball.process_game_json.get_game_obj(game_dict)
+            if this_game and len(this_game.game_date_str < 16):
+                this_game.game_date_str = f"{live_json_file[0:10]}-{this_game.game_date_str}"
     except:
         exc_type, exc_value, exc_traceback = exc_info()
         lines = format_exception(exc_type, exc_value, exc_traceback)
@@ -821,22 +823,6 @@ def write_game_svg_html_from_filename(filename_output_path_tuple,
     game_id, game = get_game_from_file(filename)
     if game:
         write_game_svg_and_html(game_id, game, output_path, write_game_html)
-
-def get_game_from_xml_strings(boxscore_raw_xml, players_raw_xml,
-                              inning_raw_xml):
-    this_game = None
-    if (boxscore_raw_xml and players_raw_xml and inning_raw_xml and
-            boxscore_raw_xml != '{"message": "Internal server error"}' and
-            players_raw_xml != '{"message": "Internal server error"}' and
-            inning_raw_xml != '{"message": "Internal server error"}'):
-        boxscore_xml_obj = fromstring(boxscore_raw_xml)
-        players_xml_obj = fromstring(players_raw_xml)
-        inning_xml_obj = fromstring(inning_raw_xml)
-        this_game = baseball.process_game_xml.get_game_obj(boxscore_xml_obj,
-                                                           players_xml_obj,
-                                                           inning_xml_obj)
-
-    return this_game
 
 def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
                               output_dir, write_game_html=False,
