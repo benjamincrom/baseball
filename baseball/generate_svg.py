@@ -18,7 +18,7 @@ AWAY_DEFAULT_LOGO = 'baseball-fairy-161-away.png'
 HOME_DEFAULT_LOGO = 'baseball-fairy-161-home.png'
 LOGO_DICT = {
     'LAA': 'team_logos/angels.gif',
-    'HOU': 'team_logos/astros.gif',
+    'HOU': 'team_logos/astros.gif', # colt.gif
     'CAL': 'team_logos/california.png',
     'ANA': 'team_logos/anaheim.png',
     'FLA': 'team_logos/florida.png',
@@ -40,7 +40,7 @@ LOGO_DICT = {
     'AZ': 'team_logos/diamondbacks.gif',
     'LAD': 'team_logos/dodgers.gif',
     'SF': 'team_logos/giants.gif',
-    'CLE': 'team_logos/guardians.png',
+    'CLE': 'team_logos/guardians.png', # indians.gif
     'NAS': 'team_logos/nl.svg',
     'AAS': 'team_logos/al.svg',
     'SEA': 'team_logos/mariners.gif',
@@ -53,8 +53,8 @@ LOGO_DICT = {
     'PHI': 'team_logos/phillies.gif',
     'PIT': 'team_logos/pirates.gif',
     'TEX': 'team_logos/rangers.gif',
-    'TB': 'team_logos/rays.gif',
-    'CIN': 'team_logos/reds.gif',
+    'TB': 'team_logos/rays.gif', # devil.png
+    'CIN': 'team_logos/reds.gif', # redlegs.png
     'BOS': 'team_logos/red-sox.gif',
     'COL': 'team_logos/rockies.gif',
     'KC': 'team_logos/royals.gif',
