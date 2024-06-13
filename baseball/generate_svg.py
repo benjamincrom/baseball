@@ -14,8 +14,8 @@ FakePlateAppearance = namedtuple(
 )
 
 EASTERN_TIMEZONE_STR = 'America/New_York'
-AWAY_DEFAULT_LOGO = 'baseball-fairy-161-away.png'
-HOME_DEFAULT_LOGO = 'baseball-fairy-161-home.png'
+AWAY_DEFAULT_LOGO = 'team_logos/baseball-fairy-161-away.png'
+HOME_DEFAULT_LOGO = 'team_logos/baseball-fairy-161-home.png'
 LOGO_DICT = {
     'LAA': 'team_logos/angels.gif',
     'HOU': 'team_logos/astros.gif', # colt.gif
