@@ -1,17 +1,18 @@
-07 13 * * * printf -v yesterday $(date -d "1 day ago" '+%Y-%m-%d').html; find /var/www/html -name $yesterday -exec sed -i 's/<div id="delay-header" style="width:100%;/<div id="delay-header" style="visibility: hidden; width:100%;/g' {} \;
-08 13 * * * printf -v yesterday $(date -d "1 day ago" '+%Y-%m-%d').html; find /var/www/html -name $yesterday -exec sed -i 's/<div id="delay-header" style="width:100%;/<div id="delay-header" style="visibility: hidden; width:100%;/g' {} \;
-10 13 * * * python3.8 /code/clean_delay.py
-11 13 * * * python3.8 /code/clean_delay.py
-12 13 * * * python3.8 /code/clean_delay.py
-* * * * * DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 5; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 10; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 15; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 20; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 25; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 30; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 35; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 40; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 45; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 50; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
-* * * * * sleep 55; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.8 /code/wrapper.py >> /var/log/baseball/baseball.log
+07 13 * * * /bin/bash /code/erase_yesterday_delay.sh
+08 13 * * * /bin/bash /code/erase_yesterday_delay.sh
+09 14 * * * /bin/bash /code/erase_yesterday_delay.sh
+10 13 * * * python3.12 /code/clean_delay.py
+11 13 * * * python3.12 /code/clean_delay.py
+12 13 * * * python3.12 /code/clean_delay.py
+* * * * * DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 5; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 10; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 15; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 20; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 25; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 30; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 35; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 40; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 45; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 50; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
+* * * * * sleep 55; DD_PROFILING_ENABLED=true DD_ENV=none DD_SERVICE=get-todays-games DD_VERSION=1.0.3 /usr/local/bin/ddtrace-run python3.12 /code/wrapper.py >> /var/log/baseball/baseball.log
