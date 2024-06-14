@@ -32,7 +32,7 @@ LOGO_DICT = {
     'OAK': 'team_logos/athletics.gif',
     'TOR': 'team_logos/blue-jays.gif',
     'ATL': 'team_logos/braves.gif',
-    'MIL': 'team_logos/brewers.gif',
+    'MIL': 'team_logos/brewers.gif',  # milwaukeebraves.png
     'ML4': 'team_logos/brewers.gif',
     'STL': 'team_logos/cardinals.gif',
     'CHC': 'team_logos/cubs.gif',
@@ -2222,6 +2222,8 @@ def get_logo(game):
             away_logo_str = 'team_logos/indians.gif'
         if game.away_team.abbreviation == 'TB' and int(game.game_date_str[0:4]) < 2008:
             away_logo_str = 'team_logos/devil.png'
+        if game.away_team.abbreviation == 'MIL' and int(game.game_date_str[0:4]) < 1966:
+            away_logo_str = 'team_logos/milwaukeebraves.png'
         if (game.away_team.abbreviation == 'CIN' and
             (int(game.game_date_str[0:4]) >= 1954 and int(game.game_date_str[0:4]) <= 1959)):
             away_logo_str = 'team_logos/redlegs.png'
@@ -2240,6 +2242,8 @@ def get_logo(game):
             home_logo_str = 'team_logos/indians.gif'
         if game.home_team.abbreviation == 'TB' and int(game.game_date_str[0:4]) < 2008:
             home_logo_str = 'team_logos/devil.png'
+        if game.home_team.abbreviation == 'MIL' and int(game.game_date_str[0:4]) < 1966:
+            home_logo_str = 'team_logos/milwaukeebraves.png'
         if (game.home_team.abbreviation == 'CIN' and
             (int(game.game_date_str[0:4]) >= 1954 and int(game.game_date_str[0:4]) <= 1959)):
             home_logo_str = 'team_logos/redlegs.png'

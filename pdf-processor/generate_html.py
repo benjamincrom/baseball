@@ -207,6 +207,10 @@ for team, team_name in sorted((mlb_team_dict | team_dict).items(), key=lambda it
                 team_name = 'Houston Colt 45\'s'
             elif team == 'HOU' and int(year) >= 1965:
                 team_name = 'Houston Astros'
+            elif team == 'MIL' and int(year) < 1966:
+                team_name = 'Milwaukee Braves'
+            elif team == 'MIL' and int(year) >= 1966:
+                team_name = 'Milwaukee Brewers'
 
             rows_str += (f'<tr><td><a href="{url}/{team}/{year}-{team}.pdf" style="color:lightblue">{year} {team_name} (single-page)</a></td>\n'
                          f'<td><a href="{url}/{team}/{year}-{team}-two-page.pdf" style="color:lightblue">{year} {team_name} (two-page)</a></td></tr>\n')

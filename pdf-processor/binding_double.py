@@ -115,7 +115,7 @@ team_dict = {
     'LHV': 'Lehigh Valley IronPigs',
     'MEX': 'Mexico',
     'MIA': 'Miami Marlins',
-    'MIL': 'Milwaukee Brewers',
+    'MIL': 'Milwaukee Brewers', # Milwuakee Braves before 1966
     'MIN': 'Minnesota Twins',
     'MON': 'Montreal Expos',
     'MEM': 'Memphis Redbirds',

@@ -222,6 +222,10 @@ def f():
                     team_name = 'Houston Colt 45\'s'
                 elif team == 'HOU' and year >= 1965:
                     team_name = 'Houston Astros'
+                elif team == 'MIL' and year < 1966:
+                    team_name = 'Milwaukee Braves'
+                elif team == 'MIL' and year >= 1966:
+                    team_name = 'Milwaukee Brewers'
 
                 if str(year) == team_file[0:4]:
                     writer = FPDF('P', 'mm', (841, 1189))
