@@ -1,0 +1,141 @@
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server;
+  root /var/www/html;
+  index index.html;
+  server_name _;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+  location /nginx_status {
+          stub_status on;
+          access_log off;
+          allow 127.0.0.1;
+          allow 172.17.0.0/16;
+          deny all;
+  }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/www.livebaseballscorecards.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/www.livebaseballscorecards.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+server {
+  root /var/www/html;
+  index index.html;
+  server_name livebaseballscorecards.com; # managed by Certbot
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+
+  location /nginx_status {
+          stub_status on;
+           access_log off;
+          allow 127.0.0.1;
+          allow 172.17.0.0/16;
+          deny all;
+      }
+
+
+    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/livebaseballscorecards.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/livebaseballscorecards.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+
+
+}
+
+#server {
+#  root /var/www/html;
+#  index index.html;
+#    server_name www.livebaseballscorecards.com; # managed by Certbot
+
+#  location / {
+#    try_files $uri $uri/ =404;
+#  }
+
+
+#  location /nginx_status {
+#          stub_status on;
+#           access_log off;
+#          allow 127.0.0.1;
+#    allow 172.17.0.0/16;
+#          deny all;
+#      }
+
+
+#    listen [::]:443 ssl ipv6only=on; # managed by Certbot
+#    listen 443 ssl; # managed by Certbot
+#    ssl_certificate /etc/letsencrypt/live/www.livebaseballscorecards.com/fullchain.pem; # managed by Certbot
+#    ssl_certificate_key /etc/letsencrypt/live/www.livebaseballscorecards.com/privkey.pem; # managed by Certbot
+#    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+#    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+#}
+
+server {
+  root /var/www/html;
+  index index.html;
+    server_name www.livebaseballscorecards.com; # managed by Certbot
+
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+  location /nginx_status {
+          stub_status on;
+           access_log off;
+          allow 127.0.0.1;
+          allow 172.17.0.0/16;
+          deny all;
+  }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/www.livebaseballscorecards.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/www.livebaseballscorecards.com/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+
+}
+
+server {
+    if ($host = www.livebaseballscorecards.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+  listen 80 ;
+  listen [::]:80 ;
+    server_name www.livebaseballscorecards.com;
+    return 404; # managed by Certbot
+
+
+}
+
+server {
+    if ($host = livebaseballscorecards.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+  listen 80 ;
+  listen [::]:80 ;
+    server_name livebaseballscorecards.com;
+    return 404; # managed by Certbot
+
+
+}
