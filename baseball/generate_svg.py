@@ -43,7 +43,7 @@ LOGO_DICT = {
     'CLE': 'team_logos/guardians.png', # indians.gif
     'NAS': 'team_logos/nl.svg',
     'AAS': 'team_logos/al.svg',
-    'SEA': 'team_logos/mariners.gif',
+    'SEA': 'team_logos/mariners.gif', # pilots.png
     'MIA': 'team_logos/marlins.gif',
     'FLO': 'team_logos/florida.svg',
     'NYM': 'team_logos/mets.gif',
@@ -2218,6 +2218,8 @@ def get_logo(game):
     if game.game_date_str[0:4].isdigit():
         if game.away_team.abbreviation == 'HOU' and int(game.game_date_str[0:4]) < 1965:
             away_logo_str = 'team_logos/colt.gif'
+        if game.away_team.abbreviation == 'SEA' and int(game.game_date_str[0:4]) < 1977:
+            away_logo_str = 'team_logos/pilots.png'
         if game.away_team.abbreviation == 'CLE' and int(game.game_date_str[0:4]) < 2022:
             away_logo_str = 'team_logos/indians.gif'
         if game.away_team.abbreviation == 'TB' and int(game.game_date_str[0:4]) < 2008:
@@ -2238,6 +2240,8 @@ def get_logo(game):
     if game.game_date_str[0:4].isdigit():
         if game.home_team.abbreviation == 'HOU' and int(game.game_date_str[0:4]) < 1965:
             home_logo_str = 'team_logos/colt.gif'
+        if game.home_team.abbreviation == 'SEA' and int(game.game_date_str[0:4]) < 1977:
+            home_logo_str = 'team_logos/pilots.png'
         if game.home_team.abbreviation == 'CLE' and int(game.game_date_str[0:4]) < 2022:
             home_logo_str = 'team_logos/indians.gif'
         if game.home_team.abbreviation == 'TB' and int(game.game_date_str[0:4]) < 2008:

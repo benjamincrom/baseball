@@ -152,7 +152,7 @@ team_dict = {
     'ROC': 'Rochester Red Wings',
     'RSA': 'South Africa',
     'SD': 'San Diego Padres',
-    'SEA': 'Seattle Mariners',
+    'SEA': 'Seattle Mariners',  # Seattle Pilots before 1977
     'SEU': 'Southeastern U. Fire',
     'SF': 'San Francisco Giants',
     'SFF': 'San Francisco Giants Futures',
@@ -226,6 +226,10 @@ def f():
                     team_name = 'Milwaukee Braves'
                 elif team == 'MIL' and year >= 1966:
                     team_name = 'Milwaukee Brewers'
+                elif team == 'SEA' and int(year) < 1977:
+                    team_name = 'Seattle Pilots'
+                elif team == 'SEA' and int(year) >= 1977:
+                    team_name = 'Seattle Mariners'
 
                 if str(year) == team_file[0:4]:
                     writer = FPDF('P', 'mm', (841, 1189))

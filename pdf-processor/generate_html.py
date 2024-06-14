@@ -1,4 +1,4 @@
-import os
+//import os
 
 mlb_team_dict = {
     'CAL': 'California Angels',
@@ -211,6 +211,10 @@ for team, team_name in sorted((mlb_team_dict | team_dict).items(), key=lambda it
                 team_name = 'Milwaukee Braves'
             elif team == 'MIL' and int(year) >= 1966:
                 team_name = 'Milwaukee Brewers'
+            elif team == 'SEA' and int(year) < 1977:
+                team_name = 'Seattle Pilots'
+            elif team == 'SEA' and int(year) >= 1977:
+                team_name = 'Seattle Mariners'
 
             rows_str += (f'<tr><td><a href="{url}/{team}/{year}-{team}.pdf" style="color:lightblue">{year} {team_name} (single-page)</a></td>\n'
                          f'<td><a href="{url}/{team}/{year}-{team}-two-page.pdf" style="color:lightblue">{year} {team_name} (two-page)</a></td></tr>\n')

@@ -137,7 +137,7 @@ team_dict = {
     'ROC': 'Rochester Red Wings',
     'RSA': 'South Africa',
     'SD': 'San Diego Padres',
-    'SEA': 'Seattle Mariners',
+    'SEA': 'Seattle Mariners',  # Seattle Pilots before 1977
     'SEU': 'Southeastern U. Fire',
     'SF': 'San Francisco Giants',
     'SFF': 'San Francisco Giants Futures',
