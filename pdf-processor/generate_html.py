@@ -38,7 +38,7 @@ mlb_team_dict = {
     'SEA': 'Seattle Mariners',
     'SF': 'San Francisco Giants',
     'STL': 'St. Louis Cardinals',
-    'TB': 'Tampa Bay Devil Rays',
+    'TB': 'Tampa Bay Rays',
     'LA': 'Los Angeles Dodgers',
     'TEX': 'Texas Rangers',
     'TOR': 'Toronto Blue Jays',
@@ -191,6 +191,23 @@ for team, team_name in sorted((mlb_team_dict | team_dict).items(), key=lambda it
         files = os.listdir(f'/Volumes/B_Crom_SSD/bound_books/{team}')
         year_str_set = sorted(set([file[0:4] for file in files]))
         for year in year_str_set:
+            if team == 'CLE' and int(year) < 2022:
+                team_name = 'Cleveland Indians'
+            elif team == 'CLE' and int(year) >= 2022:
+                team_name = 'Cleveland Guardians'
+            elif team == 'CIN' and int(year) >= 1954 and int(year) <= 1959:
+                team_name = 'Cincinnati Redlegs'
+            elif team == 'CIN' and (int(year) < 1954 or int(year) > 1959):
+                team_name = 'Cincinnati Reds'
+            elif team == 'TB' and int(year) < 2008:
+                team_name = 'Tampa Bay Devil Rays'
+            elif team == 'TB' and int(year) >= 2008:
+                team_name = 'Tampa Bay Rays'
+            elif team == 'HOU' and int(year) < 1965:
+                team_name = 'Houston Colt 45\'s'
+            elif team == 'HOU' and int(year) >= 1965:
+                team_name = 'Houston Astros'
+
             rows_str += (f'<tr><td><a href="{url}/{team}/{year}-{team}.pdf" style="color:lightblue">{year} {team_name} (single-page)</a></td>\n'
                          f'<td><a href="{url}/{team}/{year}-{team}-two-page.pdf" style="color:lightblue">{year} {team_name} (two-page)</a></td></tr>\n')
 
