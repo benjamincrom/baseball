@@ -39,10 +39,11 @@ LOGO_DICT = {
     'ARI': 'team_logos/diamondbacks.gif',
     'AZ': 'team_logos/diamondbacks.gif',
     'LAD': 'team_logos/dodgers.gif',
+    'LA': 'team_logos/dodgers.gif',
     'SF': 'team_logos/giants.gif',
     'CLE': 'team_logos/guardians.png', # indians.gif
-    'NAS': 'team_logos/nl.svg',
-    'AAS': 'team_logos/al.svg',
+    'NL': 'team_logos/nl.svg',
+    'AL': 'team_logos/al.svg',
     'SEA': 'team_logos/mariners.gif', # pilots.png
     'MIA': 'team_logos/marlins.gif',
     'FLO': 'team_logos/florida.svg',

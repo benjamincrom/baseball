@@ -1,4 +1,4 @@
-//import os
+import os
 
 mlb_team_dict = {
     'CAL': 'California Angels',
