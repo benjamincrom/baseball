@@ -937,8 +937,7 @@ def write_svg_from_url(date_str, away_code, home_code, game_number, output_dir):
         makedirs(output_dir)
 
     output_path = abspath(output_dir)
-    this_date = parse(date_str)
-    game_id, game = get_game_from_url(date_str, this_date, away_code, home_code,
+    game_id, game = get_game_from_url(date_str, away_code, home_code,
                                       game_number)
 
     write_game_svg_and_html(game_id, game, output_path, False)
@@ -992,8 +991,9 @@ def get_game_dict_from_url(date_str, away_code, home_code, game_number):
 
     return game_id, return_dict
 
-def get_game_from_url(date_str, this_date, away_code, home_code,
+def get_game_from_url(date_str, away_code, home_code,
                       game_number):
+    this_date = parse(date_str)
     this_game = get_game_from_date(this_date, away_code, home_code,
                                    game_number)
 
