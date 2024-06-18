@@ -61,7 +61,7 @@ LOGO_DICT = {
     'KC': 'team_logos/royals.gif',
     'DET': 'team_logos/tigers.gif',
     'MIN': 'team_logos/twins.gif',
-    'MON': 'team_logos/expos.svg',
+    'MON': 'team_logos/expos.png',
     'CWS': 'team_logos/white-sox.gif',
     'CHW': 'team_logos/white-sox.gif',
     'NYY': 'team_logos/yankees.gif'
