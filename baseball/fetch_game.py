@@ -886,9 +886,9 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
             exc_type, exc_value, exc_traceback = exc_info()
             lines = format_exception(exc_type, exc_value, exc_traceback)
             exception_str = ' '.join(lines)
-            print('{} ({}) {}'.format(datetime.utcnow(),
-                                      str(this_datetime),
-                                      exception_str))
+        #    print('{} ({}) {}'.format(datetime.utcnow(),
+        #                              str(this_datetime),
+        #                              exception_str))
 
         this_datetime += day_interval
 
