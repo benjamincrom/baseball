@@ -47,5 +47,7 @@ date_list = [
     ('2020-01-01', '2025-01-01')
 ]
 
-with Pool(16) as p:
-    p.map(f, date_list)
+if __name__ == '__main__':
+    with Pool(16) as p:
+        p.map(f, date_list)
+
