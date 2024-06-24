@@ -4,6 +4,11 @@
     - [Installing from pypi](#installing-from-pypi)
     - [Installing from source](#installing-from-source)
     - [Fetch individual MLB game](#fetch-individual-mlb-game)
+    - [Fetch list of MLB games](#fetch-list-of-mlb-games)
+    - [Get Game generator given target directory and date range](#get-game-generator-given-target-directory-and-date-range)
+    - [Get raw XML files for an individual MLB game](#get-raw-xml-files-for-an-individual-mlb-game)
+    - [Convert XML documents into Game object](#convert-xml-documents-into-game-object)
+    - [Write scorecard SVGs for all MLB games on a given date](#write-scorecard-svgs-for-all-mlb-games-on-a-given-date)
     - [Game Class Structure](#game-class-structure)
         - [Game](#game)
         - [Team](#team)
@@ -51,6 +56,42 @@ with open(game_id + '.svg', 'w') as fh:
 ```
 2017-11-01-HOU-LAD-1.svg
 ![svg](README_images/2017-11-01-HOU-LAD-1.svg)
+
+## Fetch list of MLB games
+* __get_game_list_from_file_range(__*start_date_str, end_date_str, input_dir*__)__
+
+Fetch a list of game objects which each contain metadata and events for a single MLB game.
+
+First, download and unzip the [source data zip file](https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_1974_2021.zip):
+```shell
+wget https://spaces-host.nyc3.digitaloceanspaces.com/livebaseballscorecards-artifacts/baseball_1974_2021.zip
+unzip baseball_1974_2021.zip -d ./baseball_1974_2021
+```
+Then import the files in Python using this library:
+```python
+import baseball
+game_tuple_list = baseball.get_game_list_from_file_range('1-1-2017', '12-31-2017', 'baseball_1974_2021/1974_2021')
+```
+
+## Get Game generator given target directory and date range
+* __get_game_generator_from_file_range(__*start_date_str, end_date_str, input_dir*__)__
+
+  Returns generator which yields (game_id, [Game](#game)) tuples
+
+## Get raw XML files for an individual MLB game
+* __get_game_xml_from_url(__*date_str, away_code, home_code, game_number*__)__
+
+  Returns game_id and three strings containing XML documents: (game_id, boxscore_raw_xml, players_raw_xml, inning_raw_xml)
+
+## Convert XML documents into Game object
+* __get_game_from_xml_strings(__*boxscore_raw_xml, players_raw_xml, inning_raw_xml*__)__
+
+  Returns [Game](#game) object if enough information to create one is provided.  Otherwise returns None.
+
+## Write scorecard SVGs for all MLB games on a given date
+* __write_games_for_date(__*this_datetime, output_dir*__)__
+
+  Writes SVG files for all games played on the given date
 
 ## Game Class Structure
 #### Game
