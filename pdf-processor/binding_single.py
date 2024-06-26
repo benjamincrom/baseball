@@ -162,7 +162,7 @@ team_dict = {
 def f(team):
     os.mkdir(f"/Volumes/B_Crom_SSD/bound_books/{team}")
     team_files = sorted(os.listdir(f"/Volumes/B_Crom_SSD/binding_books_1/{team}"))
-    if len(team_files) > 200:
+    if len(team_files) > 200 and team != 'AL' and team != 'NL':
         for year in range(1950, 2024):
             has_scorecards = False
             this_merger = PdfMerger()
