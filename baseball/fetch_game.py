@@ -171,7 +171,6 @@ HTML_INDEX_PAGE = (
     'here</a>.'
     '<br>Download a PDF of any season for any team from the '
     '<a style="color:lightblue" href="/archive.html">Scorebook PDF Archive</a>.'
-    '<br>Scorecards now go back to 1950!'
     '<br />'
     '<br />'
     '<font size="6" color="white">Select a date</font>'
