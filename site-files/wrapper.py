@@ -34,7 +34,7 @@ def get_todays_games():
 
         shutil.rmtree('/mnt/delay/1800')
         os.mkdir('/mnt/delay/1800')
-        for i in range(1895, -5, -5):
+        for i in range(1795, -5, -5):
             for this_file in os.listdir(f'/mnt/delay/{str(i)}'):
                 source_path = f'/mnt/delay/{str(i)}/{this_file}'
                 dest_dir = f'/mnt/delay/{str(i+5)}/'
