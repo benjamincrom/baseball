@@ -14,5 +14,5 @@ def del_folder_contents(folder):
 
 del_folder_contents('/mnt/delay')
 
-for i in range(0, 3605, 5):
+for i in range(0, 1805, 5):
     os.mkdir(f'/mnt/delay/{str(i)}')
