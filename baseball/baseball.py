@@ -116,6 +116,7 @@ STADIUM_TIMEZONE_DICT = {
     'Coors Field': 'America/Denver',
     'Chase Field': 'America/Phoenix',
     'Safeco Field': 'America/Los_Angeles',
+    'Sutter Health Park': 'America/Los_Angeles',
     'AT&T Park': 'America/Los_Angeles',
     'Oakland-Alameda County Coliseum': 'America/Los_Angeles',
     'Oakland Coliseum': 'America/Los_Angeles',
