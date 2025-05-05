@@ -29,11 +29,11 @@ LOGO_DICT = {
     'BRO': 'team_logos/dodgers.png',
     'WAS': 'team_logos/senators.svg',
     'BSN': 'team_logos/bostonbraves.png',
-    'OAK': 'team_logos/athletics.gif',
+    'ATH': 'team_logos/athletics.gif',
     'TOR': 'team_logos/blue-jays.gif',
     'ATL': 'team_logos/braves.gif',
-    'MIL': 'team_logos/brewers.gif',  # milwaukeebraves.png
-    'ML4': 'team_logos/brewers.gif',
+    'MIL': 'team_logos/brewers.png',  # milwaukeebraves.png
+    'ML4': 'team_logos/brewers.png',
     'STL': 'team_logos/cardinals.gif',
     'CHC': 'team_logos/cubs.gif',
     'ARI': 'team_logos/diamondbacks.gif',

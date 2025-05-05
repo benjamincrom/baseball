@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-from baseball.baseball_events import Pickoff, RunnerAdvance, Pitch
+from baseball.baseball_events import Pickoff, Substitution, RunnerAdvance, Pitch
 
 NOT_AT_BAT_CODE_LIST = ['SH', 'SF', 'BB', 'CI', 'FI', 'IBB', 'HBP', 'CS', 'PO']
 HIT_CODE_LIST = ['1B', '2B', '3B', 'HR']
@@ -45,7 +45,19 @@ def process_baserunners(plate_appearance, last_plate_appearance,
     first_base_list = [first_base] if first_base else []
     second_base_list = [second_base] if second_base else []
     third_base_list = [third_base] if third_base else []
+
     for event in plate_appearance.event_list:
+        if isinstance(event, Substitution):
+            if event.outgoing_player in first_base_list:
+                first_base_list.remove(event.outgoing_player)
+                first_base_list.append(event.incoming_player)
+            if event.outgoing_player in second_base_list:
+                second_base_list.remove(event.outgoing_player)
+                second_base_list.append(event.incoming_player)
+            if event.outgoing_player in third_base_list:
+                third_base_list.remove(event.outgoing_player)
+                third_base_list.append(event.incoming_player)
+
         if isinstance(event, RunnerAdvance):
             if (plate_appearance == last_plate_appearance and
                     ('out' in event.run_description or
