@@ -29,7 +29,7 @@ LOGO_DICT = {
     'BRO': 'team_logos/dodgers.png',
     'WAS': 'team_logos/senators.svg',
     'BSN': 'team_logos/bostonbraves.png',
-    'ATH': 'team_logos/athletics.png',
+    'ATH': 'team_logos/athletics.jpg',
     'TOR': 'team_logos/blue-jays.gif',
     'ATL': 'team_logos/braves.gif',
     'MIL': 'team_logos/brewers.png',  # milwaukeebraves.png
