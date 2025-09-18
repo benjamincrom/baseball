@@ -450,10 +450,21 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
     player_appearance_list = None
     processed_flag = False
 
+    # handle pitcher-to-other-position scenarios
+    is_pitcher_to_different_position = False
+    if (substitution_obj.position == 1 and substitution_obj.outgoing_player):
+        # check if outgoing player is still in a batting position but not pitching
+        for this_appearance_list in batting_list_list:
+            if (this_appearance_list[-1].player_obj.mlb_id ==
+                    substitution_obj.outgoing_player.mlb_id and
+                this_appearance_list[-1].position != 1):
+                is_pitcher_to_different_position = True
+                break
+
     if substitution_obj.batting_order:
         batting_index = substitution_obj.batting_order - 1
         player_appearance_list = batting_list_list[batting_index]
-    else:
+    elif not is_pitcher_to_different_position:
         for this_appearance_list in batting_list_list:
             if (this_appearance_list[-1].player_obj.mlb_id ==
                     substitution_obj.outgoing_player.mlb_id):
@@ -503,7 +514,7 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
                     this_appearance_list[-2].player_obj.mlb_id == outgoing_id):
                 player_appearance_list = this_appearance_list
 
-    if player_appearance_list:
+    if player_appearance_list and not is_pitcher_to_different_position:
         processed_flag = True
         set_player_position_from_list(player_appearance_obj,
                                       player_appearance_list)
