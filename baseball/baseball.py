@@ -1096,7 +1096,7 @@ class PlateAppearance:
              'event_list': [x._asdict() for x in self.event_list],
              'plate_appearance_description': self.plate_appearance_description,
              'plate_appearance_summary': self.plate_appearance_summary,
-             'pitcher': self.pitcher._asdict(),
+             'pitcher': self.pitcher._asdict() if self.pitcher is not None else None,
              'batter': self.batter._asdict(),
              'inning_outs': self.inning_outs,
              'scoring_runners_list': [x._asdict()
