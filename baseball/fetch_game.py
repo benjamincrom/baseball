@@ -123,7 +123,7 @@ HTML_INDEX_PAGE = (
     '}}'
     'function applydelay() {{'
     'var sec_delay = Math.ceil(document.getElementById("delay_seconds").value / 5) * 5; '
-    'if (sec_delay > 3600) {{ sec_delay = 3600; }}'
+    'if (sec_delay > 1800) {{ sec_delay = 1800; }}'
     'window.location = "/delay/" + sec_delay + "/index.html"; ' 
     '}}'
     'function secondsToHms(d) {{'
@@ -171,7 +171,6 @@ HTML_INDEX_PAGE = (
     'here</a>.'
     '<br>Download a PDF of any season for any team from the '
     '<a style="color:lightblue" href="/archive.html">Scorebook PDF Archive</a>.'
-    '<br>Scorecards now go back to 1950!'
     '<br />'
     '<br />'
     '<font size="6" color="white">Select a date</font>'
@@ -339,7 +338,7 @@ HTML_WRAPPER = (
     '}}'
     'function applydelay() {{'
     'var sec_delay = Math.ceil(document.getElementById("delay_seconds").value / 5) * 5; '
-    'if (sec_delay > 3600) {{ sec_delay = 3600; }}'
+    'if (sec_delay > 1800) {{ sec_delay = 1800; }}'
     'url_array = window.location.href.split(\'/\'); '
     'file_name = url_array.slice(-1)[0]; '
     'window.location = "/delay/" + sec_delay + "/" + file_name; ' 
@@ -351,9 +350,9 @@ HTML_WRAPPER = (
     '}}'
     'function secondsToHms(d) {{'
     'd = Number(d);'
-    'var h = Math.floor(d / 3600);'
-    'var m = Math.floor(d % 3600 / 60);'
-    'var s = Math.floor(d % 3600 % 60);'
+    'var h = Math.floor(d / 1800);'
+    'var m = Math.floor(d % 1800 / 60);'
+    'var s = Math.floor(d % 1800 % 60);'
     'var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";'
     'var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";'
     'var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";'
@@ -886,9 +885,9 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
             exc_type, exc_value, exc_traceback = exc_info()
             lines = format_exception(exc_type, exc_value, exc_traceback)
             exception_str = ' '.join(lines)
-            print('{} ({}) {}'.format(datetime.utcnow(),
-                                      str(this_datetime),
-                                      exception_str))
+        #    print('{} ({}) {}'.format(datetime.utcnow(),
+        #                              str(this_datetime),
+        #                              exception_str))
 
         this_datetime += day_interval
 
