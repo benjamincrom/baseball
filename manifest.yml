@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: my-single-container-pod
+  name: scorecards-app
 spec:
   containers:
-  - name: my-container
-    image: nginx:latest
+  - name: scorecards-app
+    image: benjamincrom/livebaseballscorecards
     ports:
     - containerPort: 80
