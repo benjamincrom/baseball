@@ -5,6 +5,6 @@ metadata:
 spec:
   containers:
   - name: scorecards-app
-    image: benjamincrom/livebaseballscorecards
+    image: benjamincrom/livebaseballscorecards:harness_build
     ports:
     - containerPort: 80
