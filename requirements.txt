@@ -1,3 +1,5 @@
 python-dateutil
 pytz
 requests
+lmdbm
+ddtrace

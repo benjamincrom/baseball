@@ -25,7 +25,7 @@ class MyLmdb(Lmdb):
         return value.decode("utf-8")
 
 
-@tracer.wrap(service="get_todays_games", resource="wrapper")
+#@tracer.wrap(service="get_todays_games", resource="wrapper")
 def get_todays_games():
     with MyLmdb.open("/mnt/delay/hash.db", "c", map_size=2**30, autogrow=False) as hash_map:
         for this_file in os.listdir('/mnt/delay/1800'):
