@@ -312,7 +312,7 @@ def parse_substitution(substitution_datetime, description, event_summary,
           'Pinch runner' in player_list[0]):
         position_num = 'PR'
     elif event_summary == 'Pitching Substitution':
-        position_num = 1
+        position_num = '1'
 
     outgoing_player_name = get_name_only(outgoing_player_name)
 
@@ -514,7 +514,7 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
         final_appearance.end_inning_batter_num = next_batter_num
         player_appearance_list.append(player_appearance_obj)
 
-    if player_appearance_obj.position == 1:
+    if player_appearance_obj.position == '1':
         processed_flag = True
         pitching_appearance_list = substituting_team.pitcher_list
         final_appearance = pitching_appearance_list[-1]
@@ -565,7 +565,7 @@ def process_switch(switch_obj, inning_num, inning_half_str,
     else:
         old_player_appearance_list.append(player_appearance_obj)
 
-    if player_appearance_obj.position == 1:
+    if player_appearance_obj.position == '1':
         switching_team.pitcher_list.append(player_appearance_obj)
 
 def parse_switch_description(event_datetime, description, event_summary,
@@ -613,7 +613,7 @@ def parse_switch_description(event_datetime, description, event_summary,
 
     for pitcher_appearance in switching_team.pitcher_list:
         if pitcher_appearance.player_obj.mlb_id == player.mlb_id:
-            old_position = 1
+            old_position = '1'
 
     if not old_position:
         raise ValueError('Cannot find player\'s position')
