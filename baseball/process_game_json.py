@@ -19,7 +19,7 @@ from baseball.process_game_xml import (
 def process_pitch(event):
     pitch_description = event['details']['call']['description']
     if event['details'].get('type'):
-        pitch_type = event['details']['type']['code']
+        pitch_type = event['details']['type'].get('code')
     else:
         pitch_type = ''
 
