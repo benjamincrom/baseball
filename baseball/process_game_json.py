@@ -71,6 +71,24 @@ def process_plate_appearance(plate_appearance, inning_half_str, inning_num,
     event_list = []
     scoring_runners_list = []
     runners_batted_in_list = []
+
+    # Ohtani fix
+    this_event_description = ''
+    next_event_description = ''
+    play_events = plate_appearance['playEvents']
+    for i, this_event in enumerate(play_events):
+        if this_event['type'] == 'action':
+            this_event_description = this_event['details'].get('description', '')
+
+        if i+1 < len(play_events):
+            next_event = play_events[i+1]
+            if next_event['type'] == 'action':
+                next_event_description = next_event['details'].get('description', '')
+                if ('switch from pitcher to designated hitter' in next_event_description and
+                        'Pitching Change' in this_event_description):
+                    play_events[i], play_events[i+1] = play_events[i+1], play_events[i]
+
+
     for event in plate_appearance['playEvents']:
         if event['type'] == 'pitch':
             pitch_obj = process_pitch(event)

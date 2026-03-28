@@ -457,7 +457,12 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
         for this_appearance_list in batting_list_list:
             if (this_appearance_list[-1].player_obj.mlb_id ==
                     substitution_obj.outgoing_player.mlb_id):
-                player_appearance_list = this_appearance_list
+                # Ohtani rule
+                if (this_appearance_list[-1].position == '10' and
+                        substitution_obj.position == '1'):
+                    player_appearance_list = None
+                else:
+                    player_appearance_list = this_appearance_list
 
     if not player_appearance_list:
         position_list = [batting_list[-1].position
@@ -501,7 +506,12 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
             outgoing_id = substitution_obj.outgoing_player.mlb_id
             if (len(this_appearance_list) > 1 and
                     this_appearance_list[-2].player_obj.mlb_id == outgoing_id):
-                player_appearance_list = this_appearance_list
+                # Ohtani rule
+                if (this_appearance_list[-1].position == '10' and
+                        substitution_obj.position == '1'):
+                    player_appearance_list = None
+                else:
+                    player_appearance_list = this_appearance_list
 
     if player_appearance_list:
         processed_flag = True
@@ -651,6 +661,7 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
     plate_appearance_list = []
     event_list = []
     steal_description = None
+
     for event_container in baseball_half_inning:
         event_datetime = get_datetime(event_container.get('tfs_zulu'))
         event_description = event_container.get('des', '')
@@ -670,6 +681,7 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
                                                         event_summary,
                                                         inning_half_str,
                                                         game_obj)
+
 
                 event_list.append(substitution_obj)
                 process_substitution(substitution_obj, inning_num,
