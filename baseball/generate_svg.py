@@ -1011,7 +1011,7 @@ def get_runners_svg(plate_appearance):
                  event.runner != plate_appearance.batter)])
     )
 
-    all_runners_list.sort(key=get_player_last_name)
+    all_runners_list.sort(key=lambda p: (get_player_last_name(p), p.mlb_id))
 
     y_val_list = []
     for runner in all_runners_list:

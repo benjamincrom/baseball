@@ -28,6 +28,7 @@ ALL_GAMES_URL = ('http://statsapi.mlb.com/api/v1/schedule/games/?sportId=1'
 
 GAME_URL_TEMPLATE = 'http://statsapi.mlb.com/api/v1.1/game/{game_pk}/feed/live'
 
+# Legacy link, no longer used
 MLB_URL_PATTERN = ('http://gd2.mlb.com/components/game/mlb/year_{year}/'
                    'month_{month}/day_{day}/gid_{year}_{month}_{day}_'
                    '{away_mlb_code}mlb_{home_mlb_code}mlb_{game_number}/')
@@ -915,8 +916,7 @@ def get_filename_list(start_date_str, end_date_str, input_dir):
 
     return return_filename_list
 
-def get_game_list_from_file_range(start_date_str, end_date_str, input_dir,
-                                    ):
+def get_game_list_from_file_range(start_date_str, end_date_str, input_dir):
     filename_list = get_filename_list(start_date_str, end_date_str, input_dir)
     process_pool = Pool(NUM_PROCESS_SUBLISTS)
     #game_tuple_list = process_pool.map(get_game_from_file,
