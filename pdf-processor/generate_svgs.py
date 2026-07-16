@@ -1,34 +1,10 @@
-from datetime import datetime
-
-from sys import exc_info
-from traceback import format_exception
-
-from multiprocessing import Pool
-
 import baseball
 
-"""
-baseball.fetch_game.write_svg_from_file_range(
-    '1950-01-01',
-    '1960-01-01',
-    '/Volumes/B_Crom_SSD/raw_mlb_data',
-    '/Volumes/B_Crom_SSD/scorecards',
-    True,
-    True
-)
-"""
-
-def f(this_date_tuple):
-    start_date_str, end_date_str = this_date_tuple
-    baseball.fetch_game.write_svg_from_file_range(
-        start_date_str,
-        end_date_str,
-        '/Volumes/B_Crom_SSD/raw_mlb_data',
-        '/Volumes/B_Crom_SSD/scorecards',
-        True,
-        True
-    )
-
+# write_svg_from_file_range now parallelizes internally across a process pool
+# (SVG_PROCESS_POOL_SIZE in baseball/fetch_game.py), so these ranges are run one
+# after another rather than wrapped in an outer Pool. An outer pool would make
+# these workers daemonic, and daemonic processes cannot create the child
+# processes that the inner pool needs.
 date_list = [
     ('1950-01-01', '1955-01-01'),
     ('1955-01-01', '1960-01-01'),
@@ -48,6 +24,12 @@ date_list = [
 ]
 
 if __name__ == '__main__':
-    with Pool(16) as p:
-        p.map(f, date_list)
-
+    for start_date_str, end_date_str in date_list:
+        baseball.fetch_game.write_svg_from_file_range(
+            start_date_str,
+            end_date_str,
+            '/Volumes/B_Crom_SSD/raw_mlb_data',
+            '/Volumes/B_Crom_SSD/scorecards',
+            True,
+            True
+        )

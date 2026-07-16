@@ -18,6 +18,7 @@ from baseball.process_game_xml import (MLB_TEAM_CODE_DICT,
 
 EASTERN_TIMEZONE_STR = 'America/New_York'
 NUM_PROCESS_SUBLISTS = 3
+SVG_PROCESS_POOL_SIZE = 32
 BOXSCORE_SUFFIX = 'boxscore.xml'
 PLAYERS_SUFFIX = 'players.xml'
 INNING_SUFFIX = 'inning/inning_all.xml'
@@ -854,6 +855,27 @@ def write_game_svg_html_from_filename(filename_output_path_tuple,
     if game:
         write_game_svg_and_html(game_id, game, output_path, write_game_html)
 
+def write_svg_for_day(day_task_tuple):
+    (this_datetime, day_filename_output_path_tuple_list, output_dir,
+     write_game_html, write_date_html) = day_task_tuple
+    try:
+        game_html_id_tuple_list = []
+        for tup in day_filename_output_path_tuple_list:
+            filename, _ = tup
+            write_game_svg_html_from_filename(tup, write_game_html)
+            game_html_id_tuple_list.append(get_game_from_file(filename))
+
+        object_html_str = get_object_html_str(game_html_id_tuple_list)
+        write_game_index(object_html_str, this_datetime, output_dir,
+                         write_date_html, False)
+    except:
+        exc_type, exc_value, exc_traceback = exc_info()
+        lines = format_exception(exc_type, exc_value, exc_traceback)
+        exception_str = ' '.join(lines)
+    #    print('{} ({}) {}'.format(datetime.utcnow(),
+    #                              str(this_datetime),
+    #                              exception_str))
+
 def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
                               output_dir, write_game_html=False,
                               write_date_html=False):
@@ -869,28 +891,23 @@ def write_svg_from_file_range(start_date_str, end_date_str, input_dir,
     start_datetime = parse(start_date_str)
     end_datetime = parse(end_date_str)
     day_interval = timedelta(days=1)
+
+    day_task_tuple_list = []
     this_datetime = start_datetime
     while this_datetime <= end_datetime:
-        try:
-            game_html_id_tuple_list = []
-            for tup in filename_output_path_tuple_list:
-                filename, _ = tup
-                if str(this_datetime).split()[0] in filename:
-                    write_game_svg_html_from_filename(tup, write_game_html)
-                    game_html_id_tuple_list.append(get_game_from_file(filename))
-
-            object_html_str = get_object_html_str(game_html_id_tuple_list)
-            write_game_index(object_html_str, this_datetime, output_dir,
-                             write_date_html, False)
-        except:
-            exc_type, exc_value, exc_traceback = exc_info()
-            lines = format_exception(exc_type, exc_value, exc_traceback)
-            exception_str = ' '.join(lines)
-        #    print('{} ({}) {}'.format(datetime.utcnow(),
-        #                              str(this_datetime),
-        #                              exception_str))
-
+        this_date_str = str(this_datetime).split()[0]
+        day_filename_output_path_tuple_list = [
+            tup for tup in filename_output_path_tuple_list
+            if this_date_str in tup[0]
+        ]
+        day_task_tuple_list.append(
+            (this_datetime, day_filename_output_path_tuple_list, output_dir,
+             write_game_html, write_date_html)
+        )
         this_datetime += day_interval
+
+    with Pool(SVG_PROCESS_POOL_SIZE) as process_pool:
+        process_pool.map(write_svg_for_day, day_task_tuple_list)
 
 def get_filename_list(start_date_str, end_date_str, input_dir):
     return_filename_list = []
