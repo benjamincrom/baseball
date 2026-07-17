@@ -1531,6 +1531,12 @@ def get_hit_svg(plate_appearance):
     if hit_location:
         if hit_location[0] == 'S':
             hit_location = hit_location[1:]
+            # After dropping the sacrifice prefix, a sacrifice fly ('SF')
+            # leaves 'F', which already maps to the fly template below, but a
+            # sacrifice bunt ('SH') leaves a bare 'H' that matches no hit
+            # type, so treat it as the bunt grounder it is.
+            if hit_location and hit_location[0] == 'H':
+                hit_location = 'B' + hit_location[1:]
 
         if len(hit_location) == 2:
             hit_type = hit_location[0]

@@ -271,7 +271,32 @@ def process_at_bat(plate_appearance, event_list, game_obj,
                                            runners_batted_in_list,
                                            event_list)
 
+    if (plate_appearance_obj.hit_location is None and
+            'Sac Bunt' in plate_appearance_summary):
+        # Many sacrifice-bunt descriptions never name the fielder in the
+        # bunt clause itself (e.g. "... hits a sacrifice bunt. Throwing
+        # error by third baseman X." or just "... hits a sacrifice bunt.
+        # Runner to 2nd."), so the text-derived hit location is empty. Fall
+        # back to MLB's recorded fielding location so the scorecard can still
+        # draw where the ball was bunted.
+        bunt_hit_location = get_sac_bunt_hit_location(plate_appearance)
+        if bunt_hit_location:
+            plate_appearance_obj.hit_location = bunt_hit_location
+
     return plate_appearance_obj
+
+def get_sac_bunt_hit_location(plate_appearance):
+    location = None
+    for event in plate_appearance['playEvents']:
+        hit_data = event.get('hitData')
+        if hit_data and hit_data.get('location') not in (None, ''):
+            location = hit_data.get('location')
+
+    if (location is not None and str(location).isdigit() and
+            1 <= int(location) <= 9):
+        return 'SH' + str(int(location))
+
+    return None
 
 def set_pitcher_wls_codes(game_dict, game):
     teams_dict = game_dict['liveData']['boxscore']['teams']
