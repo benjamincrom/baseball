@@ -2,6 +2,7 @@ from collections import OrderedDict
 from json import dumps
 from textwrap import TextWrapper
 from re import search, sub, findall, escape
+from unicodedata import normalize
 
 from pytz import timezone
 
@@ -578,6 +579,9 @@ def strip_suffixes(input_str):
 
     return input_str
 
+def fold_accents(input_str):
+    return normalize('NFKD', input_str).encode('ascii', 'ignore').decode('ascii')
+
 
 class PlayerAppearance:
     def __init__(self, player_obj, position, start_inning_num,
@@ -730,6 +734,17 @@ class Team:
             for player_name_key in self.player_name_dict:
                 if player_name_no_spaces in player_name_key:
                     player = self.player_name_dict[player_name_key]
+
+            if not player:
+                # MLB's free-text play descriptions sometimes drop or
+                # mis-render diacritics (e.g. "Azocar" for "Azócar") even
+                # though the structured player data keeps them, so retry
+                # ignoring accents before falling back to a lossy
+                # last-name-only match.
+                player_name_folded = fold_accents(player_name_no_spaces)
+                for player_name_key in self.player_name_dict:
+                    if player_name_folded in fold_accents(player_name_key):
+                        player = self.player_name_dict[player_name_key]
 
             if not player:
                 player_name = sub(r' Jr$', '', player_name.strip(' .'))
