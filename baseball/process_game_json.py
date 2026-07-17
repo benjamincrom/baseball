@@ -170,13 +170,20 @@ def process_runner_list(plate_appearance, game_obj, event_list,
         run_earned = runner_event['details'].get('earned')
         is_rbi = runner_event['details'].get('rbi')
 
+        error_position_code = None
+        for credit in runner_event.get('credits', []):
+            if 'error' in credit.get('credit', ''):
+                error_position_code = credit.get('position', {}).get('code')
+                break
+
         runner_advance_obj = RunnerAdvance(run_description,
                                            runner,
                                            start_base,
                                            end_base,
                                            runner_scored,
                                            run_earned,
-                                           is_rbi)
+                                           is_rbi,
+                                           error_position_code)
 
         if runner_advance_obj.runner_scored:
             scoring_runners_list.append(runner_advance_obj.runner)

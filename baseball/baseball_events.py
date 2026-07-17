@@ -158,7 +158,7 @@ class Pickoff:
 
 class RunnerAdvance:
     def __init__(self, run_description, runner, start_base, end_base,
-                 runner_scored, run_earned, is_rbi):
+                 runner_scored, run_earned, is_rbi, error_position_code=None):
         self.run_description = run_description
         self.runner = runner
         self.start_base = start_base
@@ -166,6 +166,7 @@ class RunnerAdvance:
         self.runner_scored = runner_scored
         self.run_earned = run_earned
         self.is_rbi = is_rbi
+        self.error_position_code = error_position_code
 
     def _asdict(self):
         return (
@@ -175,7 +176,8 @@ class RunnerAdvance:
              'end_base': self.end_base,
              'runner_scored': self.runner_scored,
              'run_earned': self.run_earned,
-             'is_rbi': self.is_rbi}
+             'is_rbi': self.is_rbi,
+             'error_position_code': self.error_position_code}
         )
     def __repr__(self):
         score_str = ''

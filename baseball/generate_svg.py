@@ -1335,7 +1335,7 @@ def fix_pa(plate_appearance, event):
             plate_appearance.batter
         )
     elif 'Error' in event.run_description:
-        summary = 'E'
+        summary = 'E' + (event.error_position_code or '')
         description = '{} batting: {}'.format(
             plate_appearance.batter,
             event.run_description
