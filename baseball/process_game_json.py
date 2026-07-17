@@ -371,7 +371,8 @@ def process_half_inning(plate_appearance_dict_list, inning_half_str, game_obj):
     for plate_appearance in plate_appearance_list:
         extra_runner_frame = None
         if plate_appearance.plate_appearance_summary == 'Extra Innings Runner':
-            if diff_list and len(diff_list) == 1:
+            if (diff_list and len(diff_list) == 1 and
+                    plate_appearance.batter not in runners_set):
                 plate_appearance.batter = diff_list[0]
 
     return plate_appearance_list
