@@ -23,7 +23,7 @@ if __name__ == '__main__':
     game_date_pk_tuple_list = []
     for year in range(2015, 2027):
         all_games_dict = requests.get(
-            ALL_GAMES_URL.format(start_month=1, start_day=1, start_year=year,
+            ALL_GAMES_URL.format(start_month=3, start_day=23, start_year=year,
                                   end_month=12, end_day=31, end_year=year)
         ).json()
 

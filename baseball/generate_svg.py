@@ -1282,6 +1282,32 @@ def player_got_on_base(plate_appearance):
 
     return got_on_base
 
+def advances_batting_order(plate_appearance_summary):
+    """Return whether plate_appearance_summary represents a genuine
+    completed turn through the batting order (as opposed to a baserunning
+    event -- e.g. a runner out on the bases, a wild pitch/passed ball/balk,
+    a stolen base, or a synthetic extra-innings runner -- that leaves the
+    current batter's turn unresolved and should not advance a batting-order
+    row counter)."""
+    non_advancing_substrings = (
+        'Caught Stealing',
+        'Pickoff',
+        'Wild Pitch',
+        'Passed Ball',
+        'Balk',
+        'Stolen Base',
+        'Runner Double Play',
+        'Extra Innings Runner',
+    )
+
+    if plate_appearance_summary == 'Runner Out':
+        return False
+
+    return not any(
+        substring in plate_appearance_summary
+        for substring in non_advancing_substrings
+    )
+
 def fix_pa(plate_appearance, event):
     summary = None
     description = None
@@ -1896,8 +1922,7 @@ def add_away_pitcher_sub_division_lines(game):
                                                              y_pos=y_pos)
                         )
 
-                    if (appearance.plate_appearance_summary != 'Runner Out' and
-                            'Caught Stealing' not in appearance.plate_appearance_summary):
+                    if advances_batting_order(appearance.plate_appearance_summary):
                         inning_pa_num += 1
                         total_pa_num += 1
 
@@ -1937,12 +1962,11 @@ def add_home_pitcher_sub_division_lines(game):
                             )
                         )
 
-                    if (appearance.plate_appearance_summary == 'Runner Out' or
-                            'Caught Stealing' in appearance.plate_appearance_summary):
-                        last_batter_no_pa = True
-                    else:
+                    if advances_batting_order(appearance.plate_appearance_summary):
                         total_pa_num += 1
                         inning_pa_num += 1
+                    else:
+                        last_batter_no_pa = True
 
                 if (inning_num == pitcher_app.end_inning_num and
                         pitcher_app.end_inning_half == 'bottom'):
@@ -2310,10 +2334,7 @@ def assemble_box_content_dict(game):
             if summary == 'Extra Innings Runner':
                 bottom_offset = (bottom_pa_index - 1) % LEN_BATTING_LIST
 
-            if (summary != 'Runner Out' and
-                    'Caught Stealing' not in summary and
-                    'Pickoff' not in summary and
-                    'Extra Innings Runner' not in summary):
+            if advances_batting_order(summary):
                 bottom_pa_index += 1
 
             this_y_pos = (HEIGHT // 2 +
@@ -2323,10 +2344,7 @@ def assemble_box_content_dict(game):
             if summary == 'Extra Innings Runner':
                 top_offset = (top_pa_index - 1)% LEN_BATTING_LIST
 
-            if (summary != 'Runner Out' and
-                    'Caught Stealing' not in summary and
-                    'Pickoff' not in summary and
-                    'Extra Innings Runner' not in summary):
+            if advances_batting_order(summary):
                 top_pa_index += 1
 
             this_y_pos = (top_offset * BOX_HEIGHT +

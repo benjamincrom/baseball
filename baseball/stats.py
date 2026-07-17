@@ -19,18 +19,50 @@ TeamBoxScore = namedtuple(
     'B1 B2 B3 HR SF SAC DP HBP WP PB SB CS PA'
 )
 
-def process_pickoffs(plate_appearance, first_base, second_base, third_base):
+NON_BATTED_BALL_RUNNER_OUT_SUBSTRINGS = (
+    'Pickoff',               # 'Pickoff 1B/2B/3B'
+    'Caught Stealing',       # 'Caught Stealing {base}' and
+                             # 'Pickoff Caught Stealing {base}'
+    'Runner Out',            # standalone rundown/appeal out
+    'Strikeout Double Play', # dead-ball runner-out accompanying a strikeout
+)
+
+def is_runner_advance_out(event):
+    """A RunnerAdvance whose runner did not reach a base and did not score
+    always has end_base == '' -- verified across the reference corpus,
+    including the 'Pickoff Error {base}' phrasing where the runner is safe
+    and always has a non-empty end_base ('1B'/'2B'/'3B'/'score')."""
+    return isinstance(event, RunnerAdvance) and event.end_base == ''
+
+def is_non_batted_ball_runner_out(event):
+    """Runner already put out by a play that did not involve a live batted
+    ball. Excludes batted-ball outs (fielder's choice, double play) --
+    those remain handled by the normal process_baserunners flow that runs
+    after the LOB snapshot."""
+    return (
+        is_runner_advance_out(event) and
+        any(substring in event.run_description
+            for substring in NON_BATTED_BALL_RUNNER_OUT_SUBSTRINGS)
+    )
+
+def process_runner_outs(plate_appearance, first_base, second_base, third_base):
+    """Clear any base whose runner was already put out earlier in this same
+    plate appearance by a non-batted-ball play (pickoff, caught stealing,
+    rundown/appeal out, etc.), so a same-PA LOB snapshot doesn't still count
+    that runner as on base."""
     for event in plate_appearance.event_list:
         if (isinstance(event, Pickoff) and
                 event.pickoff_was_successful):
+            # Kept defensively -- never exercised by real feed data today
+            # (the pitch-level Pickoff description is always the three-word
+            # "Pickoff Attempt {base}"), but cheap to retain.
             if event.pickoff_base == '1B':
                 first_base = None
             elif event.pickoff_base == '2B':
                 second_base = None
             elif event.pickoff_base == '3B':
                 third_base = None
-        elif (isinstance(event, RunnerAdvance) and
-              'Picked off stealing' in event.run_description):
+        elif is_non_batted_ball_runner_out(event):
             if event.start_base == '1B':
                 first_base = None
             elif event.start_base == '2B':
@@ -76,7 +108,7 @@ def process_baserunners(plate_appearance, last_plate_appearance,
                         first_base_list.remove(event.runner)
                     if event.runner in second_base_list:
                         second_base_list.remove(event.runner)
-                elif event.end_base == '' or 'score':
+                elif event.end_base == '' or 'score':  # TODO: should be `event.end_base in ('', 'score')`; currently harmless since this is the last elif
                     if event.runner in first_base_list:
                         first_base_list.remove(event.runner)
                     if event.runner in second_base_list:
@@ -314,10 +346,10 @@ def get_batter_lob(batter, inning_half_list):
         for plate_appearance in inning_half:
             (first_base,
              second_base,
-             third_base) = process_pickoffs(plate_appearance,
-                                            first_base,
-                                            second_base,
-                                            third_base)
+             third_base) = process_runner_outs(plate_appearance,
+                                               first_base,
+                                               second_base,
+                                               third_base)
 
             if (not plate_appearance_is_hit(plate_appearance) and
                     'BB' not in plate_appearance.scorecard_summary and
