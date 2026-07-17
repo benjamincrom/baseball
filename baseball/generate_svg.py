@@ -695,8 +695,60 @@ SVG_BASE_4_TEMPLATE = (
     '</text>'
 )
 
+SVG_BASE_4_EXTRA_INNINGS_TEMPLATE = (
+    '<path d="M164 89 L 112 141" stroke="black" '
+    'fill="transparent" stroke-width="11"/>'
+    '<path d="M112 134 L 169 192" stroke="black" '
+    'fill="transparent" stroke-width="11"/>'
+    '<rect x="79" y="138" width="75" height="75" stroke="black" fill="black" '
+    'transform = "rotate(-45 100 100)"/>'
+    '<text x="199" y="93" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_number}</text>'
+    '<text x="199" y="114" font-family="Arial" text-anchor="start" '
+    'font-size="{base_2_size}">{base_2_summary}'
+    '<title id="title">{base_2_title}</title>'
+    '</text>'
+    '<text x="132" y="93" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_number}</text>'
+    '<text x="132" y="114" font-family="Arial" text-anchor="end" '
+    'font-size="{base_3_size}">{base_3_summary}'
+    '<title id="title">{base_3_title}</title>'
+    '</text>'
+    '<text x="164" y="133" font-family="Arial" text-anchor="middle" '
+    'font-size="22" fill="white">{base_4_number}</text>'
+    '<text x="164" y="158" font-family="Arial" text-anchor="middle" '
+    'font-size="{base_4_size}" fill="white">{base_4_summary}'
+    '<title id="title">{base_4_title}</title>'
+    '</text>'
+)
+
 SVG_BASE_4_OUT_TEMPLATE = (
     '<path d="M162 192 L 216 138 L 164 89 L 111 142 L 137 167" stroke="black" '
+    'fill="transparent" stroke-width="11"/>'
+    '<path d="M128 174 L 143 158" stroke="black" fill="transparent" '
+    'stroke-width="5"/>'
+    '<text x="199" y="93" font-family="Arial" text-anchor="start" '
+    'font-size="22">{base_2_number}</text>'
+    '<text x="199" y="114" font-family="Arial" text-anchor="start" '
+    'font-size="{base_2_size}">{base_2_summary}'
+    '<title id="title">{base_2_title}</title>'
+    '</text>'
+    '<text x="132" y="93" font-family="Arial" text-anchor="end" '
+    'font-size="22">{base_3_number}</text>'
+    '<text x="132" y="114" font-family="Arial" text-anchor="end" '
+    'font-size="{base_3_size}">{base_3_summary}'
+    '<title id="title">{base_3_title}</title>'
+    '</text>'
+    '<text x="164" y="133" font-family="Arial" text-anchor="middle" '
+    'font-size="22">{base_4_number}</text>'
+    '<text x="164" y="158" font-family="Arial" text-anchor="middle" '
+    'font-size="{base_4_size}">{base_4_summary}'
+    '<title id="title">{base_4_title}</title>'
+    '</text>'
+)
+
+SVG_BASE_4_OUT_EXTRA_INNINGS_TEMPLATE = (
+    '<path d="M164 89 L 111 142 L 137 167" stroke="black" '
     'fill="transparent" stroke-width="11"/>'
     '<path d="M128 174 L 143 158" stroke="black" fill="transparent" '
     'stroke-width="5"/>'
@@ -1208,7 +1260,12 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                 base_3_size=base_3_size
             )
         elif batter_out_base == 'H':
-            base_svg = SVG_BASE_4_OUT_TEMPLATE.format(
+            if start_on_second:
+                this_template = SVG_BASE_4_OUT_EXTRA_INNINGS_TEMPLATE
+            else:
+                this_template = SVG_BASE_4_OUT_TEMPLATE
+
+            base_svg = this_template.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
                 base_2_title=base_2_title,
@@ -1251,7 +1308,12 @@ def process_base_appearances(base_2_pa, base_3_pa, home_pa, batter_final_base,
                 base_3_size=base_3_size
             )
         elif batter_final_base == 'H':
-            base_svg = SVG_BASE_4_TEMPLATE.format(
+            if start_on_second:
+                this_template = SVG_BASE_4_EXTRA_INNINGS_TEMPLATE
+            else:
+                this_template = SVG_BASE_4_TEMPLATE
+
+            base_svg = this_template.format(
                 base_2_number=base_2_number,
                 base_2_summary=base_2_summary,
                 base_2_title=base_2_title,
