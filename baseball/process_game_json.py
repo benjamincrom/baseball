@@ -111,29 +111,45 @@ def process_plate_appearance(plate_appearance, inning_half_str, inning_num,
             )
 
             if substitution_flag:
-                (substituting_team,
-                 substitution_obj) = parse_substitution(event_datetime,
-                                                        event_description,
-                                                        event_summary,
-                                                        inning_half_str,
-                                                        game_obj)
-
-                event_list.append(substitution_obj)
-                process_substitution(substitution_obj, inning_num,
-                                     inning_half_str, next_batter_num,
-                                     substituting_team)
-
-            elif switch_flag:
-                (switch_obj,
-                 switching_team) = parse_switch_description(event_datetime,
+                try:
+                    (substituting_team,
+                     substitution_obj) = parse_substitution(event_datetime,
                                                             event_description,
                                                             event_summary,
-                                                            game_obj,
-                                                            inning_half_str)
+                                                            inning_half_str,
+                                                            game_obj)
+                except (ValueError, AttributeError, IndexError, KeyError):
+                    # Some games (e.g. the 2020 exhibition games) carry
+                    # corrupt substitution free-text -- a raw player id in
+                    # place of a name, or a blank name/position -- that cannot
+                    # be parsed. parse_substitution has no side effects, so
+                    # skip the unparseable event rather than fail the game.
+                    substitution_obj = None
 
-                event_list.append(switch_obj)
-                process_switch(switch_obj, inning_num, inning_half_str,
-                               next_batter_num, switching_team)
+                if substitution_obj is not None:
+                    event_list.append(substitution_obj)
+                    process_substitution(substitution_obj, inning_num,
+                                         inning_half_str, next_batter_num,
+                                         substituting_team)
+
+            elif switch_flag:
+                try:
+                    (switch_obj,
+                     switching_team) = parse_switch_description(event_datetime,
+                                                                event_description,
+                                                                event_summary,
+                                                                game_obj,
+                                                                inning_half_str)
+                except (ValueError, AttributeError, IndexError, KeyError):
+                    # As above: skip corrupt/glitched switch free-text (e.g.
+                    # "... remains in the game as the ." with a blank position)
+                    # instead of crashing the whole game.
+                    switch_obj = None
+
+                if switch_obj is not None:
+                    event_list.append(switch_obj)
+                    process_switch(switch_obj, inning_num, inning_half_str,
+                                   next_batter_num, switching_team)
         elif event['type'] == 'no_pitch':
             pass
         elif event['type'] == 'stepoff':
@@ -471,6 +487,11 @@ def initialize_team(team_gamedata_dict, team_livedata_dict, full_gamedata_dict):
 
             if batting_order % 100 == 0:
                 batting_index = int((batting_order / 100) - 1)
+                if batting_index >= len(team.batting_order_list_list):
+                    team.batting_order_list_list.extend(
+                        [None] *
+                        (batting_index + 1 - len(team.batting_order_list_list))
+                    )
                 team.batting_order_list_list[batting_index] = [
                     PlayerAppearance(team[int(player_dict['person']['id'])],
                                      position,
@@ -525,14 +546,17 @@ def initialize_game(this_game, attendance_str, temperature_str, weather_str,
         this_game['gameData']
     )
 
-    location = '{}, {}'.format(
-        this_game['gameData']['venue']['name'],
-        this_game['gameData']['venue']['location']['city']
-    )
+    venue = this_game['gameData'].get('venue') or {}
+    venue_name = venue.get('name', '')
+    venue_city = venue.get('location', {}).get('city')
+    if venue_name and venue_city:
+        location = '{}, {}'.format(venue_name, venue_city)
+    else:
+        location = venue_name or venue_city or ''
 
-    if this_game['gameData']['venue']['location'].get('stateAbbrev'):
+    if venue.get('location', {}).get('stateAbbrev'):
         location += ', {}'.format(
-            this_game['gameData']['venue']['location'].get('stateAbbrev')
+            venue.get('location', {}).get('stateAbbrev')
         )
 
     start_date = None

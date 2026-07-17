@@ -566,9 +566,9 @@ def strip_this_suffix(pattern, suffix, input_str):
 def strip_suffixes(input_str):
     input_str = strip_this_suffix(r' Jr\.\s+[A-Z]', r' Jr\.', input_str)
     input_str = strip_this_suffix(r' Sr\.\s+[A-Z]', r' Sr\.', input_str)
-    input_str = sub(r' II', '', input_str)
     input_str = sub(r' III', '', input_str)
     input_str = sub(r' IV', '', input_str)
+    input_str = sub(r' II', '', input_str)
     input_str = sub(r' St\. ', ' St ', input_str)
 
     initials_match = findall(r'([A-Z]\.[A-Z]\.? )', input_str)
@@ -737,13 +737,14 @@ class Team:
 
             if not player:
                 # MLB's free-text play descriptions sometimes drop or
-                # mis-render diacritics (e.g. "Azocar" for "Azócar") even
-                # though the structured player data keeps them, so retry
-                # ignoring accents before falling back to a lossy
-                # last-name-only match.
-                player_name_folded = fold_accents(player_name_no_spaces)
+                # mis-render diacritics (e.g. "Azocar" for "Azócar") or
+                # re-capitalize name particles (e.g. "De Los Santos" for
+                # "De los Santos") even though the structured player data
+                # keeps them, so retry ignoring accents and case before
+                # falling back to a lossy last-name-only match.
+                player_name_folded = fold_accents(player_name_no_spaces).lower()
                 for player_name_key in self.player_name_dict:
-                    if player_name_folded in fold_accents(player_name_key):
+                    if player_name_folded in fold_accents(player_name_key).lower():
                         player = self.player_name_dict[player_name_key]
 
             if not player:
@@ -759,6 +760,25 @@ class Team:
 
                 initial_plus_last_name = first_name_initial + last_name
                 player = self.player_last_name_dict.get(initial_plus_last_name)
+
+            if not player and player_key not in SPECIAL_CASE_NAME_DICT:
+                # The free-text name occasionally disagrees with the
+                # roster on the first name entirely (e.g. a since-renamed
+                # player: "Vicente Campos" for roster "Jose Campos"), so
+                # as a last resort match on the last name alone when
+                # exactly one player on the team carries it. Names with an
+                # explicit SPECIAL_CASE_NAME_DICT entry are skipped so this
+                # fuzzy match never overrides that authoritative mapping.
+                last_name_folded = fold_accents(last_name).lower()
+                matching_players = [
+                    team_player
+                    for team_player in self.player_id_dict.values()
+                    if fold_accents(
+                        team_player.last_name.split()[-1]
+                    ).lower() == last_name_folded
+                ]
+                if len(matching_players) == 1:
+                    player = matching_players[0]
         else:
             raise ValueError(
                 'Player key: {player_key} must be either int or str'.format(
@@ -1252,9 +1272,30 @@ class PlateAppearance:
             if findall(search_pattern, description):
                 base = INCREMENT_BASE_DICT[base]
 
-            runner_tuple_list.append(
-                (batting_team[name], base)
-            )
+            try:
+                runner = batting_team[name]
+            except ValueError:
+                # A runner name parsed out of the free-text description can
+                # be unresolvable: a fielder suffix (e.g. "Michael Harris
+                # II.") collapses into the following runner name and
+                # over-captures it, or the description belongs to an
+                # exhibition game whose runner sits on the other roster.
+                # Retry after dropping leading over-captured tokens, and
+                # otherwise drop just this annotation rather than fail the
+                # whole game.
+                runner = None
+                name_token_list = name.split()
+                while len(name_token_list) > 2:
+                    name_token_list = name_token_list[1:]
+                    trimmed_name = ' '.join(name_token_list)
+                    if trimmed_name in batting_team:
+                        runner = batting_team[trimmed_name]
+                        break
+
+            if runner is not None:
+                runner_tuple_list.append(
+                    (runner, base)
+                )
 
         return runner_tuple_list
 

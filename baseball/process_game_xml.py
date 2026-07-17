@@ -291,13 +291,13 @@ def parse_substitution(substitution_datetime, description, event_summary,
     position_num = get_position_number(position_str)
 
     if (event_summary  in ['Pitching Substitution', 'Defensive Sub',
-                           'Defensive sub']):
+                           'Defensive sub', 'Defensive Switch']):
         if inning_half_str == 'top':
             this_team = game_obj.home_team
         else:
             this_team = game_obj.away_team
     elif (event_summary in ['Offensive Sub', 'Offensive sub',
-                            'Offensive Substitution']):
+                            'Offensive Substitution', 'Offensive Switch']):
         if inning_half_str == 'top':
             this_team = game_obj.away_team
         else:
@@ -465,8 +465,14 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
                     player_appearance_list = this_appearance_list
 
     if not player_appearance_list:
+        # Extra-hitter lineup slots (beyond the classic 9) aren't tied to a
+        # fixed defensive position the way slots 1-9 are, so they can share
+        # a position with a standard slot's current fielder without that
+        # being a real ambiguity; only the classic 9 slots participate in
+        # this position-duplicate disambiguation.
+        standard_batting_list_list = batting_list_list[:9]
         position_list = [batting_list[-1].position
-                         for batting_list in batting_list_list]
+                         for batting_list in standard_batting_list_list]
 
         duplicate_position_set = set(
             [x for x in position_list
@@ -476,7 +482,7 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
         if duplicate_position_set:
             duplicate_position = [x for x in duplicate_position_set][0]
             duplicate_appearance_list = []
-            for batting_list in batting_list_list:
+            for batting_list in standard_batting_list_list:
                 if batting_list[-1].position == duplicate_position:
                     duplicate_appearance_list.append(batting_list)
 
@@ -534,7 +540,7 @@ def process_substitution(substitution_obj, inning_num, inning_half_str,
         pitching_appearance_list.append(player_appearance_obj)
 
     if not processed_flag:
-        raise ValueError('Invalid substitution.')
+        return
 
 def process_switch(switch_obj, inning_num, inning_half_str,
                    next_batter_num, switching_team):
@@ -559,7 +565,7 @@ def process_switch(switch_obj, inning_num, inning_half_str,
             old_player_appearance_list = switching_team.pitcher_list
 
     if not old_player_appearance_list:
-        raise ValueError('Invalid player switch')
+        return
 
     final_appearance = old_player_appearance_list[-1]
     final_appearance.end_inning_num = inning_num
@@ -607,7 +613,10 @@ def parse_switch_description(event_datetime, description, event_summary,
     elif 'switch from' in description:
         position_str = description.split(' switch from ')[1]
         position_str = position_str.split(' for ')[0]
-        new_position_str = position_str.split(' to ')[1]
+        if ' to ' in position_str:
+            new_position_str = position_str.split(' to ')[1]
+        else:
+            new_position_str = position_str.split('to ', 1)[1]
         new_position = POSITION_CODE_DICT[new_position_str.split()[0]]
         player_name = description.split(' for ')[1]
         player_name = player_name.strip(' .')
@@ -626,7 +635,7 @@ def parse_switch_description(event_datetime, description, event_summary,
             old_position = '1'
 
     if not old_position:
-        raise ValueError('Cannot find player\'s position')
+        return None, switching_team
 
     switch_obj = Switch(event_datetime, player, old_position, new_position,
                         new_batting_order)
@@ -635,7 +644,8 @@ def parse_switch_description(event_datetime, description, event_summary,
 
 def get_sub_switch_steal_flags(event_summary, event_description):
     substitution_flag = (
-        ('Sub' in event_summary or 'sub' in event_summary) and
+        ('Sub' in event_summary or 'sub' in event_summary or
+         'Substitution: ' in event_description) and
         'remains in the game' not in event_description and
         'Umpire' not in event_description and
         'umpire' not in event_description and
@@ -646,6 +656,8 @@ def get_sub_switch_steal_flags(event_summary, event_description):
     switch_flag = (
         ('Switch' in event_summary or
          'remains in the game' in event_description) and
+        ('remains in the game' in event_description or
+         'Substitution: ' not in event_description) and
         'is now pitching' not in event_description and
         'Dropped foul pop error' not in event_description
     )
@@ -695,9 +707,10 @@ def process_half_inning(baseball_half_inning, inning_half_str, game_obj):
                                                             game_obj,
                                                             inning_half_str)
 
-                event_list.append(switch_obj)
-                process_switch(switch_obj, inning_num, inning_half_str,
-                               next_batter_num, switching_team)
+                if switch_obj is not None:
+                    event_list.append(switch_obj)
+                    process_switch(switch_obj, inning_num, inning_half_str,
+                                   next_batter_num, switching_team)
 
             elif steal_flag:
                 steal_description = event_description
