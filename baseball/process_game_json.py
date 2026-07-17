@@ -16,6 +16,10 @@ from baseball.process_game_xml import (
     fix_description
 )
 
+# MLB Stats API gameData.game.type codes for postseason/playoff games:
+# Wild Card, Division Series, League Championship Series, World Series.
+POSTSEASON_GAME_TYPES = frozenset({'F', 'D', 'L', 'W'})
+
 def process_pitch(event):
     pitch_description = event['details']['call']['description']
     if event['details'].get('type'):
@@ -291,7 +295,7 @@ def process_half_inning(plate_appearance_dict_list, inning_half_str, game_obj):
                     timezone('America/New_York')
                 )
 
-    if (est_time.year >= 2020 and
+    if (est_time.year >= 2020 and not game_obj.is_postseason and
             (inning_num >= 10 or
              (inning_num >= 8 and game_obj.is_doubleheader and (est_time.year == 2020 or est_time.year == 2021)))
        ):
@@ -600,6 +604,10 @@ def get_game_obj(game_dict, is_doubleheader=False):
     )
 
     game.is_doubleheader = is_doubleheader
+    game.is_postseason = (
+        game_dict.get('gameData', {}).get('game', {}).get('type')
+        in POSTSEASON_GAME_TYPES
+    )
     inning_dict_list = get_inning_dict_list(game_dict)
     set_game_inning_list(inning_dict_list, game)
     set_pitcher_wls_codes(game_dict, game)

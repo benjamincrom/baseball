@@ -850,6 +850,7 @@ class Game:
         self.is_postponed = False
         self.is_suspended = False
         self.is_doubleheader = False
+        self.is_postseason = False
         self.is_today = True
 
     def json(self):
