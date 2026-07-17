@@ -872,8 +872,12 @@ def get_summary_svg(plate_appearance):
         )
 
     if plate_appearance.got_on_base:
+        # The fielder-throw suffix (e.g. "1B (7-4)" for a hit where a
+        # runner was thrown out on the bases) belongs in the top-middle
+        # play summary below, not in this corner's plain on-base result.
+        on_base_summary = plate_appearance.scorecard_summary.split(' (')[0]
         return_str = SVG_SUMMARY_TEMPLATE.format(
-            summary=plate_appearance.scorecard_summary,
+            summary=on_base_summary,
             title=plate_appearance.plate_appearance_description
         )
     else:
@@ -910,6 +914,27 @@ def get_summary_svg(plate_appearance):
             title=plate_appearance.plate_appearance_description,
             size=size
         )
+    elif (plate_appearance.got_on_base and
+              plate_appearance.plate_appearance_summary in
+              ('Single', 'Double', 'Triple', 'Home Run')):
+        # A hit that also puts a runner out (and isn't a fielder's choice
+        # or sacrifice, neither of which reach here since those aren't
+        # on-base results) leaves the large play-summary spot at the top
+        # middle of the frame empty. Fill it with just the fielder throws
+        # that recorded the out (e.g. "7-4"), not the hit type.
+        _, out_on_play_suffix = plate_appearance.get_throws_str()
+        if out_on_play_suffix and any(ch.isdigit() for ch in out_on_play_suffix):
+            throws_summary = out_on_play_suffix.strip(' ()')
+            if len(throws_summary) < 9:
+                size = SUMMARY_SIZE_LARGE
+            else:
+                size = SUMMARY_SIZE_SMALL
+
+            return_str += SVG_FIELDING_TEMPLATE.format(
+                summary=throws_summary,
+                title=plate_appearance.plate_appearance_description,
+                size=size
+            )
 
     return return_str
 

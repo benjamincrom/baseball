@@ -635,7 +635,7 @@ def get_pitcher_home_runs(pitcher, inning_half_list):
     for inning_half in inning_half_list:
         for plate_appearance in inning_half:
             if (pitcher == plate_appearance.pitcher and
-                    plate_appearance.scorecard_summary == 'HR'):
+                    plate_appearance.scorecard_summary.startswith('HR')):
                 num_hr += 1
 
     return num_hr

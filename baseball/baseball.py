@@ -1202,7 +1202,7 @@ class PlateAppearance:
             r'(?:out at|(?:was )?picked off and caught stealing|'
             r'(?:was )?caught stealing|(?:was )?picked off|'
             r'(?:was )?doubled off)'
-            r'[1-3,h][snro][tdm][e]?[\w\s]*, ',
+            r'\s+[1-3,h][snro][tdm][e]?[\w\s]*, ',
             suffix_str
         )
 
