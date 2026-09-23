@@ -887,6 +887,7 @@ class Game:
         self.is_doubleheader = False
         self.is_postseason = False
         self.is_today = True
+        self.is_final = False
 
     def json(self):
         return dumps(self._asdict())

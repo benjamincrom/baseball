@@ -694,4 +694,9 @@ def get_game_obj(game_dict, is_doubleheader=False):
             'detailedState', {})):
         game.is_suspended = True
 
+    # Over, by MLB's own word: a page for a finished game need not poll.
+    if (game_dict.get('gameData', {}).get('status', {}).get(
+            'abstractGameState', '') == 'Final'):
+        game.is_final = True
+
     return game

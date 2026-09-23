@@ -34,6 +34,39 @@ MLB_URL_PATTERN = ('http://gd2.mlb.com/components/game/mlb/year_{year}/'
                    'month_{month}/day_{day}/gid_{year}_{month}_{day}_'
                    '{away_mlb_code}mlb_{home_mlb_code}mlb_{game_number}/')
 
+# The page's loader, plain JavaScript in place of jQuery: fetch the card
+# once, again whenever the tab comes back into view, and for a live game
+# every few seconds while the tab is showing — touching the page only when
+# the card's ETag has changed, so a poll that finds nothing new costs a
+# 304 and nothing else.
+# The braces are doubled because the templates go through str.format.
+LBS_LOADER_JS = (
+    'function lbsLoad(name, target, poll, small) {{'
+    'var last = null;'
+    'function show(text) {{'
+    'text = text.replace(/^\\s*<\\?xml[^>]*\\?>\\s*/, "");'
+    'if (small) {{ text = text.replace(\'height="2256" \', \'height="735" \'); }}'
+    'document.getElementById(target).innerHTML = text;'
+    '}}'
+    'function load(force) {{'
+    'if (document.hidden && !force) {{ return; }}'
+    'fetch(name, {{cache: "no-cache"}}).then(function (r) {{'
+    'if (!r.ok) {{ return null; }}'
+    'var tag = r.headers.get("etag") || r.headers.get("last-modified");'
+    'if (tag && tag === last) {{ return null; }}'
+    'last = tag;'
+    'return r.text();'
+    '}}).then(function (text) {{ if (text) {{ show(text); }} }}).catch(function () {{}});'
+    '}}'
+    'function start() {{'
+    'load(true);'
+    'document.addEventListener("visibilitychange", function () {{ if (!document.hidden) {{ load(true); }} }});'
+    'if (poll > 0) {{ setInterval(function () {{ load(false); }}, poll); }}'
+    '}}'
+    'if (document.readyState === "loading") {{ document.addEventListener("DOMContentLoaded", start); }} else {{ start(); }}'
+    '}}'
+)
+
 HTML_INDEX_PAGE = (
     '<html>'
     '<head>'
@@ -69,8 +102,7 @@ HTML_INDEX_PAGE = (
     '-webkit-transform: rotate(45deg);'
     '}}'
     '</style>'
-    '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/'
-    'jquery.min.js"></script>'
+    '<script>' + LBS_LOADER_JS + '</script>'
     '<link rel="icon" type="image/png" href="/team_logos/baseball-fairy-161.png" />'
     '<meta name="viewport" content="width=device-width, initial-scale=0.35">'
     '<!-- Global site tag (gtag.js) - Google Analytics -->'
@@ -365,8 +397,7 @@ HTML_WRAPPER = (
     '}}'
     'return return_str; }}'
     '</script>'
-    '<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/'
-    'jquery.min.js"></script>'
+    '<script>' + LBS_LOADER_JS + '</script>'
     '<!-- Global site tag (gtag.js) - Google Analytics -->'
     '<script async src="https://www.googletagmanager.com/gtag/js?'
     'id=UA-108577160-1"></script>'
@@ -376,18 +407,7 @@ HTML_WRAPPER = (
     '(\'config\', \'UA-108577160-1\');'
     '</script>'
     '<script>'
-    '$(document).ready(function() {{'
-    '$.get(\'{filename}\', function (data) {{'
-    'document.getElementById("{title}").innerHTML = '
-    'new XMLSerializer().serializeToString(data.documentElement);'
-    '}});'
-    'setInterval(function() {{'
-    '$.get(\'{filename}\', function (data) {{'
-    'document.getElementById("{title}").innerHTML = '
-    'new XMLSerializer().serializeToString(data.documentElement);'
-    '}});'
-    '}}, 3000); '
-    '}});'
+    'lbsLoad(\'{filename}\', \'{title}\', {poll_ms}, false);'
     '</script>'
     '<script>'
     '(function(h,o,u,n,d) {{ '
@@ -429,20 +449,7 @@ HTML_WRAPPER = (
 
 OBJECT_ENTRY_TEMPLATE = (
     '<script>'
-    '$(document).ready(function() {{'
-    '$.get(\'{game_id_str}.svg\', function (data) {{'
-    'document.getElementById("{game_id_str}").innerHTML = new XMLSerializer().'
-    'serializeToString(data.documentElement).replace(\'height="2256" \','
-    ' \'height="735" \');'
-    '}});'
-    'setInterval(function() {{'
-    '$.get(\'{game_id_str}.svg\', function (data) {{'
-    'document.getElementById("{game_id_str}").innerHTML = new XMLSerializer().'
-    'serializeToString(data.documentElement).replace(\'height="2256" \','
-    ' \'height="735" \');'
-    '}});'
-    '}}, 10000);'
-    '}});'
+    'lbsLoad(\'{game_id_str}.svg\', \'{game_id_str}\', {poll_ms}, true);'
     '</script>'
     '<td valign="top"><div align="center">'
     '<a>'
@@ -553,7 +560,8 @@ def get_object_html_str(game_html_id_tuple_list):
 
         object_html_str += OBJECT_ENTRY_TEMPLATE.format(
             title_str=title_str,
-            game_id_str=game_html_id
+            game_id_str=game_html_id,
+            poll_ms=DAY_PAGE_POLL_MS if game_is_live(game) else 0
         )
 
         if list_index % 2 == 1:
@@ -794,12 +802,24 @@ def get_formatted_date_str(input_date_str):
 
     return this_date_str
 
+GAME_PAGE_POLL_MS = 3000
+DAY_PAGE_POLL_MS = 10000
+
+def game_is_live(game):
+    """Whether the card can still change: today's game, not over, not
+    called off. Only such a page keeps asking for its card."""
+    return bool(game.is_today and not game.is_final and not game.is_postponed)
+
 def write_game_svg_and_html(game_id, game, output_path, write_html=False):
     svg_filename = game_id + '.svg'
     html_filename = game_id + '.html'
 
     svg_text = game.get_svg_str()
-    html_text = HTML_WRAPPER.format(title=game_id, filename=svg_filename)
+    html_text = HTML_WRAPPER.format(
+        title=game_id,
+        filename=svg_filename,
+        poll_ms=GAME_PAGE_POLL_MS if game_is_live(game) else 0
+    )
 
     output_svg_path = join(output_path, svg_filename)
     output_html_path = join(output_path, html_filename)
@@ -813,7 +833,15 @@ def write_game_svg_and_html(game_id, game, output_path, write_html=False):
         with open(output_svg_path, 'w') as filehandle:
             filehandle.write(svg_text)
 
-        if write_html:
+    # The page is written when it changes — the game going final turns its
+    # polling off — not only when the card does.
+    if write_html:
+        old_html_text = ''
+        if exists(output_html_path):
+            with open(output_html_path, 'r') as filehandle:
+                old_html_text = filehandle.read()
+
+        if old_html_text != html_text:
             with open(output_html_path, 'w') as filehandle:
                 filehandle.write(html_text)
 
