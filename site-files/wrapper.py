@@ -1,6 +1,7 @@
 import hashlib
 import os
 import shutil
+import traceback
 
 from lmdbm import Lmdb
 
@@ -25,7 +26,43 @@ class MyLmdb(Lmdb):
         return value.decode("utf-8")
 
 
-#@tracer.wrap(service="get_todays_games", resource="wrapper")
+
+def publish(source_path, dest_path):
+    """Copy a file into place atomically: to a temporary name in the same
+    directory, then renamed over the target, so nginx never serves a
+    half-written file. copy2 keeps the modification time, so a file that
+    has not changed keeps its Last-Modified and browsers get 304s."""
+    dest_dir = os.path.dirname(dest_path)
+    tmp_path = os.path.join(dest_dir, f'.{os.path.basename(dest_path)}.tmp-{os.getpid()}')
+    shutil.copy2(source_path, tmp_path)
+    os.replace(tmp_path, dest_path)
+
+
+def publish_changed(prime_dir, dest_dir, hash_map):
+    """Publish every file in the live slot whose content differs from what
+    the web root holds, by md5 kept in the hash map, and leave the rest
+    untouched. (This step used to compare an undefined name inside a bare
+    except, which copied every file every tick.)"""
+    for this_file in os.listdir(prime_dir):
+        source_path = f'{prime_dir}{this_file}'
+        dest_path = f'{dest_dir}{this_file}'
+        try:
+            with open(source_path, 'r') as filehandle:
+                source_hash = my_hash(filehandle.read())
+            hash_map[source_path] = source_hash
+            dest_hash = hash_map.get(dest_path, 0)
+            if dest_hash == 0 and os.path.isfile(dest_path):
+                with open(dest_path, 'r') as filehandle_2:
+                    dest_hash = my_hash(filehandle_2.read())
+                hash_map[dest_path] = dest_hash
+            if source_hash != dest_hash or not os.path.isfile(dest_path):
+                publish(source_path, dest_path)
+                hash_map[dest_path] = source_hash
+        except Exception:
+            traceback.print_exc()
+
+
+@tracer.wrap(service="get_todays_games", resource="wrapper")
 def get_todays_games():
     with MyLmdb.open("/mnt/delay/hash.db", "c", map_size=2**30, autogrow=False) as hash_map:
         for this_file in os.listdir('/mnt/delay/1800'):
@@ -46,9 +83,6 @@ def get_todays_games():
                         source_text = filehandle.read()
                         source_hash = my_hash(source_text)
                         hash_map[source_path] = source_hash
-                else:
-                    with open(source_path, 'r') as fh:
-                        text1 = fh.read()
 
                 if dest_hash == 0:
                     if os.path.isfile(dest_path):
@@ -57,33 +91,19 @@ def get_todays_games():
                             dest_hash = my_hash(dest_text)
                             hash_map[dest_path] = dest_hash
                     else:
-                        shutil.copy(source_path, dest_dir)
+                        publish(source_path, dest_path)
                         dest_hash = source_hash
                         hash_map[dest_path] = dest_hash
 
                 if source_hash != dest_hash:
-                    shutil.copy(source_path, dest_dir)
+                    publish(source_path, dest_path)
                     dest_hash = source_hash
                     hash_map[dest_path] = dest_hash
 
         prime_dir = "/mnt/delay/0/"
         dest_dir = '/var/www/html/'
         baseball.generate_today_game_svgs(prime_dir, True, True, True)
-        files = os.listdir(prime_dir)
-        for this_file in files:
-            source_path = f'{prime_dir}{this_file}'
-            dest_path = f'{dest_dir}{this_file}'
-            with open(source_path, 'r') as filehandle:
-                source_text = filehandle.read()
-                hash_text = my_hash(source_text)
-                hash_map[source_path] = hash_text
-                try:
-                    with open(dest_path, 'r') as filehandle_2:
-                        dest_svg_text = filehandle_2.read()
-                        if source_svg_text != dest_svg_text:
-                            shutil.copy(source_path, dest_dir)
-                except:
-                    shutil.copy(f'{prime_dir}{this_file}', dest_dir)
+        publish_changed(prime_dir, dest_dir, hash_map)
 
 
 if __name__ == '__main__':
